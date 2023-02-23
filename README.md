@@ -14,6 +14,7 @@ Add your own name (do not add the names for others!) to the section below.
 | ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/6091/avatar.png?width=400) | Francisco Cunha | F.SiqueiraCarneirodaCunhaNeto-1@student.tudelft.nl |
 | ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Vlad Ionita | V.Ionita@student.tudelft.nl |
 | ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Luca-Serban Ionescu | ionescu-8@student.tudelft.nl |
+| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Maria Cristescu | m.a.cristescu@student.tudelft.nl |
 
 | ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/4881/avatar.png?width=400) | Renyi Yang      | R.Yang-7@student.tudelft.nl                        |
 <!-- Instructions (remove once assignment has been completed -->
