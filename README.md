@@ -8,11 +8,11 @@ Add your own name (do not add the names for others!) to the section below.
 
 ## Group members
 
-| Profile Picture | Name | Email                         |
-|---|---|-------------------------------|
-| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Your Name Here | Y.NameHere@student.tudelft.nl |
+| Profile Picture | Name        | Email                       |
+|---|-------------|-----------------------------|
 | ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/2613/avatar.png?width=400) | Justin Jo | B.Jo@student.tudelft.nl       |
 | ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/6091/avatar.png?width=400) | Francisco Cunha | F.SiqueiraCarneirodaCunhaNeto-1@student.tudelft.nl |
+| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Vlad Ionita | V.Ionita@student.tudelft.nl |
 
 <!-- Instructions (remove once assignment has been completed -->
 <!-- - Add (only!) your own name to the table above (use Markdown formatting) -->
