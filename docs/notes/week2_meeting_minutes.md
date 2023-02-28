@@ -1,4 +1,4 @@
-### week1 meeting note
+### Week 2 Meeting Minutes
 
 Group 45
 
