@@ -1,8 +1,8 @@
-# Group 45 Meeting Agenda - Week 2
+# Group 45 Meeting Agenda - Week 3
 
 ### Date / Time
 - Feb 28, 2023
-- 14:30 - 15:15
+- 16:45 - 17:30
 ### Attendees
 - Maria Cristescu
 - Luca Ionescu
