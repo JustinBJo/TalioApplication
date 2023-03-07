@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package commons;
-
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import javax.persistence.Entity;
@@ -45,6 +44,7 @@ public class Person {
         this.firstName = firstName;
         this.lastName = lastName;
     }
+
 
     @Override
     public boolean equals(Object obj) {
