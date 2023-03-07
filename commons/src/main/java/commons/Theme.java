@@ -2,6 +2,7 @@ package commons;
 
 import javax.persistence.*;
 import java.awt.Color;
+import java.util.Objects;
 
 @Entity
 @Table(name = "themes")
@@ -74,6 +75,19 @@ public class Theme {
 
     public void setSubtaskColor(Color subtaskColor) {
         this.subtaskColor = subtaskColor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Theme theme = (Theme) o;
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 
