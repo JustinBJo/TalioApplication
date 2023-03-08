@@ -1,13 +1,11 @@
 package server.api;
 
-import commons.Task;
 import commons.Theme;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
-import server.database.TaskRepository;
 import server.database.ThemeRepository;
 
 import java.util.*;
