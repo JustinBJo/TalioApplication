@@ -29,12 +29,20 @@ public class TaskList {
         this.tasks = new ArrayList<Task>();
     }
 
+    public long getId() {
+        return this.id;
+    }
+
     public String getTitle() {
         return this.title;
     }
 
     public List<Task> getTasks() {
         return this.tasks;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setTitle(String title) {
