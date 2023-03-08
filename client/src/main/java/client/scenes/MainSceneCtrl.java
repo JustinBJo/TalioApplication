@@ -18,13 +18,12 @@ public class MainSceneCtrl {
     }
 
     @FXML
-    private ListView boards;
+    ListView boards;
 
     @FXML
-    private ListView lists;
+    ListView lists;
 
-    private int i =0;
-    private int k=0;
+    private int i = 0;
 
     public void addBoard(){
 
@@ -33,8 +32,7 @@ public class MainSceneCtrl {
         }
 
     public void addList() {
-        lists.getItems().add("List: " + k);
-        k++;
+        mainCtrl.showAddList();
     }
 
 
