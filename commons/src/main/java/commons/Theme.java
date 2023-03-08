@@ -77,17 +77,18 @@ public class Theme {
         this.subtaskColor = subtaskColor;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id);
+        return Objects.equals(id, theme.id) && Objects.equals(boardColor, theme.boardColor) && Objects.equals(listColor, theme.listColor) && Objects.equals(taskColor, theme.taskColor) && Objects.equals(subtaskColor, theme.subtaskColor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, boardColor, listColor, taskColor, subtaskColor);
     }
 }
 

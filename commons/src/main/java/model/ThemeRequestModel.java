@@ -10,6 +10,16 @@ public class ThemeRequestModel {
     private String taskColor;
     private String subtaskColor;
 
+    public ThemeRequestModel() {
+    }
+    // constructor with parameters
+    public ThemeRequestModel(String boardColor, String listColor, String taskColor, String subtaskColor) {
+        this.boardColor = boardColor;
+        this.listColor = listColor;
+        this.taskColor = taskColor;
+        this.subtaskColor = subtaskColor;
+    }
+
     private static final Map<String, Color> COLOR_MAP = new HashMap<>();
 
     static {

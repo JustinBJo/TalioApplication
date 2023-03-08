@@ -14,9 +14,21 @@ import java.awt.*;
 @RequestMapping("/themes")
 public class ThemeController {
 
-    @Autowired
     private ThemeRepository themeRepository;
 
+    /**
+     * Constructor for ThemeController
+     * @param themeRepository the repository to use
+     */
+    public ThemeController(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
+    }
+
+    /**
+     * Creates a new theme
+     * @param themeRequestModel the theme to create
+     * @return the created theme
+     */
     @PostMapping("/")
     public ResponseEntity<Theme> createTheme(@RequestBody ThemeRequestModel themeRequestModel) {
         Color board = themeRequestModel.getBoardColor();
@@ -28,6 +40,11 @@ public class ThemeController {
         return new ResponseEntity<>(savedTheme, HttpStatus.CREATED);
     }
 
+    /**
+     * Gets a theme by id
+     * @param id the id of the theme
+     * @return the theme
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Theme> getThemeById(@PathVariable Long id) {
         Theme theme = themeRepository.findById(id).orElse(null);
