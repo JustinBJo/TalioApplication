@@ -2,6 +2,9 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,5 +56,30 @@ public class TaskListTest {
         String actual = new TaskList("Test List").toString();
         assertTrue(actual.contains(TaskList.class.getSimpleName()));
         assertTrue(actual.contains("Test List"));
+    }
+
+    @Test
+    public void idTest() {
+        TaskList a = new TaskList("Test List");
+        a.setId(10L);
+        assertTrue(a.getId() == 10L);
+    }
+
+    @Test
+    public void titleTest() {
+        TaskList a = new TaskList("Test List");
+        a.setTitle("Title");
+        assertEquals(a.getTitle(), "Title");
+    }
+
+    @Test
+    public void tasksTest() {
+        TaskList a = new TaskList("Test List");
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(new Task("task1", "example task 1", new ArrayList<>(), new ArrayList<>()));
+        tasks.add(new Task("task2", "example task 2", new ArrayList<>(), new ArrayList<>()));
+        a.setTasks(tasks);
+        assertEquals(a.getTasks(), tasks);
+        assertTrue(a.getTasks().size() == 2);
     }
 }

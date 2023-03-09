@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class TaskListControllerTest {
 
@@ -49,4 +50,18 @@ public class TaskListControllerTest {
         assertEquals(tl1, taskListController.getById(tl1.getId()).getBody());
         assertEquals(tl2, taskListController.getById(tl2.getId()).getBody());
     }
+
+    @Test
+    public void getByIdNonExistentTest() {
+        var result = taskListController.getById(1L);
+        assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void addWithNullTitle() {
+        TaskList tl = new TaskList(null);
+        var result = taskListController.add(tl);
+        assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
 }
