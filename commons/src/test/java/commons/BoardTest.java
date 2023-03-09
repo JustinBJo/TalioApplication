@@ -50,7 +50,7 @@ public class BoardTest {
 
     @Test
     void testEquals() {
-        Board a = new Board("a", "b", emptyListOfTaskList());
+        Board a = new Board("a", "a", emptyListOfTaskList());
         Board b = new Board("a", "b");
         Board c = new Board("c", "b", emptyListOfTaskList());
         assertEquals(a, b);
