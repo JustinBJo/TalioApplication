@@ -26,8 +26,8 @@ public class SubtaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Subtask> getById(@PathVariable("id") long id){
-        if(id < 0 || !repo.existsById(id)) {
+    public ResponseEntity<Subtask> getById(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
@@ -35,7 +35,7 @@ public class SubtaskController {
 
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Subtask> add(@RequestBody Subtask subtask) {
-        if(subtask.getTitle() == null || subtask.getTitle().isEmpty())
+        if (subtask.getTitle() == null || subtask.getTitle().isEmpty())
             return ResponseEntity.badRequest().build();
 
         Subtask saved = repo.save(subtask);

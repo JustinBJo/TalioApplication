@@ -13,7 +13,8 @@ public class ThemeRequestModel {
     public ThemeRequestModel() {
     }
     // constructor with parameters
-    public ThemeRequestModel(String boardColor, String listColor, String taskColor, String subtaskColor) {
+    public ThemeRequestModel(String boardColor, String listColor,
+                             String taskColor, String subtaskColor) {
         this.boardColor = boardColor;
         this.listColor = listColor;
         this.taskColor = taskColor;

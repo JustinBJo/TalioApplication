@@ -23,9 +23,12 @@ public class Task {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Tag> tags;
 
-    public Task(){}
+    public Task() {
 
-    public Task(String title, String description, List<Subtask> subtasks, List<Tag> tags){
+    }
+
+    public Task(String title, String description,
+                List<Subtask> subtasks, List<Tag> tags) {
         this.title = title;
         this.description = description;
         this.subtasks = subtasks;

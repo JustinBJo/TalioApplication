@@ -25,7 +25,7 @@ class ThemeTest {
         var c = new Theme(Color.WHITE, Color.BLACK, Color.BLACK, Color.BLACK);
         assertEquals(a, b);
         assertNotEquals(a, c);
-        assertEquals(a,a);
+        assertEquals(a, a);
     }
 
     @Test

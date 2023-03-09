@@ -19,9 +19,9 @@ public class Tag {
     private Tag() {
         // for object mapper
     }
-    public Tag(String name, String color){
-        this.name=name;
-        this.color=color;
+    public Tag(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public long getId() {

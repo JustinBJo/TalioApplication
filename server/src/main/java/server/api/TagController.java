@@ -36,8 +36,8 @@ public class TagController {
     }
 
     @PostMapping(path = {"", "/"})
-    public ResponseEntity<Tag> add(@RequestBody Tag tag){
-        if(isNullOrEmpty(tag.getName()) || tag.getColor()==null){
+    public ResponseEntity<Tag> add(@RequestBody Tag tag) {
+        if (isNullOrEmpty(tag.getName()) || tag.getColor() == null) {
             return ResponseEntity.badRequest().build();
         }
 

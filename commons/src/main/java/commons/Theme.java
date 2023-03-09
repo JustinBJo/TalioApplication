@@ -29,7 +29,8 @@ public class Theme {
     }
 
     // constructor with parameters
-    public Theme(Color boardColor, Color listColor, Color taskColor, Color subtaskColor) {
+    public Theme(Color boardColor, Color listColor,
+                 Color taskColor, Color subtaskColor) {
         this.boardColor = boardColor;
         this.listColor = listColor;
         this.taskColor = taskColor;
@@ -83,7 +84,11 @@ public class Theme {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(boardColor, theme.boardColor) && Objects.equals(listColor, theme.listColor) && Objects.equals(taskColor, theme.taskColor) && Objects.equals(subtaskColor, theme.subtaskColor);
+        return Objects.equals(id, theme.id)
+                && Objects.equals(boardColor, theme.boardColor)
+                && Objects.equals(listColor, theme.listColor)
+                && Objects.equals(taskColor, theme.taskColor)
+                && Objects.equals(subtaskColor, theme.subtaskColor);
     }
 
     @Override

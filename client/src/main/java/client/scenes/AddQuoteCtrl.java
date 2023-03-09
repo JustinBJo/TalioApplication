@@ -29,6 +29,7 @@ import javafx.stage.Modality;
 
 public class AddQuoteCtrl {
 
+
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 

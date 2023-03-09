@@ -194,7 +194,8 @@ public class TestQuoteRepository implements QuoteRepository {
     }
 
     @Override
-    public <S extends Quote> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Quote> Page<S> findAll(Example<S> example,
+                                             Pageable pageable) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -212,7 +213,9 @@ public class TestQuoteRepository implements QuoteRepository {
     }
 
     @Override
-    public <S extends Quote, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Quote, R> R findBy(Example<S> example,
+                                         Function<FetchableFluentQuery<S>, R>
+                                                 queryFunction) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -38,7 +38,8 @@ public class Subtask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subtask subtask = (Subtask) o;
-        return id == subtask.id && completed == subtask.completed && Objects.equals(title, subtask.title);
+        return id == subtask.id && completed == subtask.completed &&
+                Objects.equals(title, subtask.title);
     }
 
     @Override
