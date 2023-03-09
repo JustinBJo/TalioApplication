@@ -13,15 +13,28 @@ public class TaskController {
 
     private final TaskRepository repo;
 
+    /**
+     * constructor of the task controller
+     * @param repo the task repository
+     */
     public TaskController(TaskRepository repo) {
         this.repo = repo;
     }
 
+    /**
+     * get all the tasks
+     * @return all the tasks
+     */
     @GetMapping(path = { "", "/" })
     public List<Task> getAll() {
         return repo.findAll();
     }
 
+    /**
+     * get a task by id
+     * @param id the id of the task
+     * @return the task
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Task> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -30,6 +43,11 @@ public class TaskController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * add a task
+     * @param task the task to add
+     * @return the added task
+     */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Task> add(@RequestBody Task task) {
 

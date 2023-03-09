@@ -6,7 +6,10 @@
 <module name = "Checker">
     <module name="TreeWalker">
         <!-- javadoc -->
-        <module name="MissingJavadocMethod"/>
+        <module name="MissingJavadocMethod">
+            <property name="allowedAnnotations" value="Override, Test, BeforeEach"/>
+            <property name="scope" value="protected"/>
+        </module>
         <module name="UnusedImports" />
         <!-- No C-style array declarations -->
         <module name="ArrayTypeStyle"/>

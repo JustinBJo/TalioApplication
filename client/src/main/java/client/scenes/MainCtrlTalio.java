@@ -37,11 +37,17 @@ public class MainCtrlTalio {
 
     }
 
+    /**
+     * show the connect screen
+     */
     public void showConnect() {
         primaryStage.setTitle("Connect to a server");
         primaryStage.setScene(connect);
     }
 
+    /**
+     * show the main screen
+     */
     public void showMain() {
         primaryStage.setTitle("Talio: Lists");
         primaryStage.setScene(mainScene);

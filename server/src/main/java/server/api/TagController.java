@@ -18,15 +18,28 @@ import server.database.TagRepository;
 public class TagController {
     private final TagRepository repo;
 
+    /**
+     * constructor
+     * @param repo the tag repository
+     */
     public TagController(TagRepository repo) {
         this.repo = repo;
     }
 
+    /**
+     * get all the tags
+     * @return all the tags
+     */
     @GetMapping(path = { "", "/" })
     public List<Tag> getAll() {
         return repo.findAll();
     }
 
+    /**
+     * get a tag by id
+     * @param id the id of the tag
+     * @return the tag
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Tag> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -35,6 +48,11 @@ public class TagController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * add a tag
+     * @param tag the tag to add
+     * @return the added tag
+     */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Tag> add(@RequestBody Tag tag) {
         if (isNullOrEmpty(tag.getName()) || tag.getColor() == null) {
@@ -45,6 +63,11 @@ public class TagController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * check if a string is null or empty
+     * @param s the string to check
+     * @return true if the string is null or empty, false otherwise
+     */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

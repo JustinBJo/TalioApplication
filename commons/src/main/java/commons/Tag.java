@@ -19,6 +19,12 @@ public class Tag {
     private Tag() {
         // for object mapper
     }
+
+    /**
+     * Create a new tag.
+     * @param name the name of the tag
+     * @param color the color of the tag
+     */
     public Tag(String name, String color) {
         this.name = name;
         this.color = color;
@@ -32,21 +38,38 @@ public class Tag {
         this.id = id;
     }
 
+    /**
+     * get the name of the tag
+     * @return the name of the tag
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * set the name of the tag
+     * @param name the name of the tag
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * get the color of the tag
+     * @return the color of the tag
+     */
     public String getColor() {
         return color;
     }
 
+    /**
+     * set the color of the tag
+     * @param color the color of the tag
+     */
     public void setColor(String color) {
         this.color = color;
     }
+
 
     @Override
     public boolean equals(Object o) {

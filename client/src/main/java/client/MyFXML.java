@@ -33,10 +33,21 @@ public class MyFXML {
 
     private Injector injector;
 
+    /**
+     * Create a new MyFXML.
+     * @param injector the injector to use
+     */
     public MyFXML(Injector injector) {
         this.injector = injector;
     }
 
+    /**
+     * Load a FXML file.
+     * @param <T> the type of the controller
+     * @param c the class of the controller
+     * @param parts the parts of the path to the FXML file
+     * @return a pair of the controller and the parent
+     */
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
             var loader = new FXMLLoader(getLocation(parts), null, null,
@@ -49,11 +60,19 @@ public class MyFXML {
         }
     }
 
+    /**
+     * Get the location of a resource.
+     * @param parts the parts of the path to the resource
+     * @return the location of the resource
+     */
     private URL getLocation(String... parts) {
         var path = Path.of("", parts).toString();
         return MyFXML.class.getClassLoader().getResource(path);
     }
 
+    /**
+     * A factory for builders.
+     */
     private class MyFactory implements BuilderFactory,
             Callback<Class<?>, Object> {
 
@@ -68,6 +87,11 @@ public class MyFXML {
             };
         }
 
+        /**
+         * Get an instance of a class.
+         * @param type the class
+         * @return an instance of the class
+         */
         @Override
         public Object call(Class<?> type) {
             return injector.getInstance(type);

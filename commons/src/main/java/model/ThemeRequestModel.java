@@ -10,9 +10,19 @@ public class ThemeRequestModel {
     private String taskColor;
     private String subtaskColor;
 
+    /**
+     * constructor
+     */
     public ThemeRequestModel() {
     }
-    // constructor with parameters
+
+    /**
+     * Create a new theme.
+     * @param boardColor the color of the board
+     * @param listColor the color of the list
+     * @param taskColor  the color of the task
+     * @param subtaskColor the color of the subtask
+     */
     public ThemeRequestModel(String boardColor, String listColor,
                              String taskColor, String subtaskColor) {
         this.boardColor = boardColor;
@@ -39,18 +49,34 @@ public class ThemeRequestModel {
         COLOR_MAP.put("YELLOW", Color.YELLOW);
     }
 
+    /**
+     * get the color of the board
+     * @return the color of the board
+     */
     public Color getBoardColor() {
         return COLOR_MAP.get(boardColor);
     }
 
+    /**
+     * get the color of the list
+     * @return the color of the list
+     */
     public Color getListColor() {
         return COLOR_MAP.get(listColor);
     }
 
+    /**
+     * get the color of the task
+     * @return the color of the task
+     */
     public Color getTaskColor() {
         return COLOR_MAP.get(taskColor);
     }
 
+    /**
+     * get the color of the subtask
+     * @return the color of the subtask
+     */
     public Color getSubtaskColor() {
         return COLOR_MAP.get(subtaskColor);
     }

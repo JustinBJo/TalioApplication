@@ -23,12 +23,19 @@ public class MainSceneCtrl {
     @FXML
     ListView<String> lists;
 
+    /**
+     * constructor
+     * @param mainCtrl the main controller
+     */
     @Inject
     public  MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * go back to the connect screen
+     */
     public void back() {
         mainCtrl.showConnect();
     }
@@ -44,11 +51,17 @@ public class MainSceneCtrl {
 
     private int i = 0;
 
+    /**
+     * add a board to the list
+     */
     public void addBoard() {
         boards.getItems().add("Board: " + i);
         i++;
     }
 
+    /**
+     * add a list to the list
+     */
     public void addList() {
         mainCtrl.showAddList();
     }
