@@ -14,6 +14,26 @@ public class TaskListTest {
     }
 
     @Test
+    public void equalsTestNormal() {
+        TaskList taskList = new TaskList("Test List");
+        TaskList other1 = taskList;
+        assertTrue(taskList.equals(other1));
+    }
+
+    @Test
+    public void equalsTestForced() {
+        TaskList tl1 = new TaskList("test one");
+        tl1.setId(1L);
+        TaskList tl2 = new TaskList("test two");
+        tl2.setId(2L);
+
+        assertFalse(tl1.equals(tl2));
+
+        tl2.setId(tl1.getId());
+        assertTrue(tl1.equals(tl2));
+    }
+
+    @Test
     public void equalsHashCode() {
         TaskList a = new TaskList("Test List");
         TaskList b = new TaskList("Test List");
@@ -25,7 +45,6 @@ public class TaskListTest {
     public void notEqualsHashCode() {
         TaskList a = new TaskList("Test List");
         TaskList b = new TaskList("Test List2");
-        assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
     }
 
