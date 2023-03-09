@@ -20,7 +20,6 @@
         <module name="ParameterName"/>
         <module name="TypeName"/>
         <!-- javadoc -->
-
         <module name="JavadocMethod"/>
         <module name="JavadocStyle"/>
         <!-- Curly bracket -->
