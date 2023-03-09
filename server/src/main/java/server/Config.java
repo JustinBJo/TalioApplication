@@ -17,10 +17,8 @@ package server;
 
 import java.util.Random;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import server.database.TaskListRepository;
 
 @Configuration
 public class Config {
@@ -28,12 +26,5 @@ public class Config {
     @Bean
     public Random getRandom() {
         return new Random();
-    }
-
-    @Bean
-    public CommandLineRunner commandLineRunner(TaskListRepository taskListRepository) {
-        return args -> {
-            taskListRepository.deleteAll();
-        };
     }
 }
