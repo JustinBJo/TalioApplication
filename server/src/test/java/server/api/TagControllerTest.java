@@ -19,7 +19,7 @@ class TagControllerTest {
     }
 
     @Test
-    public void cannotAddNullPerson() {
+    public void cannotAddNullTag() {
         var actual = sut.add(getTag(null, "BLUE"));
         assertEquals(BAD_REQUEST, actual.getStatusCode());
         actual = sut.add(getTag("Name", null));
