@@ -3,6 +3,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Task;
 import commons.TaskList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,9 @@ public class MainSceneCtrl {
     @FXML
     ListView<String> lists;
 
+    @FXML
+    ListView<String> tasks;
+
     @Inject
     public  MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
@@ -39,7 +43,13 @@ public class MainSceneCtrl {
                         .map(TaskList::getTitle)
                         .collect(Collectors.toList())
         );
+        ObservableList<String> task = FXCollections.observableList(
+                server.getTasks().stream()
+                        .map(Task::getTitle)
+                        .collect(Collectors.toList())
+        );
         lists.setItems(taskLists);
+        tasks.setItems(task);
     }
 
     private int i = 0;
@@ -54,5 +64,6 @@ public class MainSceneCtrl {
         mainCtrl.showAddList();
     }
 
+    public void addTask(){mainCtrl.showAddTask();}
 
 }

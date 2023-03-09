@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
+import commons.Task;
 import commons.TaskList;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -75,5 +76,21 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
+
+    public List<Task> getTasks() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("tasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Task>>() {});
+    }
+
+    public Task addTask(Task task) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("tasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
 }
