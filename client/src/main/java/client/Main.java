@@ -31,6 +31,12 @@ public class Main extends Application {
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
 
+    /**
+     * main method
+     * @param args the command line arguments
+     * @throws URISyntaxException if the URI is invalid
+     * @throws IOException if the file cannot be read
+     */
     public static void main(String[] args)
             throws URISyntaxException, IOException {
         launch();

@@ -44,11 +44,10 @@ public class MainSceneCtrl {
 
     private int i = 0;
 
-    public void addBoard(){
-
+    public void addBoard() {
         boards.getItems().add("Board: " + i);
         i++;
-        }
+    }
 
     public void addList() {
         mainCtrl.showAddList();

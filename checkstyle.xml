@@ -5,6 +5,8 @@
 
 <module name = "Checker">
     <module name="TreeWalker">
+        <!-- javadoc -->
+        <module name="MissingJavadocMethod"/>
         <module name="UnusedImports" />
         <!-- No C-style array declarations -->
         <module name="ArrayTypeStyle"/>
@@ -19,9 +21,7 @@
         <module name="ConstantName"/>
         <module name="ParameterName"/>
         <module name="TypeName"/>
-        <!-- javadoc -->
-        <module name="JavadocMethod"/>
-        <module name="JavadocStyle"/>
+
         <!-- Curly bracket -->
         <module name="LeftCurly"/>
         <!-- white space -->
@@ -57,6 +57,7 @@
             <property name="allowLineBreaks" value="true"/>
         </module>
     </module>
+
     <!-- line length -->
     <module name="LineLength">
         <property name="max" value="80"/>
