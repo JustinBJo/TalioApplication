@@ -1,9 +1,13 @@
 package commons;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Board {
@@ -34,6 +38,10 @@ public class Board {
         this.taskLists = taskLists;
     }
 
+    public long getId() { return id; }
+
+    public void setId(long id) { this.id = id; }
+
     public String getCode() {
         return code;
     }
@@ -59,25 +67,20 @@ public class Board {
     }
 
     @Override
-    public String toString() {
-        return "Board{" +
-                "id=" + id +
-                ", code='" + code + '\'' +
-                ", title='" + title + '\'' +
-                ", taskLists=" + taskLists +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return id == board.id;
+        return id == board.id && Objects.equals(code, board.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, code);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 }
