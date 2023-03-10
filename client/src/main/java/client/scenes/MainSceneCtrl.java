@@ -9,8 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 
-import java.util.stream.Collectors;
-
 public class MainSceneCtrl {
 
     private final ServerUtils server;
@@ -21,7 +19,7 @@ public class MainSceneCtrl {
     @FXML
     ListView boards;
     @FXML
-    ListView<String> lists;
+    ListView<TaskList> lists;
 
     /**
      * constructor
@@ -44,11 +42,7 @@ public class MainSceneCtrl {
      * refresh the list
      */
     public void refresh() {
-        taskLists = FXCollections.observableList(
-                server.getTaskList().stream()
-                        .map(TaskList::getTitle)
-                        .collect(Collectors.toList())
-        );
+        taskLists = FXCollections.observableList(server.getTaskList());
         lists.setItems(taskLists);
     }
 
