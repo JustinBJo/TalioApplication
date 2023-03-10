@@ -9,14 +9,17 @@ public class MainCtrlTalio {
 
     private Stage primaryStage;
 
-    private ConnectScreenCtrl connectCtrl;
-    private Scene connect;
+    ConnectScreenCtrl connectCtrl;
+    Scene connect;
 
+    MainSceneCtrl mainSceneCtrl;
+    Scene mainScene;
 
-    private MainSceneCtrl mainSceneCtrl;
-    private Scene mainScene;
+    AddListCtrl addListCtrl;
+    Scene addListScene;
 
-    public void initialize(Stage primaryStage, Pair<ConnectScreenCtrl, Parent> connect, Pair<MainSceneCtrl, Parent>mainScene) {
+    public void initialize(Stage primaryStage, Pair<ConnectScreenCtrl, Parent> connect,
+                           Pair<MainSceneCtrl, Parent> mainScene, Pair<AddListCtrl, Parent> addList) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -24,6 +27,10 @@ public class MainCtrlTalio {
 
         this.mainSceneCtrl = mainScene.getKey();
         this.mainScene = new Scene(mainScene.getValue());
+
+        this.addListCtrl = addList.getKey();
+        this.addListScene = new Scene(addList.getValue());
+
 
         showConnect();
         primaryStage.show();
@@ -38,5 +45,10 @@ public class MainCtrlTalio {
     public void showMain(){
         primaryStage.setTitle("Talio: Lists");
         primaryStage.setScene(mainScene);
+    }
+
+    public void showAddList(){
+        primaryStage.setTitle("Add a new List");
+        primaryStage.setScene(addListScene);
     }
 }
