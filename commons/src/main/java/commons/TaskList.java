@@ -28,6 +28,22 @@ public class TaskList {
     }
 
     /**
+     * get the id of the task list
+     * @return the id of the task list
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * set the id of the task list
+     * @param id the id of the task list
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
      * constructor
      * @param title the title of the task list
      */
