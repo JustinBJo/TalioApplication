@@ -20,52 +20,82 @@ public class TaskList {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Task> tasks;
 
+    /**
+     * empty constructor
+     */
     public TaskList() {
 
     }
 
+    /**
+     * get the id of the task list
+     * @return the id of the task list
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * set the id of the task list
+     * @param id the id of the task list
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * constructor
+     * @param title the title of the task list
+     */
     public TaskList(String title) {
         this.title = title;
         this.tasks = new ArrayList<Task>();
     }
 
+    /**
+     * get the title of the task list
+     * @return the title of the task list
+     */
     public String getTitle() {
         return this.title;
     }
 
+    /**
+     * get the tasks of the task list
+     * @return the tasks of the task list
+     */
     public List<Task> getTasks() {
         return this.tasks;
     }
 
+    /**
+     * set the title of the task list
+     * @param title the title of the task list
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * set the tasks of the task list
+     * @param tasks the tasks of the task list
+     */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         TaskList taskList = (TaskList) o;
-
-        if (!Objects.equals(id, taskList.id)) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(id, taskList.id)
+                && Objects.equals(title, taskList.title)
+                && Objects.equals(tasks, taskList.tasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, title, tasks);
     }
-
 }

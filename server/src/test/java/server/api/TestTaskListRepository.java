@@ -1,21 +1,21 @@
 package server.api;
 
-import commons.Task;
+import commons.TaskList;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
-import server.database.TaskRepository;
+import server.database.TaskListRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class TestTaskRepository implements TaskRepository {
+public class TestTaskListRepository implements TaskListRepository {
 
-    public final List<Task> tasks = new ArrayList<>();
+    private List<TaskList> lists = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
 
     private void call(String name) {
@@ -23,29 +23,29 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> findAll() {
+    public List<TaskList> findAll() {
         calledMethods.add("findAll");
-        return tasks;
+        return lists;
     }
 
     @Override
-    public List<Task> findAll(Sort sort) {
+    public List<TaskList> findAll(Sort sort) {
         return null;
     }
 
     @Override
-    public Page<Task> findAll(Pageable pageable) {
+    public Page<TaskList> findAll(Pageable pageable) {
         return null;
     }
 
     @Override
-    public List<Task> findAllById(Iterable<Long> longs) {
+    public List<TaskList> findAllById(Iterable<Long> longs) {
         return null;
     }
 
     @Override
     public long count() {
-        return tasks.size();
+        return 0;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void delete(Task entity) {
+    public void delete(TaskList entity) {
 
     }
 
@@ -64,7 +64,7 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void deleteAll(Iterable<? extends Task> entities) {
+    public void deleteAll(Iterable<? extends TaskList> entities) {
 
     }
 
@@ -74,20 +74,20 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
-    public <S extends Task> S save(S entity) {
+    public <S extends TaskList> S save(S entity) {
         call("save");
-        entity.setId(tasks.size());
-        tasks.add(entity);
+        entity.setId((long) lists.size());
+        lists.add(entity);
         return entity;
     }
 
     @Override
-    public <S extends Task> List<S> saveAll(Iterable<S> entities) {
+    public <S extends TaskList> List<S> saveAll(Iterable<S> entities) {
         return null;
     }
 
     @Override
-    public Optional<Task> findById(Long aLong) {
+    public Optional<TaskList> findById(Long aLong) {
         return Optional.empty();
     }
 
@@ -103,17 +103,17 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
-    public <S extends Task> S saveAndFlush(S entity) {
+    public <S extends TaskList> S saveAndFlush(S entity) {
         return null;
     }
 
     @Override
-    public <S extends Task> List<S> saveAllAndFlush(Iterable<S> entities) {
+    public <S extends TaskList> List<S> saveAllAndFlush(Iterable<S> entities) {
         return null;
     }
 
     @Override
-    public void deleteAllInBatch(Iterable<Task> entities) {
+    public void deleteAllInBatch(Iterable<TaskList> entities) {
 
     }
 
@@ -128,53 +128,53 @@ public class TestTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task getOne(Long aLong) {
+    public TaskList getOne(Long aLong) {
         return null;
     }
 
     @Override
-    public Task getById(Long id) {
+    public TaskList getById(Long id) {
         call("getById");
         return find(id).get();
     }
 
-    private Optional<Task> find(Long id) {
-        return tasks.stream().filter(t -> t.getId() == id).findFirst();
+    private Optional<TaskList> find(Long id) {
+        return lists.stream().filter(tl -> tl.getId() == id).findFirst();
     }
 
     @Override
-    public <S extends Task> Optional<S> findOne(Example<S> example) {
+    public <S extends TaskList> Optional<S> findOne(Example<S> example) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <S extends TaskList> List<S> findAll(Example<S> example) {
         return null;
     }
 
     @Override
-    public <S extends Task> List<S> findAll(Example<S> example) {
+    public <S extends TaskList> List<S> findAll(Example<S> example, Sort sort) {
         return null;
     }
 
     @Override
-    public <S extends Task> List<S> findAll(Example<S> example, Sort sort) {
+    public <S extends TaskList> Page<S> findAll(Example<S> example,
+                                                Pageable pageable) {
         return null;
     }
 
     @Override
-    public <S extends Task> Page<S> findAll(Example<S> example,
-                                            Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends Task> long count(Example<S> example) {
+    public <S extends TaskList> long count(Example<S> example) {
         return 0;
     }
 
     @Override
-    public <S extends Task> boolean exists(Example<S> example) {
+    public <S extends TaskList> boolean exists(Example<S> example) {
         return false;
     }
 
     @Override
-    public <S extends Task, R> R findBy(Example<S> example,
+    public <S extends TaskList, R> R findBy(Example<S> example,
             Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }

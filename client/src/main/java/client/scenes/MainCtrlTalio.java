@@ -9,14 +9,26 @@ public class MainCtrlTalio {
 
     private Stage primaryStage;
 
-    private ConnectScreenCtrl connectCtrl;
-    private Scene connect;
+    ConnectScreenCtrl connectCtrl;
+    Scene connect;
 
+    MainSceneCtrl mainSceneCtrl;
+    Scene mainScene;
 
-    private MainSceneCtrl mainSceneCtrl;
-    private Scene mainScene;
+    AddListCtrl addListCtrl;
+    Scene addListScene;
 
-    public void initialize(Stage primaryStage, Pair<ConnectScreenCtrl, Parent> connect, Pair<MainSceneCtrl, Parent>mainScene) {
+    /**
+     * initialize the main controller
+     * @param primaryStage the primary stage
+     * @param connect the connect screen
+     * @param mainScene the main screen
+     * @param addList  the add list screen
+     */
+    public void initialize(Stage primaryStage,
+                           Pair<ConnectScreenCtrl, Parent> connect,
+                           Pair<MainSceneCtrl, Parent> mainScene,
+                           Pair<AddListCtrl, Parent> addList) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -25,18 +37,36 @@ public class MainCtrlTalio {
         this.mainSceneCtrl = mainScene.getKey();
         this.mainScene = new Scene(mainScene.getValue());
 
+        this.addListCtrl = addList.getKey();
+        this.addListScene = new Scene(addList.getValue());
+
+
         showConnect();
         primaryStage.show();
 
     }
 
-    public void showConnect(){
+    /**
+     * show the connect screen
+     */
+    public void showConnect() {
         primaryStage.setTitle("Connect to a server");
         primaryStage.setScene(connect);
     }
 
-    public void showMain(){
+    /**
+     * show the main screen
+     */
+    public void showMain() {
         primaryStage.setTitle("Talio: Lists");
         primaryStage.setScene(mainScene);
+    }
+
+    /**
+     * show the add list screen
+     */
+    public void showAddList() {
+        primaryStage.setTitle("Add a new List");
+        primaryStage.setScene(addListScene);
     }
 }

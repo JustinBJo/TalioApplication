@@ -21,35 +21,72 @@ public class Task {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Tag> tags;
 
-    public Task(){}
+    /**
+     * empty constructor for object mapper
+     */
+    public Task() {
 
-    public Task(String title, String description, List<Subtask> subtasks, List<Tag> tags){
+    }
+
+    /**
+     * Create a new task.
+     * @param title the title of the task
+     * @param description the description of the task
+     * @param subtasks the subtasks of the task
+     * @param tags the tags of the task
+     */
+    public Task(String title, String description,
+                List<Subtask> subtasks, List<Tag> tags) {
         this.title = title;
         this.description = description;
         this.subtasks = subtasks;
         this.tags = tags;
     }
 
+    /**
+     * get the id of the task
+     * @return the id of the task
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * set the id of the task
+     * @param id the id of the task
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * get the title of the task
+     * @return the title of the task
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * set the title of the task
+     * @return the title of the task
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * get the subtasks of the task
+     * @return the subtasks of the task
+     */
     public List<Subtask> getSubtasks() {
         return subtasks;
     }
 
+    /**
+     * get the tags of the task
+     * @return the tags of the task
+     */
     public List<Tag> getTags() {
         return tags;
     }

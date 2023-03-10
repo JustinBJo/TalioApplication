@@ -11,11 +11,18 @@ public class ConnectScreenCtrl {
     @FXML
     private TextField address;
 
+    /**
+     * constructor
+     * @param mainCtrl the main controller
+     */
     @Inject
     public ConnectScreenCtrl(MainCtrlTalio mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * connect to the server and show the main screen
+     */
     public void click() {
         mainCtrl.showMain();
 

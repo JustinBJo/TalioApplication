@@ -12,8 +12,8 @@ public class TaskTest {
 
     @Test
     public void checkConstructor() {
-        var a = new Task();
-        var t = new Task("Task Title", "Description", new ArrayList<>(), new ArrayList<>());
+        var t = new Task("Task Title", "Description",
+                new ArrayList<>(), new ArrayList<>());
         assertEquals("Task Title", t.getTitle());
         assertEquals("Description", t.getDescription());
         assertEquals(0, t.getSubtasks().size());
@@ -87,21 +87,35 @@ public class TaskTest {
 
     @Test
     public void equalsHashCode() {
-        var a = new Task("Task Title", "Description", new ArrayList<>(), new ArrayList<>());
-        var b = new Task("Task Title", "Description", new ArrayList<>(), new ArrayList<>());
+        var a = new Task("Task Title", "Description",
+                new ArrayList<>(), new ArrayList<>());
+        var b = new Task("Task Title", "Description",
+                new ArrayList<>(), new ArrayList<>());
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
     }
 
     @Test
     public void notEqualsHashCode() {
-        var a = new Task("Task Title1", "Description", new ArrayList<>(), new ArrayList<>());
+        var a = new Task("Task Title1", "Description",
+                new ArrayList<>(), new ArrayList<>());
         a.setId(1L);
-        var b = new Task("Task Title1", "Description", new ArrayList<>(), new ArrayList<>());
+        var b = new Task("Task Title2", "Description",
+                new ArrayList<>(), new ArrayList<>());
         b.setId(2L);
+        assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
         b.setId(a.getId());
         assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    public void hasToString() {
+        var actual = new Task("Task Title", "Description",
+                new ArrayList<>(), new ArrayList<>()).toString();
+        assertTrue(actual.contains(Task.class.getSimpleName()));
+        assertTrue(actual.contains("Title"));
+        assertTrue(actual.contains("Description"));
     }
 
 }
