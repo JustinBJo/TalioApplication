@@ -70,25 +70,16 @@ public class TaskList {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         TaskList taskList = (TaskList) o;
-
-        if (!Objects.equals(id, taskList.id)) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(id, taskList.id)
+                && Objects.equals(title, taskList.title)
+                && Objects.equals(tasks, taskList.tasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, title, tasks);
     }
-
 }

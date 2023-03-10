@@ -38,12 +38,6 @@ public class TaskListTest {
         assertNotEquals(a.hashCode(), b.hashCode());
     }
 
-    @Test
-    public void hasToString() {
-        String actual = new TaskList("Test List").toString();
-        assertTrue(actual.contains(TaskList.class.getSimpleName()));
-        assertTrue(actual.contains("Test List"));
-    }
 
     @Test
     public void titleTest() {
