@@ -1,13 +1,9 @@
 package commons;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 @Table
@@ -25,35 +21,19 @@ public class TaskList {
     private List<Task> tasks;
 
     /**
-     * empty constructor for object mapper
+     * empty constructor
      */
     public TaskList() {
 
     }
 
     /**
-     * Create a new task list.
+     * constructor
      * @param title the title of the task list
      */
     public TaskList(String title) {
         this.title = title;
         this.tasks = new ArrayList<Task>();
-    }
-
-    /**
-     * get the id of the task list
-     * @return the id of the task list
-     */
-    public long getId() {
-        return this.id;
-    }
-
-    /**
-     * set the id of the task list
-     * @param id the id of the task list
-     */
-    public void setId(long id) {
-        this.id = id;
     }
 
     /**
@@ -82,34 +62,33 @@ public class TaskList {
 
     /**
      * set the tasks of the task list
-     * @param tasks  the tasks of the task list
+     * @param tasks the tasks of the task list
      */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj.getClass() != TaskList.class) return false;
-
-        TaskList other = (TaskList) obj;
-
-        if (this.id == other.id) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        else {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
+        TaskList taskList = (TaskList) o;
+
+        if (!Objects.equals(id, taskList.id)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, tasks);
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return Objects.hash(id);
     }
 
 }
