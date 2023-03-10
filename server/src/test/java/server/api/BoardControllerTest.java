@@ -37,7 +37,8 @@ public class BoardControllerTest {
         assertEquals(2, response.size());
 
         // Check repository
-        assertTrue(TestBoardRepository.containsCall((TestBoardRepository) repo, "findAll"));
+        assertTrue(TestBoardRepository.containsCall(
+                (TestBoardRepository) repo, "findAll"));
     }
 
     @Test
@@ -53,8 +54,10 @@ public class BoardControllerTest {
 
         // Check repository
         assertTrue(
-            TestBoardRepository.containsCall((TestBoardRepository) repo, "findById")
-            || TestBoardRepository.containsCall((TestBoardRepository) repo, "getById")
+            TestBoardRepository.containsCall((TestBoardRepository) repo,
+                    "findById")
+            || TestBoardRepository.containsCall((TestBoardRepository) repo,
+                    "getById")
         );
     }
 
@@ -66,7 +69,8 @@ public class BoardControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         // Check repository
-        assertTrue(TestBoardRepository.containsCall((TestBoardRepository) repo, "existsById"));
+        assertTrue(TestBoardRepository.containsCall((TestBoardRepository) repo,
+                "existsById"));
     }
 
     @Test
@@ -80,7 +84,8 @@ public class BoardControllerTest {
 
         // Check repository
         assertTrue(repo.findAll().contains(a));
-        assertTrue(TestBoardRepository.containsCall((TestBoardRepository) repo, "save"));
+        assertTrue(TestBoardRepository.containsCall((TestBoardRepository) repo,
+                "save"));
     }
 
     @Test
@@ -93,7 +98,8 @@ public class BoardControllerTest {
 
         // Check repository
         assertFalse(repo.findAll().contains(nullBoard));
-        assertFalse(TestBoardRepository.containsCall((TestBoardRepository) repo, "save"));
+        assertFalse(TestBoardRepository.containsCall((TestBoardRepository) repo,
+                "save"));
 
     }
 }

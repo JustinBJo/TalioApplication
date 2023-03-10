@@ -40,10 +40,26 @@ public class TaskList {
         this.tasks = new ArrayList<Task>();
     }
 
+    /**
+     * get the id of the task list
+     * @return the id of the task list
+     */
     public long getId() {
         return this.id;
     }
 
+    /**
+     * set the id of the task list
+     * @param id the id of the task list
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * get the title of the task list
+     * @return the title of the task list
+     */
     public String getTitle() {
         return this.title;
     }

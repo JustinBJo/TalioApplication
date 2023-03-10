@@ -52,9 +52,21 @@ public class Board {
         this.taskLists = taskLists;
     }
 
-    public long getId() { return id; }
+    /**
+     * get board id
+     * @return board id
+     */
+    public long getId() {
+        return id;
+    }
 
-    public void setId(long id) { this.id = id; }
+    /**
+     * set board id
+     * @param id board id
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
 
     /**
      * get board id

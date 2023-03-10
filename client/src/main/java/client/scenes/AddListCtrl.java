@@ -22,18 +22,29 @@ public class AddListCtrl {
     @FXML
     TextField textField;
 
+    /**
+     * constructor
+     * @param server the server utils
+     * @param mainCtrl the main controller
+     */
     @Inject
     public AddListCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * press cancel
+     */
     public void pressCancel() {
         textField.clear();
         mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
+    /**
+     * press confirm
+     */
     public void pressConfirm() {
         String title = textField.getText();
 

@@ -30,10 +30,18 @@ public class Tag {
         this.color = color;
     }
 
+    /**
+     * get the id of the tag
+     * @return the id of the tag
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * set the id of the tag
+     * @param id the id of the tag
+     */
     public void setId(long id) {
         this.id = id;
     }
@@ -76,7 +84,8 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return Objects.equals(name, tag.name) && Objects.equals(color, tag.color);
+        return Objects.equals(name, tag.name)
+                && Objects.equals(color, tag.color);
     }
 
     @Override

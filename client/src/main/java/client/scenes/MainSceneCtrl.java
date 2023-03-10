@@ -40,6 +40,9 @@ public class MainSceneCtrl {
         mainCtrl.showConnect();
     }
 
+    /**
+     * refresh the list
+     */
     public void refresh() {
         taskLists = FXCollections.observableList(
                 server.getTaskList().stream()
