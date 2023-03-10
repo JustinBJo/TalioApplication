@@ -156,7 +156,8 @@ public class TestTagRepository implements TagRepository {
     }
 
     @Override
-    public <S extends Tag> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Tag> Page<S> findAll(Example<S> example,
+                                           Pageable pageable) {
         return null;
     }
 
@@ -171,7 +172,8 @@ public class TestTagRepository implements TagRepository {
     }
 
     @Override
-    public <S extends Tag, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Tag, R> R findBy(Example<S> example,
+       Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 }

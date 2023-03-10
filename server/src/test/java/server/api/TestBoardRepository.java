@@ -18,15 +18,23 @@ public class TestBoardRepository implements BoardRepository {
     List<Board> boards = new ArrayList<>();
     List<String> calls = new ArrayList<>();
 
+    /**
+     * Returns true if the given call was made to the repository.
+     * @param tbr TestBoardRepository
+     * @param call the call method name
+     * @return true if the call was made
+     */
     public static boolean containsCall(TestBoardRepository tbr, String call) {
         return tbr.calls.contains(call);
     }
+
 
     @Override
     public List<Board> findAll() {
         calls.add("findAll");
         return boards;
     }
+
 
     @Override
     public List<Board> findAll(Sort sort) {
@@ -164,7 +172,8 @@ public class TestBoardRepository implements BoardRepository {
     }
 
     @Override
-    public <S extends Board> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Board> Page<S> findAll(Example<S> example,
+                                             Pageable pageable) {
         return null;
     }
 
@@ -179,7 +188,8 @@ public class TestBoardRepository implements BoardRepository {
     }
 
     @Override
-    public <S extends Board, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Board, R> R findBy(Example<S> example,
+         Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 }

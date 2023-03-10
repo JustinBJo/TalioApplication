@@ -20,48 +20,98 @@ public class Board {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<TaskList> taskLists;
 
+    /**
+     * board constructor
+     */
     @SuppressWarnings("unused")
     public Board() {
         // for object mappers
         taskLists = new LinkedList<TaskList>();
     }
 
+    /**
+     * board constructor
+     * @param code board code
+     * @param title board title
+     */
     public Board(String code, String title) {
         this.code = code;
         this.title = title;
         taskLists = new LinkedList<TaskList>();
     }
 
+    /**
+     * board constructor
+     * @param code board code
+     * @param title board title
+     * @param taskLists board task lists
+     */
     public Board(String code, String title, List<TaskList> taskLists) {
         this.code = code;
         this.title = title;
         this.taskLists = taskLists;
     }
 
-    public long getId() { return id; }
+    /**
+     * get board id
+     * @return board id
+     */
+    public long getId() {
+        return id;
+    }
 
-    public void setId(long id) { this.id = id; }
+    /**
+     * set board id
+     * @param id board id
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
 
+    /**
+     * get board id
+     * @return board id
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * set board code
+     * @param code board code
+     */
     public void setCode(String code) {
         this.code = code;
     }
 
+    /**
+     * get board title
+     * @return board title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * set board title
+     * @param title board title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * get board task lists
+     * @return board task lists
+     */
     public List<TaskList> getTaskLists() {
         return taskLists;
     }
 
+    /**
+     * set board task lists
+     * @param taskLists board task lists
+     */
     public void setTaskLists(List<TaskList> taskLists) {
         this.taskLists = taskLists;
     }

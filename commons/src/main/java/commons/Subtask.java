@@ -20,15 +20,28 @@ public class Subtask {
 
     }
 
+    /**
+     * Create a new subtask.
+     * @param title the title of the subtask
+     * @param completed whether the subtask is completed
+     */
     public Subtask(String title, boolean completed) {
         this.title = title;
         this.completed = completed;
     }
 
+    /**
+     * get the the title of the subtask
+     * @return the title of the subtask
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * if the subtask is completed
+     * @return true iff the subtask is completed
+     */
     public boolean isCompleted() {
         return completed;
     }
@@ -38,7 +51,8 @@ public class Subtask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subtask subtask = (Subtask) o;
-        return id == subtask.id && completed == subtask.completed && Objects.equals(title, subtask.title);
+        return id == subtask.id && completed == subtask.completed &&
+                Objects.equals(title, subtask.title);
     }
 
     @Override

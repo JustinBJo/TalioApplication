@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public class TestThemeRepository implements ThemeRepository {
 
-    public final Map<Long,Theme> themes = new HashMap<>();
+    public final Map<Long, Theme> themes = new HashMap<>();
     public final List<String> calledMethods = new ArrayList<>();
 
     private void call(String name) {
@@ -86,7 +86,7 @@ public class TestThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long aLong) {
         call("findById");
-        if(themes.containsKey(aLong)) {
+        if (themes.containsKey(aLong)) {
             return Optional.of(themes.get(aLong));
         }
         return Optional.empty();
@@ -153,7 +153,8 @@ public class TestThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public <S extends Theme> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Theme> Page<S> findAll(Example<S> example,
+                                             Pageable pageable) {
         return null;
     }
 
@@ -168,7 +169,8 @@ public class TestThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public <S extends Theme, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Theme, R> R findBy(Example<S> example,
+         Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 }

@@ -32,8 +32,9 @@ class TagControllerTest {
     }
 
     @Test
-    public void canAddTag(){
-        var actual = sut.add(getTag("Tag Name", "BLUE"));
+    public void canAddTag() {
+        var actual =
+                sut.add(getTag("Tag Name", "BLUE"));
         assertEquals(OK, actual.getStatusCode());
     }
 
@@ -44,31 +45,31 @@ class TagControllerTest {
     }
 
     private static Tag getTag(String name, String color) {
-        return new Tag(name,color);
+        return new Tag(name, color);
     }
 
     @Test
-    void getTagById(){
-        Tag t= new Tag("Name", "RED");
+    void getTagById() {
+        Tag t = new Tag("Name", "RED");
         repo.save(t);
         assertEquals(t, repo.getById(t.getId()));
     }
 
     @Test
-    void cannotGetTagById(){
-        Tag t= new Tag("Name", "BLUE");
+    void cannotGetTagById() {
+        Tag t = new Tag("Name", "BLUE");
         t.setId(2);
         repo.save(t);
 
         var requested2 = sut.getById(3);
-        assertEquals(BAD_REQUEST,requested2.getStatusCode());
+        assertEquals(BAD_REQUEST, requested2.getStatusCode());
     }
 
     @Test
-    void getAllTest(){
-        Tag t1= new Tag("Name", "BLUE");
-        Tag t2= new Tag("Name2", "RED");
-        Tag t3= new Tag("Name3", "GREEN");
+    void getAllTest() {
+        Tag t1 = new Tag("Name", "BLUE");
+        Tag t2 = new Tag("Name2", "RED");
+        Tag t3 = new Tag("Name3", "GREEN");
 
         repo.save(t1);
         repo.save(t2);
@@ -79,6 +80,6 @@ class TagControllerTest {
         assertTrue(allTags.contains(t1));
         assertTrue(allTags.contains(t2));
         assertFalse(allTags.contains(t3));
-        assertEquals(2,allTags.size());
+        assertEquals(2, allTags.size());
     }
 }

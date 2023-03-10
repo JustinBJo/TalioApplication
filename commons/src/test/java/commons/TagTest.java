@@ -7,24 +7,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class TagTest {
 
     @Test
-    void tagConstructor(){
-        var tag=new Tag("Requirement", "BLUE");
+    void tagConstructor() {
+        var tag = new Tag("Requirement", "BLUE");
         assertNotNull(tag);
         assertEquals("Requirement", tag.getName());
         assertEquals("BLUE", tag.getColor());
     }
 
     @Test
-    void testSetName(){
-        var t=new Tag("R1", "RED");
+    void testSetName() {
+        var t = new Tag("R1", "RED");
         assertEquals("R1", t.getName());
         t.setName("R2");
         assertEquals("R2", t.getName());
     }
 
     @Test
-    void testSetColor(){
-        var t=new Tag("R1", "RED");
+    void testSetColor() {
+        var t = new Tag("R1", "RED");
         assertEquals("RED", t.getColor());
         t.setColor("BLUE");
         assertEquals("BLUE", t.getColor());
@@ -35,29 +35,29 @@ class TagTest {
     void testEquals() {
         var tag1 = new Tag("R1", "RED");
         var tag2 = new Tag("R1", "RED");
-        assertEquals(tag1,tag2);
-        assertEquals(tag1,tag1);
+        assertEquals(tag1, tag2);
+        assertEquals(tag1, tag1);
     }
 
     @Test
-    void testNotEquals(){
+    void testNotEquals() {
         var tag1 = new Tag("R1", "RED");
         var tag2 = new Tag("R2", "BLUE");
-        assertNotEquals(tag1,tag2);
+        assertNotEquals(tag1, tag2);
     }
 
     @Test
     void testEqualHashCode() {
         var tag1 = new Tag("R1", "RED");
         var tag2 = new Tag("R1", "RED");
-        assertEquals(tag1.hashCode(),tag2.hashCode());
+        assertEquals(tag1.hashCode(), tag2.hashCode());
     }
 
     @Test
     void testNotEqualHashCode() {
         var tag1 = new Tag("R1", "RED");
         var tag2 = new Tag("R2", "BLUE");
-        assertNotEquals(tag1.hashCode(),tag2.hashCode());
+        assertNotEquals(tag1.hashCode(), tag2.hashCode());
     }
 
     @Test

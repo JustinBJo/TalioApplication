@@ -21,7 +21,8 @@ class ThemeControllerTest {
 
     @Test
     void createTheme() {
-        ThemeRequestModel request = new ThemeRequestModel("BLACK", "BLACK", "BLACK", "BLACK");
+        ThemeRequestModel request = new ThemeRequestModel
+                ("BLACK", "BLACK", "BLACK", "BLACK");
         var actual = sut.createTheme(request);
         assertEquals(201, actual.getStatusCodeValue());
         //verify the repo
@@ -31,7 +32,8 @@ class ThemeControllerTest {
 
     @Test
     void getThemeById() {
-        ThemeRequestModel request = new ThemeRequestModel("BLACK", "BLACK", "BLACK", "BLACK");
+        ThemeRequestModel request = new ThemeRequestModel("BLACK", "BLACK",
+                "BLACK", "BLACK");
         Theme t = new Theme(Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK);
         t.setId(1L);
         repo.save(t);

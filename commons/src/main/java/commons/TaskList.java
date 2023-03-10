@@ -24,35 +24,66 @@ public class TaskList {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Task> tasks;
 
+    /**
+     * empty constructor for object mapper
+     */
     public TaskList() {
 
     }
 
+    /**
+     * Create a new task list.
+     * @param title the title of the task list
+     */
     public TaskList(String title) {
         this.title = title;
         this.tasks = new ArrayList<Task>();
     }
 
+    /**
+     * get the id of the task list
+     * @return the id of the task list
+     */
     public long getId() {
         return this.id;
     }
 
+    /**
+     * set the id of the task list
+     * @param id the id of the task list
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * get the title of the task list
+     * @return the title of the task list
+     */
     public String getTitle() {
         return this.title;
     }
 
+    /**
+     * get the tasks of the task list
+     * @return the tasks of the task list
+     */
     public List<Task> getTasks() {
         return this.tasks;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    /**
+     * set the title of the task list
+     * @param title the title of the task list
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * set the tasks of the task list
+     * @param tasks  the tasks of the task list
+     */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }

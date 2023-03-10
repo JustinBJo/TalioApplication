@@ -31,18 +31,26 @@ public class Main extends Application {
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    /**
+     * main method
+     * @param args the command line arguments
+     * @throws URISyntaxException if the URI is invalid
+     * @throws IOException if the file cannot be read
+     */
+    public static void main(String[] args)
+            throws URISyntaxException, IOException {
         launch();
     }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        //var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
-        //var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
-        var connect = FXML.load(ConnectScreenCtrl.class, "client", "scenes", "ConnectScreen.fxml");
-        var mainScene = FXML.load(MainSceneCtrl.class, "client", "scenes", "MainScene.fxml");
-        var addList = FXML.load(AddListCtrl.class, "client", "scenes", "AddList.fxml");
+        var connect = FXML.load(ConnectScreenCtrl.class,
+                "client", "scenes", "ConnectScreen.fxml");
+        var mainScene = FXML.load(MainSceneCtrl.class,
+                "client", "scenes", "MainScene.fxml");
+        var addList = FXML.load(AddListCtrl.class,
+                "client", "scenes", "AddList.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(primaryStage, connect, mainScene, addList);

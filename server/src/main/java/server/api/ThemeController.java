@@ -16,7 +16,7 @@ public class ThemeController {
     private ThemeRepository themeRepository;
 
     /**
-     * Constructor for ThemeController
+     * Constructor for ThemeController.
      * @param themeRepository the repository to use
      */
     public ThemeController(ThemeRepository themeRepository) {
@@ -24,12 +24,13 @@ public class ThemeController {
     }
 
     /**
-     * Creates a new theme
+     * Creates a new theme.
      * @param themeRequestModel the theme to create
      * @return the created theme
      */
     @PostMapping("/")
-    public ResponseEntity<Theme> createTheme(@RequestBody ThemeRequestModel themeRequestModel) {
+    public ResponseEntity<Theme> createTheme(@RequestBody
+                                         ThemeRequestModel themeRequestModel) {
         Color board = themeRequestModel.getBoardColor();
         Color list = themeRequestModel.getListColor();
         Color task = themeRequestModel.getTaskColor();
@@ -40,7 +41,7 @@ public class ThemeController {
     }
 
     /**
-     * Gets a theme by id
+     * Gets a theme by id.
      * @param id the id of the theme
      * @return the theme
      */
