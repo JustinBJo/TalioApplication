@@ -14,10 +14,11 @@ public class MainSceneCtrl {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
 
-    private ObservableList taskLists;
+    ObservableList<TaskList> listData;
 
     @FXML
     ListView boards;
+
     @FXML
     ListView<TaskList> lists;
 
@@ -26,9 +27,16 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public  MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
+
+    public void initialize() {
+        listData = FXCollections.observableArrayList();
+        lists.setItems(listData);
+        lists.setCellFactory(new TaskListCtrl(server, this));
+        refresh();
     }
 
     /**
@@ -42,8 +50,8 @@ public class MainSceneCtrl {
      * refresh the list
      */
     public void refresh() {
-        taskLists = FXCollections.observableList(server.getTaskList());
-        lists.setItems(taskLists);
+        listData = FXCollections.observableList(server.getTaskList());
+        lists.setItems(listData);
     }
 
     private int i = 0;
