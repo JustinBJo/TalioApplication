@@ -30,13 +30,45 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static String SERVER = "http://localhost:8080/";
 
     /**
      * get task list
      * @return the task list
      */
     public List<TaskList> getTaskList() {
+
+    /**
+     * set the server url by the client's input
+     * @param url the input url
+     */
+    public static boolean setServer(String url){
+        try{
+            ClientBuilder.newClient(new ClientConfig()) //
+                    .target(url) //
+                    .request(APPLICATION_JSON) //
+                    .accept(APPLICATION_JSON) //
+                    .get();
+        } catch (IllegalArgumentException e2){
+            return false;
+        } catch (ProcessingException e2){
+            return false;
+        }
+        SERVER = url;
+        return true;
+    }
+
+    public void getQuotesTheHardWay() throws IOException {
+        var url = new URL("http://localhost:8080/api/quotes");
+        var is = url.openConnection().getInputStream();
+        var br = new BufferedReader(new InputStreamReader(is));
+        String line;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+        }
+    }
+
+    public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("tasklist") //
                 .request(APPLICATION_JSON) //
