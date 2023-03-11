@@ -37,12 +37,13 @@ public class ServerUtils {
      * @return the task list
      */
     public List<TaskList> getTaskList() {
-
+    }
+    
     /**
      * set the server url by the client's input
      * @param url the input url
      */
-    public static boolean setServer(String url){
+    public static boolean setServer(String url) {
         try{
             ClientBuilder.newClient(new ClientConfig()) //
                     .target(url) //
@@ -58,23 +59,7 @@ public class ServerUtils {
         return true;
     }
 
-    public void getQuotesTheHardWay() throws IOException {
-        var url = new URL("http://localhost:8080/api/quotes");
-        var is = url.openConnection().getInputStream();
-        var br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-    }
 
-    public List<Quote> getQuotes() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasklist") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<TaskList>>() {});
-    }
 
     /**
      * add a task list to the server
