@@ -59,7 +59,8 @@ public class MainSceneCtrl {
 
     /**
      * go back to the connect screen
-     * TODO: delete all the protiential local storage, since the user want to connect to a different server
+     * TODO: delete all the protiential local storage,
+     * since the user want to connect to a different server
      */
     public void back() {
         ServerUtils.setServer("");

@@ -22,6 +22,11 @@ public class ConnectScreenCtrl {
     @FXML
     private Label notification;
 
+    /**
+     * constructor
+     * @param mainCtrl the main controller
+     * @param server the server utils
+     */
     @Inject
     public ConnectScreenCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
         this.mainCtrl = mainCtrl;
@@ -33,8 +38,10 @@ public class ConnectScreenCtrl {
      */
     public void click() {
 
-        if(!ServerUtils.setServer(address.getText()))
+        if (!ServerUtils.setServer(address.getText())) {
             notification.setText("connection failed");
+        }
+
         else {
             notification.setText("");
             mainCtrl.showMain();

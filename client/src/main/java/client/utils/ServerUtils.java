@@ -37,6 +37,11 @@ public class ServerUtils {
      * @return the task list
      */
     public List<TaskList> getTaskList() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("tasklist") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<TaskList>>() {});
     }
     
     /**
@@ -44,15 +49,15 @@ public class ServerUtils {
      * @param url the input url
      */
     public static boolean setServer(String url) {
-        try{
+        try {
             ClientBuilder.newClient(new ClientConfig()) //
                     .target(url) //
                     .request(APPLICATION_JSON) //
                     .accept(APPLICATION_JSON) //
                     .get();
-        } catch (IllegalArgumentException e2){
+        } catch (IllegalArgumentException e2) {
             return false;
-        } catch (ProcessingException e2){
+        } catch (ProcessingException e2) {
             return false;
         }
         SERVER = url;
