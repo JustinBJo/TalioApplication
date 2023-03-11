@@ -48,7 +48,6 @@ public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskL
         this.mainSceneCtrl = mainSceneCtrl;
 
         FXMLLoader fxmlLoader = new FXMLLoader((getClass().getResource("TaskList.fxml")));
-        // fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
         } catch (IOException e) {

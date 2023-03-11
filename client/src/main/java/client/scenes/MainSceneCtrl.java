@@ -34,6 +34,7 @@ public class MainSceneCtrl {
 
     public void initialize() {
         listData = FXCollections.observableArrayList();
+        lists.setFixedCellSize(0);
         lists.setItems(listData);
         lists.setCellFactory(new TaskListCtrl(server, this));
         refresh();
