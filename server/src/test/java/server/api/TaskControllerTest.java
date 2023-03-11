@@ -26,7 +26,8 @@ public class TaskControllerTest {
 
     @Test
     public void addTest() {
-        var a = new Task("Task Title", "Description", new ArrayList<>(), new ArrayList<>());
+        var a = new Task("Task Title", "Description",
+        new ArrayList<>(), new ArrayList<>());
         var comp = sut.add(a);
         assertEquals(OK, comp.getStatusCode());
     }
