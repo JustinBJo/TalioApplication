@@ -4,40 +4,22 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
    <children>
-      <VBox prefHeight="600.0" prefWidth="800.0">
-         <children>
-            <Pane prefHeight="61.0" prefWidth="600.0">
-               <children>
-                  <Button layoutX="596.0" layoutY="20.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
-                  <Label layoutX="366.0" layoutY="19.0" text="Board X">
-                     <font>
-                        <Font size="19.0" />
-                     </font>
-                  </Label>
-                  <Button layoutX="694.0" layoutY="20.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
-                  <Button layoutX="14.0" layoutY="17.0" mnemonicParsing="false" onAction="#back" text="New server" />
-               </children>
-            </Pane>
-            <HBox prefHeight="539.0" prefWidth="800.0">
-               <children>
-                  <ListView fx:id="boards" prefHeight="343.0" prefWidth="125.0" />
-                  <ListView fx:id="lists" orientation="HORIZONTAL" prefHeight="539.0" prefWidth="661.0" />
-                  <StackPane prefHeight="343.0" prefWidth="88.0">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#addList" text="+" />
-                     </children>
-                  </StackPane>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
+      <Button layoutX="739.0" layoutY="300.0" mnemonicParsing="false" onAction="#addList" text="+" />
+      <Button layoutX="563.0" layoutY="26.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
+      <Label layoutX="346.0" layoutY="11.0" text="Board X">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <Button layoutX="672.0" layoutY="27.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
+      <Button layoutX="14.0" layoutY="27.0" mnemonicParsing="false" onAction="#back" text="New server" />
+      <ListView fx:id="boards" layoutY="63.0" prefHeight="537.0" prefWidth="127.0" />
+      <ListView fx:id="lists" layoutX="127.0" layoutY="63.0" orientation="HORIZONTAL" prefHeight="537.0" prefWidth="407.0" />
+      <ListView fx:id="tasks" layoutX="534.0" layoutY="63.0" prefHeight="537.0" prefWidth="171.0" />
+      <Button layoutX="660.0" layoutY="560.0" mnemonicParsing="false" onAction="#addTask" text="+" />
    </children>
 </AnchorPane>

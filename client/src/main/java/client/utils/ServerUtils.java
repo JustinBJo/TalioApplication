@@ -18,6 +18,7 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.util.List;
 
+import commons.Task;
 import commons.TaskList;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -54,4 +55,30 @@ public class ServerUtils {
                 .post(Entity.entity(taskList, APPLICATION_JSON),
                         TaskList.class);
     }
+
+    /**
+     * gets from the database a list of all tasks stored
+     * @return a List of tasks
+     */
+    public List<Task> getTasks() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("tasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Task>>() {});
+    }
+
+    /**
+     * Adds a task to the database
+     * @param task the task to be added
+     * @return the task
+     */
+    public Task addTask(Task task) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("tasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
 }
