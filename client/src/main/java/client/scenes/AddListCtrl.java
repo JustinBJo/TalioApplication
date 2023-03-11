@@ -52,7 +52,7 @@ public class AddListCtrl {
             try {
                 TaskList taskList = new TaskList(title);
                 server.addTaskList(taskList);
-                mainCtrl.mainSceneCtrl.lists.getItems().add(title);
+                mainCtrl.mainSceneCtrl.lists.getItems().add(taskList);
             } catch (WebApplicationException e) {
                 var alert = new Alert(Alert.AlertType.ERROR);
                 alert.initModality(Modality.APPLICATION_MODAL);

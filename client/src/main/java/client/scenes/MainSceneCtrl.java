@@ -9,28 +9,38 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 
-import java.util.stream.Collectors;
-
 public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
 
-    private ObservableList taskLists;
+    ObservableList<TaskList> listData;
 
     @FXML
     ListView boards;
+
     @FXML
-    ListView<String> lists;
+    ListView<TaskList> lists;
 
     /**
      * constructor
      * @param mainCtrl the main controller
      */
     @Inject
-    public  MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * initialize the scene with the listview elements as the TaskList scene
+     */
+    public void initialize() {
+        listData = FXCollections.observableArrayList();
+        lists.setFixedCellSize(0);
+        lists.setItems(listData);
+        lists.setCellFactory(new TaskListCtrl(server, this));
+        refresh();
     }
 
     /**
@@ -44,12 +54,8 @@ public class MainSceneCtrl {
      * refresh the list
      */
     public void refresh() {
-        taskLists = FXCollections.observableList(
-                server.getTaskList().stream()
-                        .map(TaskList::getTitle)
-                        .collect(Collectors.toList())
-        );
-        lists.setItems(taskLists);
+        listData = FXCollections.observableList(server.getTaskList());
+        lists.setItems(listData);
     }
 
     private int i = 0;

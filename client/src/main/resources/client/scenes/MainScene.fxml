@@ -10,26 +10,26 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
    <children>
-      <VBox prefHeight="400.0" prefWidth="600.0">
+      <VBox prefHeight="600.0" prefWidth="800.0">
          <children>
             <Pane prefHeight="61.0" prefWidth="600.0">
                <children>
-                  <Button layoutX="403.0" layoutY="17.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="25.0" prefWidth="92.0" text="Create board" />
-                  <Label layoutX="267.0" layoutY="15.0" text="Board X">
+                  <Button layoutX="596.0" layoutY="20.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
+                  <Label layoutX="366.0" layoutY="19.0" text="Board X">
                      <font>
                         <Font size="19.0" />
                      </font>
                   </Label>
-                  <Button layoutX="501.0" layoutY="17.0" mnemonicParsing="false" text="Delete board" />
+                  <Button layoutX="694.0" layoutY="20.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
                   <Button layoutX="14.0" layoutY="17.0" mnemonicParsing="false" onAction="#back" text="New server" />
                </children>
             </Pane>
-            <HBox prefHeight="346.0" prefWidth="600.0">
+            <HBox prefHeight="539.0" prefWidth="800.0">
                <children>
                   <ListView fx:id="boards" prefHeight="343.0" prefWidth="125.0" />
-                  <ListView fx:id="lists" orientation="HORIZONTAL" prefHeight="343.0" prefWidth="387.0" />
+                  <ListView fx:id="lists" orientation="HORIZONTAL" prefHeight="539.0" prefWidth="661.0" />
                   <StackPane prefHeight="343.0" prefWidth="88.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#addList" text="+" />
