@@ -15,7 +15,8 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 
-public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskList>> {
+public class TaskListCtrl
+        implements Callback<ListView<TaskList>, ListCell<TaskList>> {
 
     private final ServerUtils server;
     private final MainSceneCtrl mainSceneCtrl;
@@ -38,16 +39,26 @@ public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskL
 
     private ObservableList<Task> taskView;
 
+    /**
+     * Default constructor for TaskListCtrl
+     */
     public TaskListCtrl() {
         this.server = null;
         this.mainSceneCtrl = null;
     }
 
-    public TaskListCtrl(ServerUtils server, MainSceneCtrl mainSceneCtrl) {
+    /**
+     * Main Constructor for TaskListCtrl
+     * @param server the server to fetch the data from
+     * @param mainSceneCtrl the board scene that the TaskList belongs to
+     */
+    public TaskListCtrl(ServerUtils server,
+                        MainSceneCtrl mainSceneCtrl) {
         this.server = server;
         this.mainSceneCtrl = mainSceneCtrl;
 
-        FXMLLoader fxmlLoader = new FXMLLoader((getClass().getResource("TaskList.fxml")));
+        FXMLLoader fxmlLoader = new FXMLLoader((getClass()
+                .getResource("TaskList.fxml")));
         try {
             fxmlLoader.load();
         } catch (IOException e) {
@@ -55,6 +66,10 @@ public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskL
         }
     }
 
+    /**
+     * Set the TaskList instance that this Scene holds
+     * @param taskList the TaskList instance to be set
+     */
     public void setTaskList(TaskList taskList) {
         this.taskList = taskList;
         if (taskList.getTitle() == null) {
@@ -64,6 +79,12 @@ public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskL
         tasks.getItems().addAll(taskList.getTasks());
     }
 
+    /**
+     *
+     * @param param The single argument upon which the returned value should be
+     *      determined.
+     * @return the cells with the TaskList Scene
+     */
     @Override
     public ListCell<TaskList> call(ListView<TaskList> param) {
         return new ListCell<TaskList>() {
@@ -71,8 +92,8 @@ public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskL
             private FXMLLoader loader;
 
             {
-                // Load the FXML file and create a controller instance
-                loader = new FXMLLoader(getClass().getResource("TaskList.fxml"));
+                loader = new FXMLLoader(getClass()
+                        .getResource("TaskList.fxml"));
                 try {
                     loader.load();
                     controller = loader.getController();
@@ -89,9 +110,7 @@ public class TaskListCtrl implements Callback<ListView<TaskList>, ListCell<TaskL
                     setText(null);
                     setGraphic(null);
                 } else {
-                    // Set the controller's task list and update the cell content
                     controller.setTaskList(taskList);
-//                    setText(null);
                     setGraphic(controller.root);
                 }
             }

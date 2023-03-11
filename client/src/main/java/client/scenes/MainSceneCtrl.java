@@ -32,6 +32,9 @@ public class MainSceneCtrl {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * initialize the scene with the listview elements as the TaskList scene
+     */
     public void initialize() {
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
