@@ -53,10 +53,13 @@ public class Main extends Application {
                 "client", "scenes", "AddList.fxml");
         var taskList = FXML.load(TaskListCtrl.class,
                 "client", "scenes", "TaskList.fxml");
+        var renameTaskList = FXML.load(
+                RenameListController.class, "client", "scenes",
+                "RenameList.fxml");
 
         var mainCtrl =
                 INJECTOR.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(primaryStage, connect, mainScene,
-                addList, taskList);
+                addList, taskList, renameTaskList);
     }
 }

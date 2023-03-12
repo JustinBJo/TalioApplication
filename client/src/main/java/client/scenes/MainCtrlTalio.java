@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.TaskList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -21,18 +22,27 @@ public class MainCtrlTalio {
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
 
+    RenameListController renameListCtrl;
+    Scene renameListScene;
+
+    private TaskList currentTaskList;
+
+
     /**
      * initialize the main controller
-     * @param primaryStage the primary stage
-     * @param connect the connect screen
-     * @param mainScene the main screen
-     * @param addList  the add list screen
+     *
+     * @param primaryStage   the primary stage
+     * @param connect        the connect screen
+     * @param mainScene      the main screen
+     * @param addList        the add list screen
+     * @param renameTaskList
      */
     public void initialize(Stage primaryStage,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddListCtrl, Parent> addList,
-                           Pair<TaskListCtrl, Parent> taskList) {
+                           Pair<TaskListCtrl, Parent> taskList,
+                           Pair<RenameListController, Parent> renameTaskList) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -46,6 +56,9 @@ public class MainCtrlTalio {
 
         this.taskListCtrl = taskList.getKey();
         this.taskListScene = new Scene(taskList.getValue());
+
+        this.renameListCtrl = renameTaskList.getKey();
+        this.renameListScene = new Scene(renameTaskList.getValue());
 
 
         showConnect();
@@ -75,5 +88,29 @@ public class MainCtrlTalio {
     public void showAddList() {
         primaryStage.setTitle("Add a new List");
         primaryStage.setScene(addListScene);
+    }
+
+    /**
+     * changes to rename list scene
+     */
+    public void showRenameList() {
+        primaryStage.setTitle("Rename the list");
+        primaryStage.setScene(renameListScene);
+    }
+
+    /**
+     * Gets the current TaskList stored in the mainCtrl
+     * @return the current task list
+     */
+    public TaskList getCurrentTaskList() {
+        return currentTaskList;
+    }
+
+    /**
+     * sets the current task list to the value given
+     * @param currentTaskList the task list to be set
+     */
+    public void setCurrentTaskList(TaskList currentTaskList) {
+        this.currentTaskList = currentTaskList;
     }
 }
