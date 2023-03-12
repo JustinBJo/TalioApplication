@@ -63,4 +63,19 @@ public class TaskListController {
         TaskList saved = repo.save(taskList);
         return ResponseEntity.ok(saved);
     }
+
+
+    /**
+     * Deletes from the repository a tasklist with the provided id
+     * @param id the id of the tasklist to be removed
+     */
+    @GetMapping("/delete/{id}")
+    public void delete(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return;
+        }
+        TaskList param = repo.getById(id);
+        repo.delete(param);
+
+    }
 }

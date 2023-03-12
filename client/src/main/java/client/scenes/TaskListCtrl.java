@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
 import javafx.collections.ObservableList;
@@ -20,8 +21,13 @@ public class TaskListCtrl
 
     private final ServerUtils server;
     private final MainSceneCtrl mainSceneCtrl;
+    private final MainCtrlTalio mainCtrl;
 
     private TaskList taskList;
+
+    private static ServerUtils servercopy;
+    private static MainSceneCtrl mainSceneCtrlcopy;
+    private static MainCtrlTalio mainCtrlTaliocopy;
 
     @FXML
     AnchorPane root;
@@ -42,9 +48,19 @@ public class TaskListCtrl
     /**
      * Default constructor for TaskListCtrl
      */
+
     public TaskListCtrl() {
+        if (servercopy != null) {
+            this.server = servercopy;
+            this.mainSceneCtrl = mainSceneCtrlcopy;
+            this.mainCtrl = mainCtrlTaliocopy;
+        }
+        else {
         this.server = null;
-        this.mainSceneCtrl = null;
+
+        this.mainCtrl = null;
+
+        this.mainSceneCtrl = null; }
     }
 
     /**
@@ -52,10 +68,16 @@ public class TaskListCtrl
      * @param server the server to fetch the data from
      * @param mainSceneCtrl the board scene that the TaskList belongs to
      */
+    @Inject
     public TaskListCtrl(ServerUtils server,
-                        MainSceneCtrl mainSceneCtrl) {
+                        MainSceneCtrl mainSceneCtrl, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainSceneCtrl = mainSceneCtrl;
+        this.mainCtrl = mainCtrl;
+
+        this.servercopy = server;
+        this.mainSceneCtrlcopy = mainSceneCtrl;
+        this.mainCtrlTaliocopy = mainCtrl;
 
         FXMLLoader fxmlLoader = new FXMLLoader((getClass()
                 .getResource("TaskList.fxml")));
@@ -115,6 +137,18 @@ public class TaskListCtrl
                 }
             }
         };
+    }
+
+    /**
+     * used to delete a tasklist from the main scene
+     */
+    public void delete() {
+        TaskList copy = taskList;
+        mainCtrl.mainSceneCtrl.lists.getItems().remove(copy);
+        mainCtrl.mainSceneCtrl.listData.remove(copy);
+        server.deleteTaskList(copy);
+
+
     }
 
 }

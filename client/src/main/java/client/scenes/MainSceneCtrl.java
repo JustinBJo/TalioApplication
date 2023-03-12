@@ -14,6 +14,7 @@ public class MainSceneCtrl {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
 
+
     ObservableList<TaskList> listData;
 
     @FXML
@@ -39,8 +40,9 @@ public class MainSceneCtrl {
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
         lists.setItems(listData);
-        lists.setCellFactory(new TaskListCtrl(server, this));
+        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl));
         refresh();
+
     }
 
     /**
