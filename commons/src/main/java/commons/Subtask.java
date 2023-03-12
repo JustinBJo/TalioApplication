@@ -59,4 +59,12 @@ public class Subtask {
     public int hashCode() {
         return Objects.hash(id, title, completed);
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
 }
