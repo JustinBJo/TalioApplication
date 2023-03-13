@@ -10,38 +10,33 @@ public class ConnectScreenCtrl {
 
     private final MainCtrlTalio mainCtrl;
 
-    private final ServerUtils server;
-
     @FXML
     private TextField address;
-    
+
     @FXML
     private Label notification;
 
     /**
      * constructor
      * @param mainCtrl the main controller
-     * @param server the server utils
      */
     @Inject
-    public ConnectScreenCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
+    public ConnectScreenCtrl(MainCtrlTalio mainCtrl) {
         this.mainCtrl = mainCtrl;
-        this.server = server;
     }
 
     /**
      * connect to the server and show the main screen
      */
     public void click() {
-
-        if (!ServerUtils.setServer(address.getText())) {
-            notification.setText("connection failed");
+        try {
+            ServerUtils.setServer(address.getText());
         }
-
-        else {
-            notification.setText("");
-            mainCtrl.showMain();
+        catch (Exception e) {
+            notification.setText(e.getMessage());
         }
+        notification.setText("");
+        mainCtrl.showMain();
         address.setText("");
 
     }

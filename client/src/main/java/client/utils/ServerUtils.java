@@ -48,7 +48,7 @@ public class ServerUtils {
      * set the server url by the client's input
      * @param url the input url
      */
-    public static boolean setServer(String url) {
+    public static void setServer(String url) throws IllegalArgumentException, ProcessingException{
         try {
             ClientBuilder.newClient(new ClientConfig()) //
                     .target(url) //
@@ -56,12 +56,11 @@ public class ServerUtils {
                     .accept(APPLICATION_JSON) //
                     .get();
         } catch (IllegalArgumentException e2) {
-            return false;
+            throw new IllegalArgumentException("Invalid URL");
         } catch (ProcessingException e2) {
-            return false;
+            throw new ProcessingException("Server not found");
         }
         SERVER = url;
-        return true;
     }
 
 
