@@ -16,6 +16,7 @@ public class MainCtrlTalio {
     Scene mainScene;
 
     AddListCtrl addListCtrl;
+
     Scene addListScene;
 
     AddTaskCtrl addTaskCtrl;

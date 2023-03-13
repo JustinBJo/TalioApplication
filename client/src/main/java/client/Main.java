@@ -59,8 +59,7 @@ public class Main extends Application {
                 "client", "scenes", "TaskList.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrlTalio.class);
-        mainCtrl.initialize(primaryStage, connect,
-                mainScene, addList, addTask, taskList);
+        mainCtrl.initialize(primaryStage, connect, mainScene, addList, addTask, taskList);
 
     }
 }
