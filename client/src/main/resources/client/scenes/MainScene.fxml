@@ -24,6 +24,7 @@
                   </Label>
                   <Button layoutX="694.0" layoutY="20.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
                   <Button layoutX="14.0" layoutY="17.0" mnemonicParsing="false" onAction="#back" text="New server" />
+                  <Button layoutX="532.0" layoutY="20.0" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
                </children>
             </Pane>
             <HBox prefHeight="539.0" prefWidth="800.0">

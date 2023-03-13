@@ -23,6 +23,9 @@ public class MainCtrlTalio {
 
     Scene addTaskScene;
 
+    TaskListCtrl taskListCtrl;
+    Scene taskListScene;
+
     /**
      * initialize the main controller
      * @param primaryStage the primary stage
@@ -34,7 +37,9 @@ public class MainCtrlTalio {
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddListCtrl, Parent> addList,
-                           Pair<AddTaskCtrl, Parent> addTask) {
+                           Pair<AddTaskCtrl, Parent> addTask,
+                           Pair<TaskListCtrl, Parent> taskList) {
+
 
 
         this.primaryStage = primaryStage;
@@ -50,6 +55,10 @@ public class MainCtrlTalio {
 
         this.addTaskCtrl = addTask.getKey();
         this.addTaskScene = new Scene(addTask.getValue());
+
+        this.taskListCtrl = taskList.getKey();
+        this.taskListScene = new Scene(taskList.getValue());
+
 
         showConnect();
         primaryStage.show();
