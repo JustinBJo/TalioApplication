@@ -25,9 +25,9 @@ public class TaskListCtrl
 
     private TaskList taskList;
 
-    private static ServerUtils servercopy;
-    private static MainSceneCtrl mainSceneCtrlcopy;
-    private static MainCtrlTalio mainCtrlTaliocopy;
+    private static ServerUtils serverCopy;
+    private static MainSceneCtrl mainSceneCtrlCopy;
+    private static MainCtrlTalio mainCtrlTalioCopy;
 
     @FXML
     AnchorPane root;
@@ -50,16 +50,14 @@ public class TaskListCtrl
      */
 
     public TaskListCtrl() {
-        if (servercopy != null) {
-            this.server = servercopy;
-            this.mainSceneCtrl = mainSceneCtrlcopy;
-            this.mainCtrl = mainCtrlTaliocopy;
+        if (serverCopy != null) {
+            this.server = serverCopy;
+            this.mainSceneCtrl = mainSceneCtrlCopy;
+            this.mainCtrl = mainCtrlTalioCopy;
         }
         else {
         this.server = null;
-
         this.mainCtrl = null;
-
         this.mainSceneCtrl = null; }
     }
 
@@ -75,9 +73,9 @@ public class TaskListCtrl
         this.mainSceneCtrl = mainSceneCtrl;
         this.mainCtrl = mainCtrl;
 
-        this.servercopy = server;
-        this.mainSceneCtrlcopy = mainSceneCtrl;
-        this.mainCtrlTaliocopy = mainCtrl;
+        this.serverCopy = server;
+        this.mainSceneCtrlCopy = mainSceneCtrl;
+        this.mainCtrlTalioCopy = mainCtrl;
 
         FXMLLoader fxmlLoader = new FXMLLoader((getClass()
                 .getResource("TaskList.fxml")));
