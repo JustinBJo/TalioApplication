@@ -16,9 +16,11 @@ public class MainCtrlTalio {
     Scene mainScene;
 
     AddListCtrl addListCtrl;
+
     Scene addListScene;
 
     AddTaskCtrl addTaskCtrl;
+
     Scene addTaskScene;
 
     /**
@@ -34,6 +36,7 @@ public class MainCtrlTalio {
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddListCtrl, Parent> addList,
                            Pair<AddTaskCtrl, Parent> addTask) {
+
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();

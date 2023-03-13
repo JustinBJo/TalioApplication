@@ -20,10 +20,11 @@ public class AddTaskCtrl {
     @FXML
     private TextField description;
 
+
     /**
-     * Constructor for the addTask Controller
-     * @param server inject a server instance
-     * @param mainCtrl inject a mainCtrl instance
+     * Constructor for the Addtask
+     * @param server injects a server object
+     * @param mainCtrl injects a mainCtrl object
      */
     @Inject
     public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
@@ -32,9 +33,10 @@ public class AddTaskCtrl {
 
     }
 
+
     /**
-     * cancel method for the addTask scene
-     * returns to the main scene and clears the textFields
+     * Method cancel for cancelling the insertion of a new task
+     * returns to main scene
      */
     public void cancel() {
         clearFields();
@@ -43,9 +45,11 @@ public class AddTaskCtrl {
     }
 
     /**
-     * Confirm method for the addtask scene
-     * adds the inserted task to the database and
-     * returns to the main scene
+     * Method confirm adds the inserted task to the database,
+     * returns to the main scene and refreshes it in order for
+     * the new task to be displayed
+     * Throws error in case of exception
+     *
      */
     public void confirm() {
         try {
@@ -65,8 +69,8 @@ public class AddTaskCtrl {
     }
 
     /**
-     * returns the current task as a Task element
-     * @return current task
+     * getTask provides the user with the current task
+     * @return the task as a Task object
      */
     private Task getTask() {
         var t = title.getText();
@@ -75,8 +79,7 @@ public class AddTaskCtrl {
     }
 
     /**
-     * auxiliary method
-     * clears all textFields
+     * Auxiliary method, clears all text fields
      */
     private void clearFields() {
         title.clear();

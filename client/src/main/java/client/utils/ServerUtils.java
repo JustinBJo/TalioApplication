@@ -57,8 +57,8 @@ public class ServerUtils {
     }
 
     /**
-     * gets from the database a list of all tasks stored
-     * @return a List of tasks
+     * Method used to fetch the tasks from the database
+     * @return a List of all the tasks in the database
      */
     public List<Task> getTasks() {
         return ClientBuilder.newClient(new ClientConfig()) //
@@ -69,9 +69,10 @@ public class ServerUtils {
     }
 
     /**
-     * Adds a task to the database
-     * @param task the task to be added
-     * @return the task
+     * Method used to insert a task into the database
+     * @param task the task to be added to the database
+     * @return the added task, in order for future operations
+     * with it to be possible
      */
     public Task addTask(Task task) {
         return ClientBuilder.newClient(new ClientConfig()) //
@@ -80,5 +81,4 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
-
 }
