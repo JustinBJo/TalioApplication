@@ -26,10 +26,10 @@ public class TaskListCtrl
 
     private TaskList taskList;
 
-    private static ServerUtils servercopy;
-    private static MainSceneCtrl mainSceneCtrlcopy;
-    private static MainCtrlTalio mainCtrlTaliocopy;
-    private static RenameListController renameCtrlcopy;
+    private static ServerUtils serverCopy;
+    private static MainSceneCtrl mainSceneCtrlCopy;
+    private static MainCtrlTalio mainCtrlTalioCopy;
+    private static RenameListController renameCtrlCopy;
 
     @FXML
     AnchorPane root;
@@ -52,21 +52,17 @@ public class TaskListCtrl
      */
 
     public TaskListCtrl() {
-        if (servercopy != null) {
-            this.server = servercopy;
-            this.mainSceneCtrl = mainSceneCtrlcopy;
-            this.mainCtrl = mainCtrlTaliocopy;
-            this.renameCtrl = renameCtrlcopy;
+        if (serverCopy != null) {
+            this.server = serverCopy;
+            this.mainSceneCtrl = mainSceneCtrlCopy;
+            this.mainCtrl = mainCtrlTalioCopy;
+            this.renameCtrl = renameCtrlCopy;
         }
         else {
         this.server = null;
-
         this.mainCtrl = null;
-
         this.mainSceneCtrl = null;
-
-        this.renameCtrl = null;
-        }
+        this.renameCtrl = null; }
     }
 
     /**
@@ -81,14 +77,12 @@ public class TaskListCtrl
         this.server = server;
         this.mainSceneCtrl = mainSceneCtrl;
         this.mainCtrl = mainCtrl;
-
         this.renameCtrl = renameCtrl;
 
-        this.servercopy = server;
-        this.mainSceneCtrlcopy = mainSceneCtrl;
-        this.mainCtrlTaliocopy = mainCtrl;
-
-        this.renameCtrlcopy = renameCtrl;
+        this.serverCopy = server;
+        this.mainSceneCtrlCopy = mainSceneCtrl;
+        this.mainCtrlTalioCopy = mainCtrl;
+        this.renameCtrlCopy = renameCtrl;
 
         FXMLLoader fxmlLoader = new FXMLLoader((getClass()
                 .getResource("TaskList.fxml")));

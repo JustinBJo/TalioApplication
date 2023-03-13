@@ -19,6 +19,10 @@ public class MainCtrlTalio {
     AddListCtrl addListCtrl;
     Scene addListScene;
 
+    AddTaskCtrl addTaskCtrl;
+
+    Scene addTaskScene;
+
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
 
@@ -41,6 +45,7 @@ public class MainCtrlTalio {
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddListCtrl, Parent> addList,
+                           Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
                            Pair<RenameListController, Parent> renameTaskList) {
         this.primaryStage = primaryStage;
@@ -53,6 +58,9 @@ public class MainCtrlTalio {
 
         this.addListCtrl = addList.getKey();
         this.addListScene = new Scene(addList.getValue());
+
+        this.addTaskCtrl = addTask.getKey();
+        this.addTaskScene = new Scene(addTask.getValue());
 
         this.taskListCtrl = taskList.getKey();
         this.taskListScene = new Scene(taskList.getValue());
@@ -113,4 +121,13 @@ public class MainCtrlTalio {
     public void setCurrentTaskList(TaskList currentTaskList) {
         this.currentTaskList = currentTaskList;
     }
+
+    /**
+     * switches to addTask scene
+     */
+    public void showAddTask() {
+        primaryStage.setTitle("Add a new task");
+        primaryStage.setScene(addTaskScene);
+    }
+
 }

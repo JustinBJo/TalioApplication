@@ -65,12 +65,13 @@ public class TaskListController {
      * @param id the id of the tasklist to be removed
      */
     @GetMapping("/delete/{id}")
-    public void delete(@PathVariable("id") long id) {
+    public ResponseEntity<TaskList> delete(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         TaskList param = repo.getById(id);
         repo.delete(param);
+        return ResponseEntity.ok(param);
 
     }
 
@@ -89,4 +90,5 @@ public class TaskListController {
         repo.save(param);
 
     }
+
 }
