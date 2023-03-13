@@ -13,6 +13,7 @@ public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final RenameListController renameCtrl;
 
 
     ObservableList<TaskList> listData;
@@ -28,9 +29,11 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl,
+                         RenameListController renameCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.renameCtrl = renameCtrl;
     }
 
     /**
@@ -40,7 +43,8 @@ public class MainSceneCtrl {
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
         lists.setItems(listData);
-        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl));
+        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
+                renameCtrl));
         refresh();
 
     }

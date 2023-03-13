@@ -96,4 +96,19 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(TaskList.class);
     }
+
+    /**
+     * Updates the name of the selected TaskList in the database
+     * @param taskList the TaskList to be renamed
+     * @param newName the name it should be renamed to
+     * @return a TaskList entity
+     */
+    public TaskList updateTaskList(TaskList taskList, String newName) {
+        long id = taskList.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasklist/update/" + id + "/" + newName)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
 }

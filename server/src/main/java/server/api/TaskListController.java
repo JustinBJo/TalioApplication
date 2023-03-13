@@ -4,12 +4,7 @@ import java.util.List;
 
 import commons.TaskList;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.database.TaskListRepository;
 
 @RestController
@@ -77,6 +72,23 @@ public class TaskListController {
         TaskList param = repo.getById(id);
         repo.delete(param);
         return ResponseEntity.ok(param);
+
+    }
+
+    /**
+     * Updates in the database the name of the given TaskList
+     * @param id the id of the TaskList to be renamed
+     * @param newName the new name
+     */
+    @PutMapping("update/{id}/{newName}")
+    public void update(@PathVariable("id") long id,
+                       @PathVariable("newName") String newName) {
+        if (id < 0 || !repo.existsById(id) || newName.length() == 0)
+            return;
+        TaskList param = repo.getById(id);
+        param.setTitle(newName);
+        repo.save(param);
+
     }
 
 }
