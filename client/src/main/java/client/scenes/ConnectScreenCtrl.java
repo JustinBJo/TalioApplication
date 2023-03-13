@@ -34,6 +34,7 @@ public class ConnectScreenCtrl {
         }
         catch (Exception e) {
             notification.setText(e.getMessage());
+            return;
         }
         notification.setText("");
         mainCtrl.showMain();

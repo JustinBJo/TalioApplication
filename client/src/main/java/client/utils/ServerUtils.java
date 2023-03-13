@@ -43,7 +43,14 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<TaskList>>() {});
     }
-    
+
+    /**
+     * get the server url to empty string
+     */
+    public static void resetServer() {
+        SERVER = "";
+    }
+
     /**
      * set the server url by the client's input
      * @param url the input url

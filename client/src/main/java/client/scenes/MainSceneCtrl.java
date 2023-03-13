@@ -63,7 +63,7 @@ public class MainSceneCtrl {
      * since the user want to connect to a different server
      */
     public void back() {
-        ServerUtils.setServer("");
+        ServerUtils.resetServer();
         mainCtrl.showConnect();
     }
 
