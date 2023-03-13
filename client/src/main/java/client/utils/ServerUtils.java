@@ -55,7 +55,8 @@ public class ServerUtils {
      * set the server url by the client's input
      * @param url the input url
      */
-    public static void setServer(String url) throws IllegalArgumentException, ProcessingException{
+    public static void setServer(String url)
+            throws IllegalArgumentException, ProcessingException {
         try {
             ClientBuilder.newClient(new ClientConfig()) //
                     .target(url) //
