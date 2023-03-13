@@ -32,14 +32,14 @@ public class TaskTest {
     @Test
     void getId() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         assertEquals(0, a.getId());
     }
 
     @Test
     void setId() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         a.setId(10);
         assertEquals(10, a.getId());
     }
@@ -47,21 +47,21 @@ public class TaskTest {
     @Test
     void getTitle() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         assertEquals("Task Title1", a.getTitle());
     }
 
     @Test
     void getDescription() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         assertEquals("Description", a.getDescription());
     }
 
     @Test
     void getSubtasks() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         List<Subtask> comp = new ArrayList<>();
         assertEquals(comp, a.getSubtasks());
     }
@@ -69,7 +69,7 @@ public class TaskTest {
     @Test
     void getTags() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         List<Tag> comp = new ArrayList<>();
         assertEquals(comp, a.getTags());
     }
@@ -77,7 +77,7 @@ public class TaskTest {
     @Test
     public void equalsTest1() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         var b = a;
         assertEquals(a, b);
     }
@@ -85,10 +85,10 @@ public class TaskTest {
     @Test
     public void equalsTest2() {
         var a = new Task("Task Title1", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         a.setId(1L);
         var b = new Task("Task Title2", "Description",
-        new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>());
         b.setId(2L);
         assertNotEquals(a, b);
         b.setId(a.getId());
