@@ -14,11 +14,7 @@ public class ConnectScreenCtrl {
 
     @FXML
     private TextField address;
-
-    /**
-     * constructor
-     * @param mainCtrl the main controller
-     */
+    
     @FXML
     private Label notification;
 
