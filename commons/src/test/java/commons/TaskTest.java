@@ -23,7 +23,7 @@ public class TaskTest {
     @Test
     public void testToString() {
         var actual = new Task("Task Title", "Description",
-        new ArrayList<>(), new ArrayList<>()).toString();
+                new ArrayList<>(), new ArrayList<>()).toString();
         assertTrue(actual.contains(Task.class.getSimpleName()));
         assertTrue(actual.contains("Title"));
         assertTrue(actual.contains("Description"));
