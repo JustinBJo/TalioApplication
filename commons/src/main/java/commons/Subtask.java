@@ -46,6 +46,11 @@ public class Subtask {
         return completed;
     }
 
+    /**
+     * Decides whether the given object is equal to this subtask
+     * @param o object to be compared to
+     * @return whether the objects are equal or not
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -55,8 +60,28 @@ public class Subtask {
                 Objects.equals(title, subtask.title);
     }
 
+    /**
+     * generates hashCode for the subtask
+     * @return the hashcode
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, title, completed);
+    }
+
+    /**
+     * Sets the id of the subtask
+     * @param id the id to be set
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * returns the id of the subtask
+     * @return the id
+     */
+    public long getId() {
+        return id;
     }
 }
