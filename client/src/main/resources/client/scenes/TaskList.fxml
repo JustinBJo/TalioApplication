@@ -14,7 +14,7 @@
             <Font name="Arial" size="23.0" />
          </font>
       </Label>
-      <Button fx:id="deleteList" layoutX="182.0" mnemonicParsing="false" prefWidth="11.0" style="-fx-background-color: #FF0000;" text="X" textFill="WHITE">
+      <Button fx:id="deleteList" layoutX="182.0" mnemonicParsing="false" onAction="#delete" prefWidth="11.0" style="-fx-background-color: #FF0000;" text="X" textFill="WHITE">
          <font>
             <Font size="9.0" />
          </font>
@@ -24,7 +24,7 @@
             <Font size="15.0" />
          </font>
       </Button>
-      <Button fx:id="rename" layoutX="153.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #17D50A;" text="Edit" textFill="WHITE">
+      <Button fx:id="rename" layoutX="153.0" layoutY="-1.0" mnemonicParsing="false" onAction="#rename" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #17D50A;" text="Edit" textFill="WHITE">
          <font>
             <Font name="Arial" size="9.0" />
          </font>

@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.TaskList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -16,27 +17,36 @@ public class MainCtrlTalio {
     Scene mainScene;
 
     AddListCtrl addListCtrl;
-
     Scene addListScene;
 
     AddTaskCtrl addTaskCtrl;
 
     Scene addTaskScene;
 
+    TaskListCtrl taskListCtrl;
+    Scene taskListScene;
+
+    RenameListController renameListCtrl;
+    Scene renameListScene;
+
+    private TaskList currentTaskList;
+
+
     /**
      * initialize the main controller
-     * @param primaryStage the primary stage
-     * @param connect the connect screen
-     * @param mainScene the main screen
-     * @param addList the add list screen
-     * @param addTask the add task screen
+     * @param primaryStage   the primary stage
+     * @param connect        the connect screen
+     * @param mainScene      the main screen
+     * @param addList        the add list screen
+     * @param renameTaskList the rename list screen
      */
     public void initialize(Stage primaryStage,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddListCtrl, Parent> addList,
-                           Pair<AddTaskCtrl, Parent> addTask) {
-
+                           Pair<AddTaskCtrl, Parent> addTask,
+                           Pair<TaskListCtrl, Parent> taskList,
+                           Pair<RenameListController, Parent> renameTaskList) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -50,6 +60,12 @@ public class MainCtrlTalio {
 
         this.addTaskCtrl = addTask.getKey();
         this.addTaskScene = new Scene(addTask.getValue());
+
+        this.taskListCtrl = taskList.getKey();
+        this.taskListScene = new Scene(taskList.getValue());
+
+        this.renameListCtrl = renameTaskList.getKey();
+        this.renameListScene = new Scene(renameTaskList.getValue());
 
         showConnect();
         primaryStage.show();
@@ -81,7 +97,31 @@ public class MainCtrlTalio {
     }
 
     /**
-     * Switches to the addTask scene
+     * changes to rename list scene
+     */
+    public void showRenameList() {
+        primaryStage.setTitle("Rename the list");
+        primaryStage.setScene(renameListScene);
+    }
+
+    /**
+     * Gets the current TaskList stored in the mainCtrl
+     * @return the current task list
+     */
+    public TaskList getCurrentTaskList() {
+        return currentTaskList;
+    }
+
+    /**
+     * sets the current task list to the value given
+     * @param currentTaskList the task list to be set
+     */
+    public void setCurrentTaskList(TaskList currentTaskList) {
+        this.currentTaskList = currentTaskList;
+    }
+
+    /**
+     * switches to addTask scene
      */
     public void showAddTask() {
         primaryStage.setTitle("Add a new task");

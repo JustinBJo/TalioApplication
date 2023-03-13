@@ -20,6 +20,7 @@ import java.util.List;
 
 import commons.Task;
 import commons.TaskList;
+
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -80,5 +81,34 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Deletes a tasklist from the server
+     * @param taskList the tasklist to be deleted
+     * @return the tasklist which was deleted
+     */
+    public TaskList deleteTaskList(TaskList taskList) {
+        long id = taskList.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasklist/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(TaskList.class);
+    }
+
+    /**
+     * Updates the name of the selected TaskList in the database
+     * @param taskList the TaskList to be renamed
+     * @param newName the name it should be renamed to
+     * @return a TaskList entity
+     */
+    public TaskList updateTaskList(TaskList taskList, String newName) {
+        long id = taskList.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasklist/update/" + id + "/" + newName)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
     }
 }

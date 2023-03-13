@@ -1,5 +1,4 @@
 package server.api;
-
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,8 +6,7 @@ import server.database.TaskListRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class TaskListControllerTest {
@@ -62,6 +60,15 @@ public class TaskListControllerTest {
         TaskList tl = new TaskList(null);
         var result = taskListController.add(tl);
         assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void deleteTest() {
+        TaskList tl = new TaskList(null);
+        tl.setId( (long) 100);
+        repo.save(tl);
+        taskListController.delete(100);
+        assertFalse(repo.findById( (long) 100).isPresent());
     }
 
 }

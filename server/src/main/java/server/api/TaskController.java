@@ -40,7 +40,7 @@ public class TaskController {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.findById(id).get());
+        return ResponseEntity.ok(repo.getById(id));
     }
 
     /**

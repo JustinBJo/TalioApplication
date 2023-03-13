@@ -6,20 +6,21 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
+<AnchorPane prefHeight="600.0" prefWidth="831.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
    <children>
-      <Button layoutX="739.0" layoutY="300.0" mnemonicParsing="false" onAction="#addList" text="+" />
-      <Button layoutX="563.0" layoutY="26.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
-      <Label layoutX="346.0" layoutY="11.0" text="Board X">
+      <Button layoutX="761.0" layoutY="560.0" mnemonicParsing="false" onAction="#addTask" text="Add Task" />
+      <Button layoutX="590.0" layoutY="28.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
+      <Label layoutX="367.0" layoutY="14.0" text="Board X">
          <font>
             <Font size="19.0" />
          </font>
       </Label>
-      <Button layoutX="672.0" layoutY="27.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
-      <Button layoutX="14.0" layoutY="27.0" mnemonicParsing="false" onAction="#back" text="New server" />
-      <ListView fx:id="boards" layoutY="63.0" prefHeight="537.0" prefWidth="127.0" />
-      <ListView fx:id="lists" layoutX="127.0" layoutY="63.0" orientation="HORIZONTAL" prefHeight="537.0" prefWidth="407.0" />
-      <ListView fx:id="tasks" layoutX="534.0" layoutY="63.0" prefHeight="537.0" prefWidth="171.0" />
-      <Button layoutX="660.0" layoutY="560.0" mnemonicParsing="false" onAction="#addTask" text="+" />
+      <Button layoutX="694.0" layoutY="28.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
+      <Button layoutX="8.0" layoutY="28.0" mnemonicParsing="false" onAction="#back" text="New server" />
+      <Button layoutX="523.0" layoutY="28.0" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
+      <ListView fx:id="boards" layoutX="-1.0" layoutY="60.0" prefHeight="539.0" prefWidth="129.0" />
+      <ListView fx:id="lists" layoutX="128.0" layoutY="60.0" orientation="HORIZONTAL" prefHeight="539.0" prefWidth="423.0" />
+      <Button layoutX="781.0" layoutY="287.0" mnemonicParsing="false" onAction="#addList" text="+" />
+      <ListView fx:id="tasks" layoutX="551.0" layoutY="60.0" prefHeight="539.0" prefWidth="200.0" />
    </children>
 </AnchorPane>
