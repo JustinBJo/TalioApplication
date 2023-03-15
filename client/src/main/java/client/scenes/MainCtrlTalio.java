@@ -153,6 +153,10 @@ public class MainCtrlTalio {
      * Switches scene to rename board scene
      */
     public void showRenameBoard() {
+        if (this.activeBoard == null) {
+            System.out.println("Cannot rename board: this is a dummy board!");
+            return;
+        }
         primaryStage.setTitle("Rename the Board");
         primaryStage.setScene(renameScene);
         renameCtrl.initialize(RenameCtrl.Type.Board);

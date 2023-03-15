@@ -106,9 +106,13 @@ public class MainSceneCtrl {
      */
     public void removeBoard() {
         Board board = mainCtrl.getActiveBoard();
-        mainCtrl.showConnect();
+        if (board == null) {
+            System.out.println("Cannot delete board: this is a dummy board!");
+            return;
+        }
         mainCtrl.setActiveBoard(null);
         server.deleteBoard(board);
+        mainCtrl.showConnect();
     }
 
     /**
