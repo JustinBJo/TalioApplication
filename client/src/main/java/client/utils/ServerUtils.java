@@ -96,13 +96,16 @@ public class ServerUtils {
      * @param taskList the tasklist to be deleted
      * @return the tasklist which was deleted
      */
-    public TaskList deleteTaskList(TaskList taskList) {
+    public String deleteTaskList(TaskList taskList) {
         long id = taskList.getId();
-        return ClientBuilder.newClient(new ClientConfig())
+        String res =  ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("tasklist/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(TaskList.class);
+                .delete(String.class);
+
+        System.out.println(res);
+        return res;
     }
 
     /**
@@ -159,7 +162,7 @@ public class ServerUtils {
      */
     public String deleteBoard(Board board) {
         long id = board.getId();
-        String res =  ClientBuilder.newClient(new ClientConfig())
+        String res = ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("board/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
