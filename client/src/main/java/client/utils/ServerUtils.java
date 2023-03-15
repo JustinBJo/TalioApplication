@@ -22,6 +22,7 @@ import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import jakarta.ws.rs.ProcessingException;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -56,7 +57,7 @@ public class ServerUtils {
      * @param url the input url
      */
     public static void setServer(String url)
-            throws IllegalArgumentException, ProcessingException {
+            throws IllegalArgumentException {
         try {
             ClientBuilder.newClient(new ClientConfig()) //
                     .target(url) //
@@ -65,7 +66,7 @@ public class ServerUtils {
                     .get();
         } catch (IllegalArgumentException e2) {
             throw new IllegalArgumentException("Invalid URL");
-        } catch (ProcessingException e2) {
+        } catch (ProcessingException e) {
             throw new ProcessingException("Server not found");
         }
         SERVER = url;
