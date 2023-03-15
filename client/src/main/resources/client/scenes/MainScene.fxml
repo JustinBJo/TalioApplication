@@ -9,19 +9,20 @@
 <AnchorPane prefHeight="600.0" prefWidth="831.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
    <children>
       <Button layoutX="758.0" layoutY="552.0" mnemonicParsing="false" onAction="#addTask" prefHeight="25.0" prefWidth="66.0" text="Add Task" />
-      <Button layoutX="14.0" layoutY="31.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
+      <Button layoutX="14.0" layoutY="5.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
       <Label fx:id="sceneTitle" alignment="CENTER" layoutX="217.0" layoutY="14.0" prefHeight="28.0" prefWidth="398.0" text="Board X">
          <font>
             <Font size="19.0" />
          </font>
       </Label>
-      <Button fx:id="removeBoard" layoutX="725.0" layoutY="31.0" mnemonicParsing="false" onAction="#removeBoard" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
+      <Button fx:id="removeBoard" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#removeBoard" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
       <Button layoutX="758.0" layoutY="60.0" mnemonicParsing="false" onAction="#back" prefHeight="51.0" prefWidth="66.0" text="New server" textAlignment="CENTER" wrapText="true" />
       <Button layoutX="758.0" layoutY="478.0" mnemonicParsing="false" onAction="#refresh" prefHeight="25.0" prefWidth="66.0" text="Refresh" />
       <ListView fx:id="boards" layoutX="-1.0" layoutY="60.0" prefHeight="539.0" prefWidth="129.0" />
       <ListView fx:id="lists" layoutX="128.0" layoutY="60.0" orientation="HORIZONTAL" prefHeight="539.0" prefWidth="423.0" />
       <Button layoutX="758.0" layoutY="514.0" mnemonicParsing="false" onAction="#addList" prefHeight="25.0" prefWidth="66.0" text="Add list" />
       <ListView fx:id="tasks" layoutX="551.0" layoutY="60.0" prefHeight="539.0" prefWidth="200.0" />
-      <Button fx:id="renameBoard" layoutX="725.0" layoutY="6.0" mnemonicParsing="false" onAction="#renameBoard" prefHeight="22.0" prefWidth="92.0" text="Rename board" />
+      <Button fx:id="renameBoard" layoutX="725.0" layoutY="7.0" mnemonicParsing="false" onAction="#renameBoard" prefHeight="22.0" prefWidth="92.0" text="Rename board" />
+      <Button fx:id="copyCode" layoutX="725.0" layoutY="32.0" mnemonicParsing="false" onAction="#copyBoardCode" prefHeight="22.0" prefWidth="92.0" text="Copy code" />
    </children>
 </AnchorPane>

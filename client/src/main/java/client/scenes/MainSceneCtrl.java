@@ -13,6 +13,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+
 public class MainSceneCtrl {
 
     private final ServerUtils server;
@@ -26,21 +29,18 @@ public class MainSceneCtrl {
 
     @FXML
     Label sceneTitle;
-
     @FXML
     ListView boards;
-
     @FXML
     ListView<TaskList> lists;
-
     @FXML
     ListView<Task> tasks;
-
     @FXML
     Button renameBoard;
-
     @FXML
     Button removeBoard;
+    @FXML
+    Button copyCode;
 
     /**
      * constructor
@@ -109,6 +109,29 @@ public class MainSceneCtrl {
         mainCtrl.showConnect();
         mainCtrl.setActiveBoard(null);
         server.deleteBoard(board);
+    }
+
+    /**
+     * Copies the code of current board
+     * If the active board is null i.e. this is the default board,
+     * then it copies an empty string
+     */
+    public void copyBoardCode() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+
+        Board board = mainCtrl.getActiveBoard();
+        if (board == null) {
+            System.out.println("This is the default board!");
+        }
+        else {
+            String code = board.getCode();
+            content.putString(code);
+            clipboard.setContent(content);
+
+            System.out.println("The code for this board is copied!");
+            System.out.println("Code: " + code);
+        }
     }
 
     /**
