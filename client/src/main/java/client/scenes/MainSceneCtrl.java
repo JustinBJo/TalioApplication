@@ -3,7 +3,6 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Board;
 import commons.Task;
 import commons.TaskList;
 import javafx.collections.FXCollections;
@@ -81,7 +80,9 @@ public class MainSceneCtrl {
     /**
      * add a board to the list
      */
-    public void addBoard() { mainCtrl.showAddBoard(); }
+    public void addBoard() {
+        mainCtrl.showAddBoard();
+    }
 
     /**
      * add a list to the list
