@@ -57,6 +57,7 @@ public class Main extends Application {
 
         var taskList = FXML.load(TaskListCtrl.class,
                 "client", "scenes", "TaskList.fxml");
+
         var renameTaskList = FXML.load(
                 RenameListController.class, "client", "scenes",
                 "RenameList.fxml");

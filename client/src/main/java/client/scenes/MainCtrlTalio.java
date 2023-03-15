@@ -34,12 +34,11 @@ public class MainCtrlTalio {
 
     /**
      * initialize the main controller
-     *
      * @param primaryStage   the primary stage
      * @param connect        the connect screen
      * @param mainScene      the main screen
      * @param addList        the add list screen
-     * @param renameTaskList
+     * @param renameTaskList the rename list screen
      */
     public void initialize(Stage primaryStage,
                            Pair<ConnectScreenCtrl, Parent> connect,
@@ -67,7 +66,6 @@ public class MainCtrlTalio {
 
         this.renameListCtrl = renameTaskList.getKey();
         this.renameListScene = new Scene(renameTaskList.getValue());
-
 
         showConnect();
         primaryStage.show();

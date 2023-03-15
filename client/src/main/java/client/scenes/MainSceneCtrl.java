@@ -3,6 +3,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Task;
 import commons.TaskList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,11 +19,16 @@ public class MainSceneCtrl {
 
     ObservableList<TaskList> listData;
 
+    ObservableList<Task> taskData;
+
     @FXML
     ListView boards;
 
     @FXML
     ListView<TaskList> lists;
+
+    @FXML
+    ListView<Task> tasks;
 
     /**
      * constructor
@@ -61,7 +67,9 @@ public class MainSceneCtrl {
      */
     public void refresh() {
         listData = FXCollections.observableList(server.getTaskList());
+        taskData = FXCollections.observableList(server.getTasks());
         lists.setItems(listData);
+        tasks.setItems(taskData);
     }
 
     private int i = 0;
@@ -81,6 +89,12 @@ public class MainSceneCtrl {
         mainCtrl.showAddList();
     }
 
+    /**
+     * add a task to the list
+     */
+    public void addTask() {
+        mainCtrl.showAddTask();
+    }
 
 }
 
