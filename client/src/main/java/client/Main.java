@@ -49,8 +49,8 @@ public class Main extends Application {
                 "client", "scenes", "ConnectScreen.fxml");
         var mainScene = FXML.load(MainSceneCtrl.class,
                 "client", "scenes", "MainScene.fxml");
-        var addList = FXML.load(AddListCtrl.class,
-                "client", "scenes", "AddList.fxml");
+        var addTitledEntity = FXML.load(AddTitledEntityCtrl.class,
+                "client", "scenes", "AddTitledEntity.fxml");
 
         var addTask = FXML.load(AddTaskCtrl.class,
                 "client", "scenes", "AddTask.fxml");
@@ -65,6 +65,6 @@ public class Main extends Application {
         var mainCtrl =
                 INJECTOR.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(primaryStage, connect, mainScene,
-                addList, addTask, taskList, renameTaskList);
+                addTitledEntity, addTask, taskList, renameTaskList);
     }
 }

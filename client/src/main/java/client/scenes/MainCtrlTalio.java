@@ -16,8 +16,8 @@ public class MainCtrlTalio {
     MainSceneCtrl mainSceneCtrl;
     Scene mainScene;
 
-    AddListCtrl addListCtrl;
-    Scene addListScene;
+    AddTitledEntityCtrl addTitledEntityCtrl;
+    Scene addTitledEntityScene;
 
     AddTaskCtrl addTaskCtrl;
 
@@ -34,16 +34,16 @@ public class MainCtrlTalio {
 
     /**
      * initialize the main controller
-     * @param primaryStage   the primary stage
-     * @param connect        the connect screen
-     * @param mainScene      the main screen
-     * @param addList        the add list screen
-     * @param renameTaskList the rename list screen
+     * @param primaryStage    the primary stage
+     * @param connect         the "connect" screen
+     * @param mainScene       the main screen
+     * @param addTitledEntity the "add titled entity" screen
+     * @param renameTaskList  the "rename list" screen
      */
     public void initialize(Stage primaryStage,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
-                           Pair<AddListCtrl, Parent> addList,
+                           Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
                            Pair<RenameListController, Parent> renameTaskList) {
@@ -55,8 +55,8 @@ public class MainCtrlTalio {
         this.mainSceneCtrl = mainScene.getKey();
         this.mainScene = new Scene(mainScene.getValue());
 
-        this.addListCtrl = addList.getKey();
-        this.addListScene = new Scene(addList.getValue());
+        this.addTitledEntityCtrl = addTitledEntity.getKey();
+        this.addTitledEntityScene = new Scene(addTitledEntity.getValue());
 
         this.addTaskCtrl = addTask.getKey();
         this.addTaskScene = new Scene(addTask.getValue());
@@ -69,7 +69,6 @@ public class MainCtrlTalio {
 
         showConnect();
         primaryStage.show();
-
     }
 
     /**
@@ -93,7 +92,8 @@ public class MainCtrlTalio {
      */
     public void showAddList() {
         primaryStage.setTitle("Add a new List");
-        primaryStage.setScene(addListScene);
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.TaskList);
     }
 
     /**
@@ -128,4 +128,11 @@ public class MainCtrlTalio {
         primaryStage.setScene(addTaskScene);
     }
 
+    /**
+     * Switches scene to "Add Board" scene
+     */
+    public void showAddBoard() {
+        primaryStage.setTitle("Add a new board");
+        // TODO
+    }
 }
