@@ -86,7 +86,11 @@ public class BoardTest {
         List<TaskList> defaultListOfTaskList = emptyListOfTaskList();
         long defaultId = 0;
 
-        Board board = new Board(defaultCode, defaultTitle, defaultListOfTaskList);
+        Board board = new Board(
+                defaultCode,
+                defaultTitle,
+                defaultListOfTaskList
+        );
         board.setId(defaultId);
 
         // Getters
