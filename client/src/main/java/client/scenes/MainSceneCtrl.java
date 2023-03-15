@@ -3,11 +3,13 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.Task;
 import commons.TaskList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 public class MainSceneCtrl {
@@ -20,6 +22,9 @@ public class MainSceneCtrl {
     ObservableList<TaskList> listData;
 
     ObservableList<Task> taskData;
+
+    @FXML
+    Label sceneTitle;
 
     @FXML
     ListView boards;
@@ -52,7 +57,6 @@ public class MainSceneCtrl {
         lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
                 renameCtrl));
         refresh();
-
     }
 
     /**
