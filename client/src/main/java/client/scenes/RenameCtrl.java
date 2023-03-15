@@ -57,10 +57,10 @@ public class RenameCtrl {
 
         switch (type) {
             case TaskList:
-                this.header.setText("Add new list");
+                this.header.setText("Rename list");
                 break;
             case Board:
-                this.header.setText("Add new board");
+                this.header.setText("Rename current board");
                 break;
             default:
                 newName.clear();

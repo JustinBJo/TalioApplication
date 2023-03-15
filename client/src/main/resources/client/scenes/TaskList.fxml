@@ -9,7 +9,7 @@
 <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="200.0" style="-fx-background-color: #00a6d6;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.TaskListCtrl">
    <children>
       <ListView fx:id="tasks" layoutX="10.0" layoutY="51.0" prefHeight="435.0" prefWidth="180.0" />
-      <Label fx:id="title" layoutX="72.0" layoutY="14.0" text="Label">
+      <Label fx:id="title" alignment="CENTER" layoutX="10.0" layoutY="16.0" prefHeight="27.0" prefWidth="180.0" text="Label">
          <font>
             <Font name="Arial" size="23.0" />
          </font>
