@@ -15,7 +15,7 @@
             <Font size="19.0" />
          </font>
       </Label>
-      <Button layoutX="725.0" layoutY="31.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
+      <Button fx:id="removeBoard" layoutX="725.0" layoutY="31.0" mnemonicParsing="false" onAction="#removeBoard" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
       <Button layoutX="758.0" layoutY="60.0" mnemonicParsing="false" onAction="#back" prefHeight="51.0" prefWidth="66.0" text="New server" textAlignment="CENTER" wrapText="true" />
       <Button layoutX="758.0" layoutY="478.0" mnemonicParsing="false" onAction="#refresh" prefHeight="25.0" prefWidth="66.0" text="Refresh" />
       <ListView fx:id="boards" layoutX="-1.0" layoutY="60.0" prefHeight="539.0" prefWidth="129.0" />

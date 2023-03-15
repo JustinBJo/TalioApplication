@@ -3,6 +3,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.Task;
 import commons.TaskList;
 import javafx.collections.FXCollections;
@@ -37,6 +38,9 @@ public class MainSceneCtrl {
 
     @FXML
     Button renameBoard;
+
+    @FXML
+    Button removeBoard;
 
     /**
      * constructor
@@ -89,10 +93,22 @@ public class MainSceneCtrl {
     }
 
     /**
-     * rename the board
+     * Rename the current board
      */
     public void renameBoard() {
         mainCtrl.showRenameBoard();
+    }
+
+    /**
+     * Delete the active board
+     * After deleting, go back to the connect screen
+     * Behaviour after deletion can be changed in future implementations
+     */
+    public void removeBoard() {
+        Board board = mainCtrl.getActiveBoard();
+        mainCtrl.showConnect();
+        mainCtrl.setActiveBoard(null);
+        server.deleteBoard(board);
     }
 
     /**

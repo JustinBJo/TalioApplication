@@ -76,6 +76,24 @@ public class BoardController {
         return ResponseEntity.ok(board);
     }
 
+    /**
+     * Delete the board from the repository
+     * @param id the id of the board that is being removed
+     * @return the deleted board
+     */
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().body("Invalid id!");
+        }
+        if  (!repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("Board does not exist.");
+        }
+        Board board = repo.findById(id).get();
+        repo.delete(board);
+        return ResponseEntity.ok("Board " + id + " is removed.");
+    }
+
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

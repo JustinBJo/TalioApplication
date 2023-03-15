@@ -164,7 +164,14 @@ public class MainCtrlTalio {
      */
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
-        mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+
+        if (activeBoard == null) {
+            mainSceneCtrl.sceneTitle.setText("Board X");
+        }
+        else {
+            mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+        }
+
         mainSceneCtrl.refresh();
         // TODO
     }

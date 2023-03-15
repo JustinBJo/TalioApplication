@@ -134,4 +134,35 @@ public class BoardControllerTest {
         // Check endpoint
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
+    @Test
+    void deleteTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        ResponseEntity<String> response = sut.delete(board.getId());
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(
+                "Board " + board.getId() + " is removed.",
+                response.getBody()
+        );
+
+        // Check repository
+        assertEquals(repo.getById(board.getId()), null);
+    }
+
+    @Test
+    void failedDeleteTest() {
+        ResponseEntity<String> response = sut.delete(2001);
+
+        // Check endpoint
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(
+                "Board does not exist.",
+                response.getBody()
+        );
+    }
 }
