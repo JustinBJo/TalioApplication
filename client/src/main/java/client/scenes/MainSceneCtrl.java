@@ -77,10 +77,7 @@ public class MainSceneCtrl {
     /**
      * add a board to the list
      */
-    public void addBoard() {
-        boards.getItems().add("Board: " + i);
-        i++;
-    }
+    public void addBoard() { mainCtrl.showAddBoard(); }
 
     /**
      * add a list to the list

@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
@@ -14,7 +15,8 @@ import javafx.stage.Modality;
 public class AddTitledEntityCtrl {
 
     enum Type {
-        TaskList
+        TaskList,
+        Board
     }
 
     private final ServerUtils server;
@@ -52,6 +54,9 @@ public class AddTitledEntityCtrl {
         switch (type) {
             case TaskList:
                 setHeader("Add new list");
+                break;
+            case Board:
+                setHeader("Add new board");
                 break;
 
             // Error handling (very unlikely, as it is an enum)
@@ -96,6 +101,9 @@ public class AddTitledEntityCtrl {
                 case TaskList:
                     addNewTaskList(title);
                     break;
+                case Board:
+                    addNewBoard(title);
+                    break;
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
@@ -133,5 +141,14 @@ public class AddTitledEntityCtrl {
         TaskList taskList = new TaskList(title);
         server.addTaskList(taskList);
         mainCtrl.mainSceneCtrl.lists.getItems().add(taskList);
+    }
+
+    /**
+     * Add a new board
+     * @param title board title
+     */
+    private void addNewBoard(String title) throws WebApplicationException {
+        Board board = new Board(title);
+        server.addBoard(board);
     }
 }

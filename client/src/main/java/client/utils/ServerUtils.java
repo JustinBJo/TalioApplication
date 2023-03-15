@@ -18,6 +18,7 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.util.List;
 
+import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
@@ -110,5 +111,18 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
+
+    /**
+     * Uses board endpoint to ask server to add a new board
+     * @param board board to be added
+     * @return added board
+     */
+    public Board addBoard(Board board) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(board, APPLICATION_JSON), Board.class);
     }
 }

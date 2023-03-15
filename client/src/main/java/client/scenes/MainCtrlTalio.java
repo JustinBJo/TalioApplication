@@ -133,6 +133,7 @@ public class MainCtrlTalio {
      */
     public void showAddBoard() {
         primaryStage.setTitle("Add a new board");
-        // TODO
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.Board);
     }
 }
