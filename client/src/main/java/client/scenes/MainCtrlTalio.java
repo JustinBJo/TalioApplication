@@ -27,7 +27,7 @@ public class MainCtrlTalio {
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
 
-    RenameController renameCtrl;
+    RenameCtrl renameCtrl;
     Scene renameScene;
 
     private TaskList currentTaskList;
@@ -49,7 +49,7 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
-                           Pair<RenameController, Parent> renameTaskList) {
+                           Pair<RenameCtrl, Parent> renameTaskList) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -102,9 +102,10 @@ public class MainCtrlTalio {
     /**
      * changes to rename list scene
      */
-    public void showRename() {
-        primaryStage.setTitle("Rename the entity");
+    public void showRenameList() {
+        primaryStage.setTitle("Rename the List");
         primaryStage.setScene(renameScene);
+        renameCtrl.initialize(RenameCtrl.Type.TaskList);
     }
 
     /**
@@ -149,12 +150,22 @@ public class MainCtrlTalio {
     }
 
     /**
+     * Switches scene to rename board scene
+     */
+    public void showRenameBoard() {
+        primaryStage.setTitle("Rename the Board");
+        primaryStage.setScene(renameScene);
+        renameCtrl.initialize(RenameCtrl.Type.Board);
+    }
+
+    /**
      * Sets current active board and updates the main scene accordingly
      * @param activeBoard new active board
      */
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
         mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+        mainSceneCtrl.refresh();
         // TODO
     }
 }

@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -10,7 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
-public class RenameController {
+public class RenameCtrl {
 
     enum Type {
         TaskList,
@@ -42,7 +43,7 @@ public class RenameController {
      *
      */
     @Inject
-    public RenameController(MainCtrlTalio mainCtrl, ServerUtils server) {
+    public RenameCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
@@ -96,7 +97,11 @@ public class RenameController {
                     server.updateTaskList(mainCtrl.getCurrentTaskList(), name);
                     break;
                 case Board:
-                    server.updateBoard(mainCtrl.getActiveBoard(), name);
+                    Board updatedBoard = server.updateBoard(
+                            mainCtrl.getActiveBoard(),
+                            name
+                    );
+                    mainCtrl.setActiveBoard(updatedBoard);
                     break;
                 default:
                     alertError("Unexpected error in renaming entity");

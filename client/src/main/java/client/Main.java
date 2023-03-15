@@ -59,7 +59,7 @@ public class Main extends Application {
                 "client", "scenes", "TaskList.fxml");
 
         var renameTaskList = FXML.load(
-                RenameController.class, "client", "scenes",
+                RenameCtrl.class, "client", "scenes",
                 "RenameEntity.fxml");
 
         var mainCtrl =

@@ -8,6 +8,7 @@ import commons.TaskList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
@@ -15,7 +16,7 @@ public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
-    private final RenameController renameCtrl;
+    private final RenameCtrl renameCtrl;
 
 
     ObservableList<TaskList> listData;
@@ -34,13 +35,16 @@ public class MainSceneCtrl {
     @FXML
     ListView<Task> tasks;
 
+    @FXML
+    Button renameBoard;
+
     /**
      * constructor
      * @param mainCtrl the main controller
      */
     @Inject
     public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl,
-                         RenameController renameCtrl) {
+                         RenameCtrl renameCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.renameCtrl = renameCtrl;
@@ -82,6 +86,13 @@ public class MainSceneCtrl {
      */
     public void addBoard() {
         mainCtrl.showAddBoard();
+    }
+
+    /**
+     * rename the board
+     */
+    public void renameBoard() {
+        mainCtrl.showRenameBoard();
     }
 
     /**
