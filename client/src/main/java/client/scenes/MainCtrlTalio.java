@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Board;
 import commons.TaskList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,6 +31,8 @@ public class MainCtrlTalio {
     Scene renameListScene;
 
     private TaskList currentTaskList;
+
+    private Board activeBoard;
 
 
     /**
@@ -135,5 +138,15 @@ public class MainCtrlTalio {
         primaryStage.setTitle("Add a new board");
         primaryStage.setScene(addTitledEntityScene);
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.Board);
+    }
+
+    /**
+     * Sets current active board and updates the main scene accordingly
+     * @param activeBoard new active board
+     */
+    public void setActiveBoard(Board activeBoard) {
+        this.activeBoard = activeBoard;
+        mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+        // TODO
     }
 }
