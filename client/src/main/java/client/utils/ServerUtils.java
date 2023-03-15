@@ -125,4 +125,19 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
     }
+
+    /**
+     * Update the title of the given board using the board/update endpoint
+     * @param board the board that is being updated
+     * @param newName the new name of the board
+     * @return the updated board
+     */
+    public Board updateBoard(Board board, String newName) {
+        long id = board.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/update/" + id + "/" + newName)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(board, APPLICATION_JSON), Board.class);
+    }
 }

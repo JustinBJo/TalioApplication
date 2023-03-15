@@ -102,4 +102,36 @@ public class BoardControllerTest {
                 "save"));
 
     }
+
+    @Test
+    void updateTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        // Update the board with a new name
+        String newName = "newName";
+        ResponseEntity<Board> response = sut.update(2001, newName);
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(board, response.getBody());
+
+        // Check repository
+        assertTrue(repo.findAll().contains(board));
+        assertEquals(repo.findById(board.getId()).get().getTitle(), newName);
+    }
+
+    @Test
+    void failedUpdateTest() {
+        Board newBoard = new Board("1030",
+                "This board does not exist in the repository");
+        newBoard.setId(2001);
+
+        String newName = "newName";
+        ResponseEntity<Board> response = sut.update(2001, newName);
+
+        // Check endpoint
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 }

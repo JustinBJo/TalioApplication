@@ -59,6 +59,23 @@ public class BoardController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Rename the Board in the repository
+     * @param id the id of the board that is being renamed
+     * @param newName the new title of the board
+     */
+    @PutMapping("update/{id}/{newName}")
+    public ResponseEntity<Board> update(@PathVariable("id") long id,
+                       @PathVariable("newName") String newName) {
+        if (id < 0 || !repo.existsById(id) || newName.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        Board board = repo.findById(id).get();
+        board.setTitle(newName);
+        repo.save(board);
+        return ResponseEntity.ok(board);
+    }
+
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

@@ -22,14 +22,14 @@ public class TaskListCtrl
     private final ServerUtils server;
     private final MainSceneCtrl mainSceneCtrl;
     private final MainCtrlTalio mainCtrl;
-    private final RenameListController renameCtrl;
+    private final RenameController renameCtrl;
 
     private TaskList taskList;
 
     private static ServerUtils serverCopy;
     private static MainSceneCtrl mainSceneCtrlCopy;
     private static MainCtrlTalio mainCtrlTalioCopy;
-    private static RenameListController renameCtrlCopy;
+    private static RenameController renameCtrlCopy;
 
     @FXML
     AnchorPane root;
@@ -73,7 +73,7 @@ public class TaskListCtrl
     @Inject
     public TaskListCtrl(ServerUtils server,
                         MainSceneCtrl mainSceneCtrl, MainCtrlTalio mainCtrl,
-                        RenameListController renameCtrl) {
+                        RenameController renameCtrl) {
         this.server = server;
         this.mainSceneCtrl = mainSceneCtrl;
         this.mainCtrl = mainCtrl;
@@ -161,7 +161,7 @@ public class TaskListCtrl
      */
     public void rename() {
         mainCtrl.setCurrentTaskList(taskList);
-        mainCtrl.showRenameList();
+        mainCtrl.showRename();
         mainCtrl.mainSceneCtrl.refresh();
 
     }

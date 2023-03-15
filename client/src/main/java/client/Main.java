@@ -59,8 +59,8 @@ public class Main extends Application {
                 "client", "scenes", "TaskList.fxml");
 
         var renameTaskList = FXML.load(
-                RenameListController.class, "client", "scenes",
-                "RenameList.fxml");
+                RenameController.class, "client", "scenes",
+                "RenameEntity.fxml");
 
         var mainCtrl =
                 INJECTOR.getInstance(MainCtrlTalio.class);

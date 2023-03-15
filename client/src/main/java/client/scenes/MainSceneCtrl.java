@@ -15,7 +15,7 @@ public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
-    private final RenameListController renameCtrl;
+    private final RenameController renameCtrl;
 
 
     ObservableList<TaskList> listData;
@@ -40,7 +40,7 @@ public class MainSceneCtrl {
      */
     @Inject
     public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl,
-                         RenameListController renameCtrl) {
+                         RenameController renameCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.renameCtrl = renameCtrl;
