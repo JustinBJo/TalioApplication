@@ -65,7 +65,7 @@ public class BoardController {
      * @param newName the new title of the board
      */
     @PutMapping("update/{id}/{newName}")
-    public ResponseEntity<Board> update(@PathVariable("id") long id,
+    public ResponseEntity<Board> updateName(@PathVariable("id") long id,
                        @PathVariable("newName") String newName) {
         if (id < 0 || !repo.existsById(id) || newName.isEmpty()) {
             return ResponseEntity.badRequest().build();
