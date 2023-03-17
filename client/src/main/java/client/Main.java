@@ -62,9 +62,13 @@ public class Main extends Application {
                 RenameCtrl.class, "client", "scenes",
                 "RenameEntity.fxml");
 
+        var editTask = FXML.load(EditTaskCtrl.class,
+                "client", "scenes", "EditTask.fxml");
+
         var mainCtrl =
                 INJECTOR.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(primaryStage, connect, mainScene,
-                addTitledEntity, addTask, taskList, renameTaskList);
+                addTitledEntity, addTask, taskList, renameTaskList,
+                editTask);
     }
 }

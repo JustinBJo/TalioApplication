@@ -21,6 +21,13 @@ public class TaskTest {
     }
 
     @Test
+    void checkEmptyConstructor() {
+        Task emptyTask = new Task();
+        assertNull(emptyTask.getTitle());
+        assertNull(emptyTask.getDescription());
+    }
+
+    @Test
     public void testToString() {
         var actual = new Task("Task Title", "Description",
                 new ArrayList<>(), new ArrayList<>()).toString();
@@ -52,10 +59,26 @@ public class TaskTest {
     }
 
     @Test
+    void setTitle() {
+        var a = new Task("title", "description",
+                new ArrayList<>(), new ArrayList<>());
+        a.setTitle("new title");
+        assertEquals("new title", a.getTitle());
+    }
+
+    @Test
     void getDescription() {
         var a = new Task("Task Title1", "Description",
                 new ArrayList<>(), new ArrayList<>());
         assertEquals("Description", a.getDescription());
+    }
+
+    @Test
+    void setDescription() {
+        var a = new Task("title", "description",
+                new ArrayList<>(), new ArrayList<>());
+        a.setDescription("new description");
+        assertEquals("new description", a.getDescription());
     }
 
     @Test
