@@ -21,7 +21,10 @@ public class BoardController {
      * @param repo BoardRepository
      * @param taskListRepo TaskListRepository
      */
-    public BoardController(BoardRepository repo, TaskListRepository taskListRepo) {
+    public BoardController(
+            BoardRepository repo,
+            TaskListRepository taskListRepo
+    ) {
         this.repo = repo;
         this.taskListRepo = taskListRepo;
     }
@@ -81,9 +84,18 @@ public class BoardController {
         return ResponseEntity.ok(board);
     }
 
+    /**
+     * Links a task list to a board in the repository
+     * @param boardId ID of the board
+     * @param taskListId ID of the task list to be linked
+     */
     @PutMapping("addTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<String> addChildTaskList(@PathVariable("boardId") long boardId, @PathVariable("taskListId") long taskListId) {
-        if (boardId < 0 || !repo.existsById(boardId) || taskListId < 0 || !taskListRepo.existsById(taskListId)) {
+    public ResponseEntity<String> addChildTaskList(
+            @PathVariable("boardId") long boardId,
+            @PathVariable("taskListId") long taskListId
+    ) {
+        if (boardId < 0 || !repo.existsById(boardId)
+                || taskListId < 0 || !taskListRepo.existsById(taskListId)) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -91,10 +103,12 @@ public class BoardController {
         TaskList taskList = taskListRepo.getById(taskListId);
 
         boolean success = board.addTaskList(taskList);
-        if (!success) { return ResponseEntity.badRequest().build(); }
+        if (!success) return ResponseEntity.badRequest().build();
 
         repo.save(board);
-        return ResponseEntity.ok("Added Task List " + taskListId + " to board " + boardId);
+        return ResponseEntity.ok(
+                "Added Task List " + taskListId + " to board " + boardId
+        );
     }
 
     /**

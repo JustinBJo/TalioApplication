@@ -76,11 +76,11 @@ public class ServerUtils {
 
         // Link task list to board
         Response linkBoardResponse = target.path(
-                        "board/addTaskList/" + board.getId() + "/" + addedList.getId()
-                ) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .put(Entity.json(board));
+                "board/addTaskList/" + board.getId() + "/" + addedList.getId()
+            ) //
+            .request(APPLICATION_JSON) //
+            .accept(APPLICATION_JSON) //
+            .put(Entity.json(board));
 
         int linkStatus = linkBoardResponse.getStatus();
         linkBoardResponse.close();
@@ -90,7 +90,8 @@ public class ServerUtils {
             return addedList;
         }
 
-        // If failed to link list, remove it from repository to avoid lists with no parents
+        // If failed to link list,
+        // remove it from repository to avoid lists with no parents
         deleteTaskList(addedList);
         return null;
     }

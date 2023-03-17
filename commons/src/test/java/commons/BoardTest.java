@@ -90,7 +90,7 @@ public class BoardTest {
     }
 
     @Test
-    void addTaskList_WhenTaskListsIsNull() {
+    void addTaskListWhenTaskListsIsNull() {
         Board a = new Board("Test Board");
         a.setTaskLists(null);
         assertNull(a.getTaskLists());
