@@ -80,6 +80,50 @@ public class BoardTest {
     }
 
     @Test
+    void addTaskList() {
+        Board a = new Board("Test Board");
+        assertTrue(a.getTaskLists().isEmpty());
+
+        TaskList tl = new TaskList("Test List");
+        assertTrue(a.addTaskList(tl));
+        assertTrue(a.getTaskLists().contains(tl));
+    }
+
+    @Test
+    void addTaskList_WhenTaskListsIsNull() {
+        Board a = new Board("Test Board");
+        a.setTaskLists(null);
+        assertNull(a.getTaskLists());
+
+        TaskList tl = new TaskList("Test List");
+        assertTrue(a.addTaskList(tl));
+        assertTrue(a.getTaskLists().contains(tl));
+    }
+
+    @Test
+    void removeTaskList() {
+        Board a = new Board("Test Board");
+        assertTrue(a.getTaskLists().isEmpty());
+
+        TaskList tl = new TaskList("Test List");
+        assertTrue(a.addTaskList(tl));
+        assertTrue(a.getTaskLists().contains(tl));
+
+        assertTrue(a.removeTaskList(tl));
+        assertFalse(a.getTaskLists().contains(tl));
+    }
+
+    @Test
+    void failRemoveTaskList() {
+        Board a = new Board("Test Board");
+        assertTrue(a.getTaskLists().isEmpty());
+
+        TaskList tl = new TaskList("Test List");
+        assertFalse(a.getTaskLists().contains(tl));
+        assertFalse(a.removeTaskList(tl));
+    }
+
+    @Test
     void testGettersAndSetters() {
         String defaultCode = "123";
         String defaultTitle = "Test Board";

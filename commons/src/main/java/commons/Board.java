@@ -137,6 +137,16 @@ public class Board {
         this.taskLists = taskLists;
     }
 
+    public boolean addTaskList(TaskList list) {
+        if (this.taskLists == null) { this.taskLists = new ArrayList<>(); }
+        return this.taskLists.add(list);
+    }
+
+    public boolean removeTaskList(TaskList list) {
+        if (this.taskLists == null) { return false; }
+        return this.taskLists.remove(list);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
