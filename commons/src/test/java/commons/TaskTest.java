@@ -21,7 +21,7 @@ public class TaskTest {
     }
 
     @Test
-    void checkEmptyConstructor(){
+    void checkEmptyConstructor() {
         Task emptyTask = new Task();
         assertNull(emptyTask.getTitle());
         assertNull(emptyTask.getDescription());
@@ -59,8 +59,8 @@ public class TaskTest {
     }
 
     @Test
-    void setTitle(){
-        var a =new Task("title","description",
+    void setTitle() {
+        var a = new Task("title", "description",
                 new ArrayList<>(), new ArrayList<>());
         a.setTitle("new title");
         assertEquals("new title", a.getTitle());
@@ -74,8 +74,8 @@ public class TaskTest {
     }
 
     @Test
-    void setDescription(){
-        var a =new Task("title","description",
+    void setDescription() {
+        var a = new Task("title", "description",
                 new ArrayList<>(), new ArrayList<>());
         a.setDescription("new description");
         assertEquals("new description", a.getDescription());

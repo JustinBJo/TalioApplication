@@ -205,13 +205,4 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
-
-//    public Task updateTask(Task task, String newName) {
-//        long id = task.getId();
-//        return ClientBuilder.newClient(new ClientConfig())
-//                .target(SERVER).path("tasks/update/" + id + "/" + newName)
-//                .request(APPLICATION_JSON)
-//                .accept(APPLICATION_JSON)
-//                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
-//    }
 }
