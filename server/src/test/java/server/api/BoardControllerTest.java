@@ -111,7 +111,7 @@ public class BoardControllerTest {
 
         // Update the board with a new name
         String newName = "newName";
-        ResponseEntity<Board> response = sut.update(2001, newName);
+        ResponseEntity<Board> response = sut.updateName(2001, newName);
 
         // Check endpoint
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -129,7 +129,7 @@ public class BoardControllerTest {
         newBoard.setId(2001);
 
         String newName = "newName";
-        ResponseEntity<Board> response = sut.update(2001, newName);
+        ResponseEntity<Board> response = sut.updateName(2001, newName);
 
         // Check endpoint
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
