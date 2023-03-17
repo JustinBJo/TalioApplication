@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,7 +46,7 @@ public class TaskListCtrl
     @FXML
     Button rename;
 
-    private ObservableList<Task> taskView;
+    ObservableList<Task> taskData;
 
     /**
      * Default constructor for TaskListCtrl
@@ -59,10 +60,10 @@ public class TaskListCtrl
             this.renameCtrl = renameCtrlCopy;
         }
         else {
-        this.server = null;
-        this.mainCtrl = null;
-        this.mainSceneCtrl = null;
-        this.renameCtrl = null; }
+            this.server = null;
+            this.mainCtrl = null;
+            this.mainSceneCtrl = null;
+            this.renameCtrl = null; }
     }
 
     /**
@@ -94,6 +95,26 @@ public class TaskListCtrl
     }
 
     /**
+     * Initialise the scene
+     */
+    public void initialize() {
+        taskData = FXCollections.observableArrayList();
+        tasks.setItems(taskData);
+        tasks.setCellFactory(new CardCtrl(
+                server, this, mainSceneCtrl, mainCtrl));
+        tasks.setFixedCellSize(0);
+        refresh();
+    }
+
+    /**
+     * Refresh the tasklist
+     */
+    public void refresh() {
+        taskData = FXCollections.observableList(server.getTasks());
+        tasks.setItems(taskData);
+    }
+
+    /**
      * Set the TaskList instance that this Scene holds
      * @param taskList the TaskList instance to be set
      */
@@ -103,6 +124,10 @@ public class TaskListCtrl
             taskList.setTitle("Untitled");
         }
         title.setText(taskList.getTitle());
+
+        if (taskList.getTasks() == null) {
+            return;
+        }
         tasks.getItems().addAll(taskList.getTasks());
     }
 

@@ -15,6 +15,8 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 
+
+
 public class MainCtrlTalio {
 
     private Stage primaryStage;
@@ -34,6 +36,9 @@ public class MainCtrlTalio {
 
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
+
+    CardCtrl cardCtrl;
+    Scene cardScene;
 
     RenameCtrl renameCtrl;
     Scene renameScene;
@@ -63,6 +68,7 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
+                           Pair<CardCtrl, Parent> card,
                            Pair<RenameCtrl, Parent> renameTaskList,
                            Pair<EditTaskCtrl, Parent> editTask) {
         this.primaryStage = primaryStage;
@@ -82,11 +88,15 @@ public class MainCtrlTalio {
         this.taskListCtrl = taskList.getKey();
         this.taskListScene = new Scene(taskList.getValue());
 
+        this.cardCtrl = card.getKey();
+        this.cardScene = new Scene(card.getValue());
+
         this.renameCtrl = renameTaskList.getKey();
         this.renameScene = new Scene(renameTaskList.getValue());
 
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
+
 
         showConnect();
         primaryStage.show();
@@ -166,6 +176,7 @@ public class MainCtrlTalio {
         currentTask = task;
     }
 
+
     /**
      * switches to addTask scene
      */
@@ -217,6 +228,7 @@ public class MainCtrlTalio {
         primaryStage.setTitle("Edit Task");
         primaryStage.setScene(editTaskScene);
     }
+
 
     /**
      * Switches scene to rename board scene
