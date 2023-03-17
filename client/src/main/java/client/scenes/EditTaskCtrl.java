@@ -3,10 +3,12 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 
 public class EditTaskCtrl {
     private final MainCtrlTalio mainCtrl;
@@ -14,9 +16,6 @@ public class EditTaskCtrl {
 
     private static ServerUtils serverCopy;
     private static MainCtrlTalio mainCtrlTalioCopy;
-
-
-    private Task task;
 
     @FXML
     private TextField newTitle;
@@ -54,10 +53,6 @@ public class EditTaskCtrl {
 
         this.serverCopy = server;
         this.mainCtrlTalioCopy = mainCtrl;
-
-        FXMLLoader fxmlLoader = new FXMLLoader((getClass()
-                .getResource("EditTask.fxml")));
-
     }
 
     @FXML
@@ -75,6 +70,29 @@ public class EditTaskCtrl {
     }
 
     public void saveChanges(){
+        try{
+            Task task = mainCtrl.getCurrentTask();
+            String newTitleString = newTitle.getText();
+            String newDescriptionString = newDescription.getText();
 
+            System.out.println(task.getId());
+            System.out.println(newTitleString+ " " + newDescriptionString);
+
+            server.updateTaskTitle(task,newTitleString);
+            server.updateTaskDescription(task, newDescriptionString);
+
+        }
+        catch (WebApplicationException e) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return;
+        }
+
+        newTitle.clear();
+        newDescription.clear();
+        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.showMain();
     }
 }

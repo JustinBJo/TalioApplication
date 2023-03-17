@@ -171,4 +171,45 @@ public class ServerUtils {
         System.out.println(res);
         return res;
     }
+
+    /**
+     * Update the title of the given task using the tasks/updateTitle endpoint
+     *
+     * @param task   the task that is being updated
+     * @param newTitle the new title of the task
+     * @return the updated task
+     */
+    public Task updateTaskTitle(Task task, String newTitle) {
+        long id = task.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasks/updateTitle/" + id + "/" + newTitle)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Update the description of the given task using the tasks/updateDescription endpoint
+     *
+     * @param task   the task that is being updated
+     * @param newDescription the new description of the task
+     * @return the updated task
+     */
+    public Task updateTaskDescription(Task task, String newDescription) {
+        long id = task.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasks/updateDescription/" + id + "/" + newDescription)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+//    public Task updateTask(Task task, String newName) {
+//        long id = task.getId();
+//        return ClientBuilder.newClient(new ClientConfig())
+//                .target(SERVER).path("tasks/update/" + id + "/" + newName)
+//                .request(APPLICATION_JSON)
+//                .accept(APPLICATION_JSON)
+//                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+//    }
 }
