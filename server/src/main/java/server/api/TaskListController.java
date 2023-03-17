@@ -64,15 +64,24 @@ public class TaskListController {
      * Deletes from the repository a tasklist with the provided id
      * @param id the id of the tasklist to be removed
      */
-    @GetMapping("/delete/{id}")
-    public ResponseEntity<TaskList> delete(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        TaskList param = repo.getById(id);
-        repo.delete(param);
-        return ResponseEntity.ok(param);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+//        if (id < 0 || !repo.existsById(id)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        TaskList param = repo.getById(id);
+//        repo.delete(param);
+//        return ResponseEntity.ok(param);
 
+        if (id < 0) {
+            return ResponseEntity.badRequest().body("Invalid id!");
+        }
+        if  (!repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("TaskList does not exist.");
+        }
+        TaskList taskList = repo.findById(id).get();
+        repo.delete(taskList);
+        return ResponseEntity.ok("TaskList " + id + " is removed.");
     }
 
     /**

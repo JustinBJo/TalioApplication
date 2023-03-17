@@ -34,6 +34,7 @@ public class ServerUtils {
 
     /**
      * get task list
+     *
      * @return the task list
      */
     public List<TaskList> getTaskList() {
@@ -41,11 +42,13 @@ public class ServerUtils {
                 .target(SERVER).path("tasklist") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<TaskList>>() {});
+                .get(new GenericType<List<TaskList>>() {
+                });
     }
 
     /**
      * add a task list to the server
+     *
      * @param taskList the task list
      * @return the task list
      */
@@ -60,6 +63,7 @@ public class ServerUtils {
 
     /**
      * Method used to fetch the tasks from the database
+     *
      * @return a List of all the tasks in the database
      */
     public List<Task> getTasks() {
@@ -67,11 +71,13 @@ public class ServerUtils {
                 .target(SERVER).path("tasks") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Task>>() {});
+                .get(new GenericType<List<Task>>() {
+                });
     }
 
     /**
      * Method used to insert a task into the database
+     *
      * @param task the task to be added to the database
      * @return the added task, in order for future operations
      * with it to be possible
@@ -86,22 +92,27 @@ public class ServerUtils {
 
     /**
      * Deletes a tasklist from the server
+     *
      * @param taskList the tasklist to be deleted
      * @return the tasklist which was deleted
      */
-    public TaskList deleteTaskList(TaskList taskList) {
+    public String deleteTaskList(TaskList taskList) {
         long id = taskList.getId();
-        return ClientBuilder.newClient(new ClientConfig())
+        String res =  ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("tasklist/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(TaskList.class);
+                .delete(String.class);
+
+        System.out.println(res);
+        return res;
     }
 
     /**
      * Updates the name of the selected TaskList in the database
+     *
      * @param taskList the TaskList to be renamed
-     * @param newName the name it should be renamed to
+     * @param newName  the name it should be renamed to
      * @return a TaskList entity
      */
     public TaskList updateTaskList(TaskList taskList, String newName) {
@@ -115,6 +126,7 @@ public class ServerUtils {
 
     /**
      * Uses board endpoint to ask server to add a new board
+     *
      * @param board board to be added
      * @return added board
      */
@@ -124,5 +136,39 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
+    }
+
+    /**
+     * Update the title of the given board using the board/update endpoint
+     *
+     * @param board   the board that is being updated
+     * @param newName the new name of the board
+     * @return the updated board
+     */
+    public Board updateBoard(Board board, String newName) {
+        long id = board.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/update/" + id + "/" + newName)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(board, APPLICATION_JSON), Board.class);
+    }
+
+    /**
+     * Delete an existing board using the board/delete endpoint
+     *
+     * @param board the board that is being removed
+     * @return the removed board
+     */
+    public String deleteBoard(Board board) {
+        long id = board.getId();
+        String res = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(String.class);
+
+        System.out.println(res);
+        return res;
     }
 }

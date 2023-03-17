@@ -59,6 +59,41 @@ public class BoardController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Rename the Board in the repository
+     * @param id the id of the board that is being renamed
+     * @param newName the new title of the board
+     */
+    @PutMapping("update/{id}/{newName}")
+    public ResponseEntity<Board> updateName(@PathVariable("id") long id,
+                       @PathVariable("newName") String newName) {
+        if (id < 0 || !repo.existsById(id) || newName.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        Board board = repo.findById(id).get();
+        board.setTitle(newName);
+        repo.save(board);
+        return ResponseEntity.ok(board);
+    }
+
+    /**
+     * Delete the board from the repository
+     * @param id the id of the board that is being removed
+     * @return the deleted board
+     */
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().body("Invalid id!");
+        }
+        if  (!repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("Board does not exist.");
+        }
+        Board board = repo.findById(id).get();
+        repo.delete(board);
+        return ResponseEntity.ok("Board " + id + " is removed.");
+    }
+
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

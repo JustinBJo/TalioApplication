@@ -102,4 +102,67 @@ public class BoardControllerTest {
                 "save"));
 
     }
+
+    @Test
+    void updateTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        // Update the board with a new name
+        String newName = "newName";
+        ResponseEntity<Board> response = sut.updateName(2001, newName);
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(board, response.getBody());
+
+        // Check repository
+        assertTrue(repo.findAll().contains(board));
+        assertEquals(repo.findById(board.getId()).get().getTitle(), newName);
+    }
+
+    @Test
+    void failedUpdateTest() {
+        Board newBoard = new Board("1030",
+                "This board does not exist in the repository");
+        newBoard.setId(2001);
+
+        String newName = "newName";
+        ResponseEntity<Board> response = sut.updateName(2001, newName);
+
+        // Check endpoint
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void deleteTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        ResponseEntity<String> response = sut.delete(board.getId());
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(
+                "Board " + board.getId() + " is removed.",
+                response.getBody()
+        );
+
+        // Check repository
+        assertEquals(repo.getById(board.getId()), null);
+    }
+
+    @Test
+    void failedDeleteTest() {
+        ResponseEntity<String> response = sut.delete(2001);
+
+        // Check endpoint
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(
+                "Board does not exist.",
+                response.getBody()
+        );
+    }
 }

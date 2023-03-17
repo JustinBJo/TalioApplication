@@ -27,8 +27,8 @@ public class MainCtrlTalio {
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
 
-    RenameListController renameListCtrl;
-    Scene renameListScene;
+    RenameCtrl renameCtrl;
+    Scene renameScene;
 
     private TaskList currentTaskList;
 
@@ -49,7 +49,7 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
-                           Pair<RenameListController, Parent> renameTaskList) {
+                           Pair<RenameCtrl, Parent> renameTaskList) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -67,8 +67,8 @@ public class MainCtrlTalio {
         this.taskListCtrl = taskList.getKey();
         this.taskListScene = new Scene(taskList.getValue());
 
-        this.renameListCtrl = renameTaskList.getKey();
-        this.renameListScene = new Scene(renameTaskList.getValue());
+        this.renameCtrl = renameTaskList.getKey();
+        this.renameScene = new Scene(renameTaskList.getValue());
 
         showConnect();
         primaryStage.show();
@@ -103,8 +103,17 @@ public class MainCtrlTalio {
      * changes to rename list scene
      */
     public void showRenameList() {
-        primaryStage.setTitle("Rename the list");
-        primaryStage.setScene(renameListScene);
+        primaryStage.setTitle("Rename the List");
+        primaryStage.setScene(renameScene);
+        renameCtrl.initialize(RenameCtrl.Type.TaskList);
+    }
+
+    /**
+     * Gets the currently active board
+     * @return the active board
+     */
+    public Board getActiveBoard() {
+        return this.activeBoard;
     }
 
     /**
@@ -141,12 +150,33 @@ public class MainCtrlTalio {
     }
 
     /**
+     * Switches scene to rename board scene
+     */
+    public void showRenameBoard() {
+        if (this.activeBoard == null) {
+            System.out.println("Cannot rename board: this is a dummy board!");
+            return;
+        }
+        primaryStage.setTitle("Rename the Board");
+        primaryStage.setScene(renameScene);
+        renameCtrl.initialize(RenameCtrl.Type.Board);
+    }
+
+    /**
      * Sets current active board and updates the main scene accordingly
      * @param activeBoard new active board
      */
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
-        mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+
+        if (activeBoard == null) {
+            mainSceneCtrl.sceneTitle.setText("Board X");
+        }
+        else {
+            mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+        }
+
+        mainSceneCtrl.refresh();
         // TODO
     }
 }
