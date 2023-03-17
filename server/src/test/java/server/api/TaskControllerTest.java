@@ -66,4 +66,34 @@ public class TaskControllerTest {
         assertEquals(2, tasks.size());
     }
 
+    @Test
+    void updateTitleTest() {
+        Task task = new Task("OldTitle",
+                "Old Description",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.updateTitle(task.getId(), "New Title");
+
+        assertTrue(repo.findAll().contains(task));
+        String newTitle = repo.getById(task.getId()).getTitle();
+        assertEquals("New Title", newTitle);
+    }
+
+    @Test
+    void updateDescriptionTest() {
+        Task task = new Task("Old Title",
+                "Old Description",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.updateDescription(task.getId(), "new description");
+
+        assertTrue(repo.findAll().contains(task));
+        String newDescription = repo.getById(task.getId()).getDescription();
+        assertEquals(newDescription, "new description");
+    }
+
 }
