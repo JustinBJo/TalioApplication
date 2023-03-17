@@ -154,7 +154,7 @@ public class MainCtrlTalio {
      * Returns the current Task we want to edit
      * @return current task
      */
-    public Task getCurrentTask(){
+    public Task getCurrentTask() {
         return currentTask;
     }
 
@@ -162,8 +162,8 @@ public class MainCtrlTalio {
      * Updates title and description of current task
      * @param task
      */
-    public void setCurrentTask(Task task){
-        currentTask=task;
+    public void setCurrentTask(Task task) {
+        currentTask = task;
     }
 
     /**
@@ -184,21 +184,23 @@ public class MainCtrlTalio {
     }
 
     /**
-     * Switches scene to "Edit Task" scene, that shows the current task's information.
+     * Switches scene to "Edit Task" scene,
+     * that shows the current task's information.
      */
     public void showEditTask(Task task) throws IOException {
-        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EditTask.fxml"));
+        final FXMLLoader fxmlLoader =
+                new FXMLLoader(getClass().getResource("EditTask.fxml"));
         setCurrentTask(task);
 
         final Pane root = fxmlLoader.load();
-        ObservableList<Node> children= root.getChildren();
+        ObservableList<Node> children = root.getChildren();
 
         //Pane root1 = (Pane) editTaskScene.getWindow().getScene().getRoot();
         //ObservableList<Node> children= root1.getChildren();
 
 
-        for(Node child:children){
-            if(child.getId()!=null) {
+        for (Node child : children) {
+            if (child.getId() != null) {
                 if (child.getId().equals("currentTitle")) {
                     Label currentTitle = (Label) child;
                     currentTitle.setText(task.getTitle());
@@ -210,7 +212,7 @@ public class MainCtrlTalio {
             }
         }
 
-        Scene editTaskScene=new Scene(root,570,310);
+        Scene editTaskScene = new Scene(root, 570, 310);
 
         primaryStage.setTitle("Edit Task");
         primaryStage.setScene(editTaskScene);

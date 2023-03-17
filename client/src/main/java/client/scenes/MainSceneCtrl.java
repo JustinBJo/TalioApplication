@@ -17,7 +17,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 
 public class MainSceneCtrl {
 
@@ -155,15 +154,13 @@ public class MainSceneCtrl {
         mainCtrl.showAddTask();
     }
 
-//    public void showEditTask(Task task) throws IOException {
-//        mainCtrl.showEditTask(task);
-//    }
-
+    /**
+     * Edit a task
+     * @throws IOException
+     */
     public void editTask() throws IOException {
         Task currentTask = tasks.getSelectionModel().getSelectedItem();
         mainCtrl.showEditTask(currentTask);
-        //System.out.println(currentTask.getTitle() + ", " + currentTask.getDescription());
-
     }
 
 }

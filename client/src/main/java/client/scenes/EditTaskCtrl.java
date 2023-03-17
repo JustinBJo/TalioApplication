@@ -29,7 +29,10 @@ public class EditTaskCtrl {
     @FXML
     private Label currentDescription;
 
-    public EditTaskCtrl(){
+    /**
+     * Empty constructor
+     */
+    public EditTaskCtrl() {
         if (serverCopy != null) {
             this.server = serverCopy;
             this.mainCtrl = mainCtrlTalioCopy;
@@ -55,6 +58,9 @@ public class EditTaskCtrl {
         this.mainCtrlTalioCopy = mainCtrl;
     }
 
+    /**
+     * initialize method for EditTask
+     */
     @FXML
     public void initialize() {
 
@@ -69,16 +75,17 @@ public class EditTaskCtrl {
         mainCtrl.showMain();
     }
 
-    public void saveChanges(){
-        try{
+    /**
+     * Saving the changes the user made to
+     * task title and description
+     */
+    public void saveChanges() {
+        try {
             Task task = mainCtrl.getCurrentTask();
             String newTitleString = newTitle.getText();
             String newDescriptionString = newDescription.getText();
 
-            System.out.println(task.getId());
-            System.out.println(newTitleString+ " " + newDescriptionString);
-
-            server.updateTaskTitle(task,newTitleString);
+            server.updateTaskTitle(task, newTitleString);
             server.updateTaskDescription(task, newDescriptionString);
 
         }

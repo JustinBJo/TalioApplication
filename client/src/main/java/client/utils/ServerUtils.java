@@ -189,7 +189,8 @@ public class ServerUtils {
     }
 
     /**
-     * Update the description of the given task using the tasks/updateDescription endpoint
+     * Update the description of the given task,
+     * using the tasks/updateDescription endpoint
      *
      * @param task   the task that is being updated
      * @param newDescription the new description of the task
@@ -198,7 +199,8 @@ public class ServerUtils {
     public Task updateTaskDescription(Task task, String newDescription) {
         long id = task.getId();
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasks/updateDescription/" + id + "/" + newDescription)
+                .target(SERVER).
+                path("tasks/updateDescription/" + id + "/" + newDescription)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(task, APPLICATION_JSON), Task.class);

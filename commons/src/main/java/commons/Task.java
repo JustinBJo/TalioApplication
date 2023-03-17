@@ -71,8 +71,8 @@ public class Task {
      * Set the title of the task
      * @param title new title of task
      */
-    public void setTitle(String title){
-        this.title=title;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
@@ -88,8 +88,8 @@ public class Task {
      * Set the description of the task
      * @param description new description of task
      */
-    public void setDescription(String description){
-        this.description=description;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
