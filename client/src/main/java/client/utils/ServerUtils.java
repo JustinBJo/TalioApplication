@@ -22,6 +22,7 @@ import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -48,17 +49,51 @@ public class ServerUtils {
 
     /**
      * add a task list to the server
-     *
-     * @param taskList the task list
-     * @return the task list
+     * @param taskList  the task list
+     * @param board     the board that the task list belongs to
+     * @return          the added task list, null if failed to add
      */
-    public TaskList addTaskList(TaskList taskList) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasklist") //
+    public TaskList addTaskList(TaskList taskList, Board board) {
+
+        var target = ClientBuilder.newClient(new ClientConfig()).target(SERVER);
+
+        // Add task list to repository
+        Response addListResponse = target.path("tasklist") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .post(Entity.entity(taskList, APPLICATION_JSON),
-                        TaskList.class);
+                .post(Entity.entity(taskList, APPLICATION_JSON));
+
+        // If failed to add list, exit now
+        if (addListResponse.getStatus() != Response.Status.OK.getStatusCode()) {
+            addListResponse.close();
+            return null;
+        }
+
+        // Get added list
+        TaskList addedList = addListResponse.readEntity(TaskList.class);
+
+        addListResponse.close();
+
+        // Link task list to board
+        Response linkBoardResponse = target.path(
+                "board/addTaskList/" + board.getId() + "/" + addedList.getId()
+            ) //
+            .request(APPLICATION_JSON) //
+            .accept(APPLICATION_JSON) //
+            .put(Entity.json(board));
+
+        int linkStatus = linkBoardResponse.getStatus();
+        linkBoardResponse.close();
+
+        // If succeeded to link list, wrap up and exit
+        if (linkStatus == Response.Status.OK.getStatusCode()) {
+            return addedList;
+        }
+
+        // If failed to link list,
+        // remove it from repository to avoid lists with no parents
+        deleteTaskList(addedList);
+        return null;
     }
 
     /**

@@ -137,6 +137,26 @@ public class Board {
         this.taskLists = taskLists;
     }
 
+    /**
+     * Add task list to list of task lists
+     * @param list the task list to be added
+     * @return true iff added successfully
+     */
+    public boolean addTaskList(TaskList list) {
+        if (this.taskLists == null) this.taskLists = new ArrayList<>();
+        return this.taskLists.add(list);
+    }
+
+    /**
+     * Remove a task list from the list of task lists
+     * @param list the task list to be removed
+     * @return true iff removed successfully
+     */
+    public boolean removeTaskList(TaskList list) {
+        if (this.taskLists == null) return false;
+        return this.taskLists.remove(list);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
