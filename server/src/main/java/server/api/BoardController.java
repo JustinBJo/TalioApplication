@@ -82,7 +82,7 @@ public class BoardController {
     }
 
     @PutMapping("addTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<Board> addChildTaskList(@PathVariable("boardId") long boardId, @PathVariable("taskListId") long taskListId) {
+    public ResponseEntity<String> addChildTaskList(@PathVariable("boardId") long boardId, @PathVariable("taskListId") long taskListId) {
         if (boardId < 0 || !repo.existsById(boardId) || taskListId < 0 || !taskListRepo.existsById(taskListId)) {
             return ResponseEntity.badRequest().build();
         }
@@ -94,7 +94,7 @@ public class BoardController {
         if (!success) { return ResponseEntity.badRequest().build(); }
 
         repo.save(board);
-        return ResponseEntity.ok(board);
+        return ResponseEntity.ok("Added Task List " + taskListId + " to board " + boardId);
     }
 
     /**
