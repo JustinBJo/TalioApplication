@@ -1,9 +1,11 @@
 package server.api;
 
 import commons.Board;
+import commons.TaskList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
+import server.database.TaskListRepository;
 
 import java.util.List;
 
@@ -12,13 +14,16 @@ import java.util.List;
 public class BoardController {
 
     private final BoardRepository repo;
+    private final TaskListRepository taskListRepo;
 
     /**
      * Constructor
      * @param repo BoardRepository
+     * @param taskListRepo TaskListRepository
      */
-    public BoardController(BoardRepository repo) {
+    public BoardController(BoardRepository repo, TaskListRepository taskListRepo) {
         this.repo = repo;
+        this.taskListRepo = taskListRepo;
     }
 
     /**
@@ -72,6 +77,22 @@ public class BoardController {
         }
         Board board = repo.findById(id).get();
         board.setTitle(newName);
+        repo.save(board);
+        return ResponseEntity.ok(board);
+    }
+
+    @PutMapping("addTaskList/{boardId}/{taskListId}")
+    public ResponseEntity<Board> addChildTaskList(@PathVariable("boardId") long boardId, @PathVariable("taskListId") long taskListId) {
+        if (boardId < 0 || !repo.existsById(boardId) || taskListId < 0 || !taskListRepo.existsById(taskListId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Board board = repo.getById(boardId);
+        TaskList taskList = taskListRepo.getById(taskListId);
+
+        boolean success = board.addTaskList(taskList);
+        if (!success) { return ResponseEntity.badRequest().build(); }
+
         repo.save(board);
         return ResponseEntity.ok(board);
     }

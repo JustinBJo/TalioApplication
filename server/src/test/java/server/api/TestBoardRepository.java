@@ -153,7 +153,10 @@ public class TestBoardRepository implements BoardRepository {
 
     @Override
     public Board getById(Long aLong) {
-        return null;
+        calls.add("getById");
+        var board = findById(aLong);
+        if (board.isEmpty()) return null;
+        return board.get();
     }
 
     @Override
