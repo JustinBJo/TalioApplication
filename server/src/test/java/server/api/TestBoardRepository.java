@@ -64,7 +64,8 @@ public class TestBoardRepository implements BoardRepository {
 
     @Override
     public void delete(Board entity) {
-
+        calls.add("delete");
+        boards.remove(entity);
     }
 
     @Override
