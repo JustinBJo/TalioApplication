@@ -1,11 +1,19 @@
 package client.scenes;
 
 import commons.Board;
+import commons.Task;
 import commons.TaskList;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.io.IOException;
 
 public class MainCtrlTalio {
 
@@ -160,7 +168,31 @@ public class MainCtrlTalio {
     /**
      * Switches scene to "Edit Task" scene
      */
-    public void showEditTask() {
+    public void showEditTask(Task task) throws IOException {
+        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EditTask.fxml"));
+        fxmlLoader.getNamespace()
+                .put("currentTitle", task.getTitle());
+        fxmlLoader.getNamespace()
+                .put("currentDescription", task.getDescription());
+
+
+        final Pane root = fxmlLoader.load();
+        ObservableList<Node> children= root.getChildren();
+        for(Node child:children){
+            if(child.getId()!=null) {
+                if (child.getId().equals("currentTitle")) {
+                    Label currentTitle = (Label) child;
+                    currentTitle.setText(task.getTitle());
+                }
+                if (child.getId().equals("currentDescription")) {
+                    Label currentDescription = (Label) child;
+                    currentDescription.setText(task.getDescription());
+                }
+            }
+        }
+
+        Scene editTaskScene=new Scene(root,570,310);
+
         primaryStage.setTitle("Edit Task");
         primaryStage.setScene(editTaskScene);
     }

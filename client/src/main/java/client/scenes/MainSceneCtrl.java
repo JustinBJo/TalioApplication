@@ -16,6 +16,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
+import java.io.IOException;
+import java.sql.SQLOutput;
+
 public class MainSceneCtrl {
 
     private final ServerUtils server;
@@ -150,6 +153,17 @@ public class MainSceneCtrl {
      */
     public void addTask() {
         mainCtrl.showAddTask();
+    }
+
+//    public void showEditTask(Task task) throws IOException {
+//        mainCtrl.showEditTask(task);
+//    }
+
+    public void editTask() throws IOException {
+        Task currentTask = tasks.getSelectionModel().getSelectedItem();
+        mainCtrl.showEditTask(currentTask);
+        //System.out.println(currentTask.getTitle() + ", " + currentTask.getDescription());
+
     }
 
 }

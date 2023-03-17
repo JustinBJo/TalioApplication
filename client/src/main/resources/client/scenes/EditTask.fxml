@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="306.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditTaskCtrl">
     <children>
-        <Button layoutX="215.0" layoutY="262.0" mnemonicParsing="false" text="Save Changes" />
+        <Button layoutX="215.0" layoutY="262.0" mnemonicParsing="false" onAction="#saveChanges" text="Save Changes" />
         <Button layoutX="311.0" layoutY="262.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
         <TextField fx:id="newTitle" layoutX="337.0" layoutY="74.0" prefHeight="26.0" prefWidth="195.0" />
         <TextField fx:id="newDescription" layoutX="277.0" layoutY="134.0" prefHeight="123.0" prefWidth="254.0" />
