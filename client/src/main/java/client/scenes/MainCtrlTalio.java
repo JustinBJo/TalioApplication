@@ -30,6 +30,10 @@ public class MainCtrlTalio {
     RenameCtrl renameCtrl;
     Scene renameScene;
 
+    EditTaskCtrl editTaskCtrl;
+    Scene editTaskScene;
+
+
     private TaskList currentTaskList;
 
     private Board activeBoard;
@@ -49,7 +53,8 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
-                           Pair<RenameCtrl, Parent> renameTaskList) {
+                           Pair<RenameCtrl, Parent> renameTaskList,
+                           Pair<EditTaskCtrl, Parent> editTask) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -69,6 +74,9 @@ public class MainCtrlTalio {
 
         this.renameCtrl = renameTaskList.getKey();
         this.renameScene = new Scene(renameTaskList.getValue());
+
+        this.editTaskCtrl = editTask.getKey();
+        this.editTaskScene = new Scene(editTask.getValue());
 
         showConnect();
         primaryStage.show();
@@ -147,6 +155,14 @@ public class MainCtrlTalio {
         primaryStage.setTitle("Add a new board");
         primaryStage.setScene(addTitledEntityScene);
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.Board);
+    }
+
+    /**
+     * Switches scene to "Edit Task" scene
+     */
+    public void showEditTask() {
+        primaryStage.setTitle("Edit Task");
+        primaryStage.setScene(editTaskScene);
     }
 
     /**
