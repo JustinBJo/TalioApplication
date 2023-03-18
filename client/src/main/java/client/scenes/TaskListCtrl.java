@@ -10,15 +10,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Callback;
 
 import java.io.IOException;
 
-public class TaskListCtrl
-        implements Callback<ListView<TaskList>, ListCell<TaskList>> {
+public class TaskListCtrl {
 
     private final ServerUtils server;
     private final MainSceneCtrl mainSceneCtrl;
@@ -129,44 +126,6 @@ public class TaskListCtrl
             return;
         }
         tasks.getItems().addAll(taskList.getTasks());
-    }
-
-    /**
-     *
-     * @param param The single argument upon which the returned value should be
-     *      determined.
-     * @return the cells with the TaskList Scene
-     */
-    @Override
-    public ListCell<TaskList> call(ListView<TaskList> param) {
-        return new ListCell<TaskList>() {
-            private TaskListCtrl controller;
-            private FXMLLoader loader;
-
-            {
-                loader = new FXMLLoader(getClass()
-                        .getResource("TaskList.fxml"));
-                try {
-                    loader.load();
-                    controller = loader.getController();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            protected void updateItem(TaskList taskList, boolean empty) {
-                super.updateItem(taskList, empty);
-                if (empty || taskList == null) {
-                    // Clear the cell content if there is no item to display
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    controller.setTaskList(taskList);
-                    setGraphic(controller.root);
-                }
-            }
-        };
     }
 
     /**

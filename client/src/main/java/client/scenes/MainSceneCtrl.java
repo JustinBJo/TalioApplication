@@ -17,6 +17,8 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainSceneCtrl {
 
@@ -24,6 +26,7 @@ public class MainSceneCtrl {
     private final MainCtrlTalio mainCtrl;
     private final RenameCtrl renameCtrl;
 
+    List<TaskListCtrl> taskListCtrls;
 
     ObservableList<TaskList> listData;
 
@@ -60,11 +63,15 @@ public class MainSceneCtrl {
      * initialize the scene with the listview elements as the TaskList scene
      */
     public void initialize() {
+        taskListCtrls = new ArrayList<>();
+
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
         lists.setItems(listData);
-        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
-                renameCtrl));
+//        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
+//                renameCtrl));
+        lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
+                server, this, mainCtrl, renameCtrl), this));
         refresh();
     }
 
@@ -83,6 +90,10 @@ public class MainSceneCtrl {
         taskData = FXCollections.observableList(server.getTasks());
         lists.setItems(listData);
         tasks.setItems(taskData);
+
+        for (TaskListCtrl taskListCtrl : taskListCtrls) {
+            taskListCtrl.refresh();
+        }
     }
 
     private int i = 0;
