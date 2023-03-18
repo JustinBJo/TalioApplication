@@ -3,7 +3,7 @@ package commons;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,18 +26,28 @@ public class Board {
     @SuppressWarnings("unused")
     public Board() {
         // for object mappers
-        taskLists = new LinkedList<TaskList>();
+        taskLists = new ArrayList<>();
     }
 
     /**
-     * board constructor
+     * board constructor with no task lists and auto-generated code
+     * @param title board title
+     */
+    public Board(String title) {
+        this.title = title;
+        this.code = generateCode();
+        taskLists = new ArrayList<>();
+    }
+
+    /**
+     * board constructor with no task lists
      * @param code board code
      * @param title board title
      */
     public Board(String code, String title) {
         this.code = code;
         this.title = title;
-        taskLists = new LinkedList<TaskList>();
+        taskLists = new ArrayList<>();
     }
 
     /**
@@ -50,6 +60,17 @@ public class Board {
         this.code = code;
         this.title = title;
         this.taskLists = taskLists;
+    }
+
+    /**
+     * Generates a code for this board
+     * @return generated code
+     */
+    private String generateCode() {
+        // Hashes title and id then truncates a base-16 representation
+        // of that hash to 6 characters
+        String hash = Integer.toString(Objects.hash(title, id), 16);
+        return (hash.length() < 6) ? hash : hash.substring(0, 6);
     }
 
     /**
@@ -114,6 +135,26 @@ public class Board {
      */
     public void setTaskLists(List<TaskList> taskLists) {
         this.taskLists = taskLists;
+    }
+
+    /**
+     * Add task list to list of task lists
+     * @param list the task list to be added
+     * @return true iff added successfully
+     */
+    public boolean addTaskList(TaskList list) {
+        if (this.taskLists == null) this.taskLists = new ArrayList<>();
+        return this.taskLists.add(list);
+    }
+
+    /**
+     * Remove a task list from the list of task lists
+     * @param list the task list to be removed
+     * @return true iff removed successfully
+     */
+    public boolean removeTaskList(TaskList list) {
+        if (this.taskLists == null) return false;
+        return this.taskLists.remove(list);
     }
 
     @Override

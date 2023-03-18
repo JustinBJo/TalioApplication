@@ -64,7 +64,8 @@ public class TestBoardRepository implements BoardRepository {
 
     @Override
     public void delete(Board entity) {
-
+        calls.add("delete");
+        boards.remove(entity);
     }
 
     @Override
@@ -153,7 +154,10 @@ public class TestBoardRepository implements BoardRepository {
 
     @Override
     public Board getById(Long aLong) {
-        return null;
+        calls.add("getById");
+        var board = findById(aLong);
+        if (board.isEmpty()) return null;
+        return board.get();
     }
 
     @Override

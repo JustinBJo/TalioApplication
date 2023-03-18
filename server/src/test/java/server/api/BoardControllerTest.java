@@ -1,11 +1,13 @@
 package server.api;
 
 import commons.Board;
+import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.database.BoardRepository;
+import server.database.TaskListRepository;
 
 import java.util.List;
 
@@ -14,13 +16,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoardControllerTest {
 
     private BoardRepository repo;
+    private TaskListRepository listRepo;
     private BoardController sut;
 
 
     @BeforeEach
     void setUp() {
         repo = new TestBoardRepository();
-        sut = new BoardController(repo);
+        listRepo = new TestTaskListRepository();
+        sut = new BoardController(repo, listRepo);
     }
 
     @Test
@@ -101,5 +105,101 @@ public class BoardControllerTest {
         assertFalse(TestBoardRepository.containsCall((TestBoardRepository) repo,
                 "save"));
 
+    }
+
+    @Test
+    void updateTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        // Update the board with a new name
+        String newName = "newName";
+        ResponseEntity<Board> response = sut.updateName(2001, newName);
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(board, response.getBody());
+
+        // Check repository
+        assertTrue(repo.findAll().contains(board));
+        assertEquals(repo.findById(board.getId()).get().getTitle(), newName);
+    }
+
+    @Test
+    void failedUpdateTest() {
+        Board newBoard = new Board("1030",
+                "This board does not exist in the repository");
+        newBoard.setId(2001);
+
+        String newName = "newName";
+        ResponseEntity<Board> response = sut.updateName(2001, newName);
+
+        // Check endpoint
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void deleteTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        ResponseEntity<String> response = sut.delete(board.getId());
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(
+                "Board " + board.getId() + " is removed.",
+                response.getBody()
+        );
+
+        // Check repository
+        assertNull(repo.getById(board.getId()));
+    }
+
+    @Test
+    void failedDeleteTest() {
+        ResponseEntity<String> response = sut.delete(2001);
+
+        // Check endpoint
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(
+                "Board does not exist.",
+                response.getBody()
+        );
+    }
+
+    @Test
+    void addChildTaskList() {
+        Board board = new Board("Test Board");
+        long boardId = repo.save(board).getId();
+
+        TaskList taskList = new TaskList("Test List");
+        long taskListId = listRepo.save(taskList).getId();
+
+        var res = sut.addChildTaskList(boardId, taskListId);
+
+        // Check response
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+
+        // Check repository
+        Board updatedBoard = repo.findById(0L).get();
+        assertTrue(updatedBoard.getTaskLists().contains(taskList));
+    }
+
+    @Test
+    void failAddChildTaskList() {
+        Board board = new Board("Test Board");
+        long boardId = repo.save(board).getId();
+
+        var res = sut.addChildTaskList(boardId, 100);
+
+        // Check response
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+
+        // Check repository
+        Board updatedBoard = repo.findById(0L).get();
+        assertTrue(updatedBoard.getTaskLists().isEmpty());
     }
 }

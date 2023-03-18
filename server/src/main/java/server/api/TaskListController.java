@@ -4,12 +4,7 @@ import java.util.List;
 
 import commons.TaskList;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.database.TaskListRepository;
 
 @RestController
@@ -63,4 +58,46 @@ public class TaskListController {
         TaskList saved = repo.save(taskList);
         return ResponseEntity.ok(saved);
     }
+
+
+    /**
+     * Deletes from the repository a tasklist with the provided id
+     * @param id the id of the tasklist to be removed
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+//        if (id < 0 || !repo.existsById(id)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        TaskList param = repo.getById(id);
+//        repo.delete(param);
+//        return ResponseEntity.ok(param);
+
+        if (id < 0) {
+            return ResponseEntity.badRequest().body("Invalid id!");
+        }
+        if  (!repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("TaskList does not exist.");
+        }
+        TaskList taskList = repo.findById(id).get();
+        repo.delete(taskList);
+        return ResponseEntity.ok("TaskList " + id + " is removed.");
+    }
+
+    /**
+     * Updates in the database the name of the given TaskList
+     * @param id the id of the TaskList to be renamed
+     * @param newName the new name
+     */
+    @PutMapping("update/{id}/{newName}")
+    public void update(@PathVariable("id") long id,
+                       @PathVariable("newName") String newName) {
+        if (id < 0 || !repo.existsById(id) || newName.length() == 0)
+            return;
+        TaskList param = repo.getById(id);
+        param.setTitle(newName);
+        repo.save(param);
+
+    }
+
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.RenameCtrl">
+   <children>
+      <Label layoutX="28.0" layoutY="118.0" prefHeight="28.0" prefWidth="106.0" text="NewTitle: ">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <TextField fx:id="newName" layoutX="121.0" layoutY="116.0" prefHeight="31.0" prefWidth="228.0" />
+      <Button fx:id="cancel" layoutX="249.0" layoutY="205.0" mnemonicParsing="false" onAction="#cancel" prefHeight="22.0" prefWidth="60.0" text="Cancel" />
+      <Button fx:id="confirm" layoutX="323.0" layoutY="205.0" mnemonicParsing="false" onAction="#confirm" text="Confirm" />
+      <Label fx:id="header" alignment="CENTER" layoutX="56.0" layoutY="25.0" prefHeight="37.0" prefWidth="288.0" text="Label" textAlignment="CENTER">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

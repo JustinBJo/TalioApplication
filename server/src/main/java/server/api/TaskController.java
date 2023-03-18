@@ -40,7 +40,7 @@ public class TaskController {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.findById(id).get());
+        return ResponseEntity.ok(repo.getById(id));
     }
 
     /**
@@ -57,6 +57,38 @@ public class TaskController {
 
         Task saved = repo.save(task);
         return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * Updates in the database the title of the given Task
+     * @param id the id of the Task to be edited
+     * @param newTitle the new title
+     */
+    @PutMapping("/updateTitle/{id}/{newTitle}")
+    public void updateTitle(@PathVariable("id") long id,
+                       @PathVariable("newTitle") String newTitle) {
+        if (id < 0 || !repo.existsById(id) || newTitle.length() == 0)
+            return;
+        Task param = repo.getById(id);
+        param.setTitle(newTitle);
+        repo.save(param);
+
+    }
+
+    /**
+     * Updates in the database the description of the given Task
+     * @param id the id of the Task to be edited
+     * @param newDescription the new description
+     */
+    @PutMapping("/updateDescription/{id}/{newDescription}")
+    public void updateDescription(@PathVariable("id") long id,
+                       @PathVariable("newDescription") String newDescription) {
+        if (id < 0 || !repo.existsById(id) || newDescription.length() == 0)
+            return;
+        Task param = repo.getById(id);
+        param.setDescription(newDescription);
+        repo.save(param);
+
     }
 
     private static boolean isNullOrEmpty(String s) {

@@ -27,6 +27,11 @@ public class BoardTest {
         assertNull(emptyBoard.getTitle());
         assertEquals(emptyListOfTaskList(), emptyBoard.getTaskLists());
 
+        Board titleOnlyBoard = new Board("MyBoard");
+        assertNotNull(titleOnlyBoard.getCode());
+        assertEquals("MyBoard", titleOnlyBoard.getTitle());
+        assertEquals(emptyListOfTaskList(), emptyBoard.getTaskLists());
+
         Board noTaskListBoard = new Board("123", "MyBoard");
         assertEquals("123", noTaskListBoard.getCode());
         assertEquals("MyBoard", noTaskListBoard.getTitle());
@@ -72,5 +77,85 @@ public class BoardTest {
         Board b = new Board("456", "Test Board");
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    void addTaskList() {
+        Board a = new Board("Test Board");
+        assertTrue(a.getTaskLists().isEmpty());
+
+        TaskList tl = new TaskList("Test List");
+        assertTrue(a.addTaskList(tl));
+        assertTrue(a.getTaskLists().contains(tl));
+    }
+
+    @Test
+    void addTaskListWhenTaskListsIsNull() {
+        Board a = new Board("Test Board");
+        a.setTaskLists(null);
+        assertNull(a.getTaskLists());
+
+        TaskList tl = new TaskList("Test List");
+        assertTrue(a.addTaskList(tl));
+        assertTrue(a.getTaskLists().contains(tl));
+    }
+
+    @Test
+    void removeTaskList() {
+        Board a = new Board("Test Board");
+        assertTrue(a.getTaskLists().isEmpty());
+
+        TaskList tl = new TaskList("Test List");
+        assertTrue(a.addTaskList(tl));
+        assertTrue(a.getTaskLists().contains(tl));
+
+        assertTrue(a.removeTaskList(tl));
+        assertFalse(a.getTaskLists().contains(tl));
+    }
+
+    @Test
+    void failRemoveTaskList() {
+        Board a = new Board("Test Board");
+        assertTrue(a.getTaskLists().isEmpty());
+
+        TaskList tl = new TaskList("Test List");
+        assertFalse(a.getTaskLists().contains(tl));
+        assertFalse(a.removeTaskList(tl));
+    }
+
+    @Test
+    void testGettersAndSetters() {
+        String defaultCode = "123";
+        String defaultTitle = "Test Board";
+        List<TaskList> defaultListOfTaskList = emptyListOfTaskList();
+        long defaultId = 0;
+
+        Board board = new Board(
+                defaultCode,
+                defaultTitle,
+                defaultListOfTaskList
+        );
+        board.setId(defaultId);
+
+        // Getters
+        assertEquals(defaultCode, board.getCode());
+        assertEquals(defaultTitle, board.getTitle());
+        assertEquals(defaultListOfTaskList, board.getTaskLists());
+        assertEquals(defaultId, board.getId());
+
+        String differentCode = "456";
+        String differentTitle = "Changed Board";
+        List<TaskList> differentListOfTaskList = null;
+        long differentId = 10;
+
+        // Setters
+        board.setId(differentId);
+        assertEquals(differentId, board.getId());
+        board.setCode(differentCode);
+        assertEquals(differentCode, board.getCode());
+        board.setTitle(differentTitle);
+        assertEquals(differentTitle, board.getTitle());
+        board.setTaskLists(differentListOfTaskList);
+        assertEquals(differentListOfTaskList, board.getTaskLists());
     }
 }
