@@ -36,6 +36,6 @@
 
 ### Action points summary & Questions (5 min)
 - What will happen now that we've lost one of our team members?
-- How and when will we conduct the heuristic evaluation of team #44?
+- How and when will we conduct the heuristic evaluation of team 44?
   
 ### Closure
