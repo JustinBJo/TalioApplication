@@ -68,8 +68,6 @@ public class MainSceneCtrl {
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
         lists.setItems(listData);
-//        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
-//                renameCtrl));
         lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
                 server, this, mainCtrl, renameCtrl), this));
         refresh();

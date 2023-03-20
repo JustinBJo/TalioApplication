@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import commons.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -31,6 +32,8 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
     AnchorPane root;
     @FXML
     Label title;
+    @FXML
+    Button delete;
 
     /**
      * Default constructor for CardCtrl
