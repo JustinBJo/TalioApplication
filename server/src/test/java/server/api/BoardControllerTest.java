@@ -211,7 +211,7 @@ public class BoardControllerTest {
         long taskListId = listRepo.save(taskList).getId();
         long boardId = repo.save(board).getId();
 
-        var res = sut.unlinkBoardFromTaskList(boardId, taskListId);
+        var res = sut.unlinkBoardFromTaskList(taskListId);
 
         // Check response
         assertEquals(HttpStatus.OK, res.getStatusCode());
@@ -228,7 +228,7 @@ public class BoardControllerTest {
         long taskListId = listRepo.save(taskList).getId();
         long boardId = repo.save(board).getId();
 
-        var res = sut.unlinkBoardFromTaskList(boardId, taskListId);
+        var res = sut.unlinkBoardFromTaskList(taskListId);
 
         // Check response
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());

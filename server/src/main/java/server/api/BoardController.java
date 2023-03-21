@@ -94,52 +94,50 @@ public class BoardController {
             @PathVariable("boardId") long boardId,
             @PathVariable("taskListId") long taskListId
     ) {
-        if (linkOrUnlinkTaskList(boardId, taskListId, true)) {
-            return ResponseEntity.ok("Added Task List " + taskListId + " to board " + boardId);
-        }
-        else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    /**
-     * Unlinks a task list from a board in the repository
-     * @param boardId ID of the board
-     * @param taskListId ID of the task list to be unlinked
-     */
-    @PutMapping("removeTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<String> unlinkBoardFromTaskList(
-            @PathVariable("boardId") long boardId,
-            @PathVariable("taskListId") long taskListId
-    ) {
-        if (linkOrUnlinkTaskList(boardId, taskListId, false)) {
-            return ResponseEntity.ok("Removed Task List " + taskListId + " to board " + boardId);
-        }
-        else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    private boolean linkOrUnlinkTaskList(long boardId, long taskListId, boolean link) {
         if (boardId < 0 || !repo.existsById(boardId)
                 || taskListId < 0 || !taskListRepo.existsById(taskListId)) {
-            return false;
+            return ResponseEntity.badRequest().build();
         }
 
         Board board = repo.getById(boardId);
         TaskList taskList = taskListRepo.getById(taskListId);
 
-        boolean success;
-        if (link) {
-            success = board.addTaskList(taskList);
-        }
-        else {
-            success = board.removeTaskList(taskList);
-        }
-        if (!success) return false;
+        boolean success = board.addTaskList(taskList);
+
+        if (!success) return ResponseEntity.badRequest().build();
 
         repo.save(board);
-        return true;
+        return ResponseEntity.ok("Added Task List " + taskListId + " to board " + boardId);
+    }
+
+    /**
+     * Unlinks a task list from a board in the repository
+     * @param taskListId ID of the task list to be unlinked
+     */
+    @PutMapping("removeTaskList/{taskListId}")
+    public ResponseEntity<String> unlinkBoardFromTaskList(
+            @PathVariable("taskListId") long taskListId
+    ) {
+        if (taskListId < 0 || !taskListRepo.existsById(taskListId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TaskList taskList = taskListRepo.getById(taskListId);
+        for (Board board : repo.findAll()) {
+            if (!board.getTaskLists().contains(taskList)) {
+                continue;
+            }
+            // If this is reached, board is the board containing taskList
+
+            boolean success = board.removeTaskList(taskList);
+            if (!success) return ResponseEntity.badRequest().build();
+
+            repo.save(board);
+
+            return ResponseEntity.ok("Removed Task List " + taskListId + " from board " + board.getId());
+        }
+        // List doesn't belong to any board
+        return ResponseEntity.badRequest().build();
     }
 
     /**
