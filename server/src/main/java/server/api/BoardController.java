@@ -90,7 +90,7 @@ public class BoardController {
      * @param taskListId ID of the task list to be linked
      */
     @PutMapping("addTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<String> addChildTaskList(
+    public ResponseEntity<String> linkBoardToTaskList(
             @PathVariable("boardId") long boardId,
             @PathVariable("taskListId") long taskListId
     ) {
