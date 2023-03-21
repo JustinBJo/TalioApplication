@@ -12,7 +12,7 @@
             <Font name="Arial" size="19.0" />
          </font>
       </Label>
-      <Button fx:id="delete" layoutX="148.0" layoutY="3.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0" style="-fx-background-color: #FF0000;" text="X" textFill="WHITE">
+      <Button fx:id="delete" layoutX="148.0" layoutY="3.0" mnemonicParsing="false" onAction="#deleteTask" prefHeight="18.0" prefWidth="18.0" style="-fx-background-color: #FF0000;" text="X" textFill="WHITE">
          <font>
             <Font name="Arial" size="10.0" />
          </font>
