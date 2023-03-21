@@ -196,4 +196,14 @@ public class TestBoardRepository implements BoardRepository {
          Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
+
+    @Override
+    public void updateBoardId(long oldId, long newId) {
+        Board b = getById(oldId);
+        if (b != null) {
+            b.setId(newId);
+            delete(getById(oldId));
+            save(b);
+        }
+    }
 }

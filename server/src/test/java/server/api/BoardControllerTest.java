@@ -202,4 +202,16 @@ public class BoardControllerTest {
         Board updatedBoard = repo.findById(0L).get();
         assertTrue(updatedBoard.getTaskLists().isEmpty());
     }
+
+    @Test
+    void updateIdTest() {
+        Board board = new Board("test");
+        long oldId = repo.save(board).getId();
+        long newId = oldId + 1;
+
+        repo.updateBoardId(oldId, newId);
+
+        assertTrue(repo.getById(oldId) == null);
+        assertFalse(repo.getById(newId) == null);
+    }
 }
