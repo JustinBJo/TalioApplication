@@ -134,4 +134,13 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
         server.deleteTask(task);
         mainCtrl.mainSceneCtrl.refresh();
     }
+
+    /**
+     * Edit a task
+     * @throws IOException -
+     */
+    public void editTask() throws IOException {
+        Task currentTask = task;
+        mainCtrl.showEditTask(currentTask);
+    }
 }
