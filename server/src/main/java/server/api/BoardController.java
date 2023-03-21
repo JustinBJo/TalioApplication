@@ -115,7 +115,7 @@ public class BoardController {
      * @param taskListId ID of the task list to be unlinked
      */
     @PutMapping("removeTaskList/{taskListId}")
-    public ResponseEntity<String> unlinkBoardFromTaskList(
+    public ResponseEntity<Board> unlinkBoardFromTaskList(
             @PathVariable("taskListId") long taskListId
     ) {
         if (taskListId < 0 || !taskListRepo.existsById(taskListId)) {
@@ -134,7 +134,7 @@ public class BoardController {
 
             repo.save(board);
 
-            return ResponseEntity.ok("Removed Task List " + taskListId + " from board " + board.getId());
+            return ResponseEntity.ok(board);
         }
         // List doesn't belong to any board
         return ResponseEntity.badRequest().build();
