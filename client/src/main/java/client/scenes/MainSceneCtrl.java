@@ -65,6 +65,8 @@ public class MainSceneCtrl {
     public void initialize() {
         taskListCtrls = new ArrayList<>();
 
+//        mainCtrl.setActiveBoard(server.getDefaultBoard());
+
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
         lists.setItems(listData);
@@ -84,7 +86,9 @@ public class MainSceneCtrl {
      * refresh the list
      */
     public void refresh() {
-        listData = FXCollections.observableList(server.getTaskList());
+//        listData = FXCollections.observableList(server.getTaskList());
+        listData = FXCollections.observableList(
+                server.getDefaultBoardTaskList());
         taskData = FXCollections.observableList(server.getTasks());
         lists.setItems(listData);
         tasks.setItems(taskData);

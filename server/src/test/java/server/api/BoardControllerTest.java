@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -213,5 +214,34 @@ public class BoardControllerTest {
 
         assertTrue(repo.getById(oldId) == null);
         assertFalse(repo.getById(newId) == null);
+    }
+
+    @Test
+    void getDefaultBoardTest() {
+        Board defaultBoard = new Board("default");
+        long oldId = repo.save(defaultBoard).getId();
+
+        repo.updateBoardId(oldId, 1030L);
+
+        var res = sut.getDefaultBoard();
+
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+    }
+
+    @Test
+    void getTaskListTest() {
+        Board board = new Board("test");
+
+        List<TaskList> taskLists = new ArrayList<>();
+        taskLists.add(new TaskList("list 1"));
+        taskLists.add(new TaskList("list 2"));
+
+        board.setTaskLists(taskLists);
+        long id = repo.save(board).getId();
+
+        var res = sut.getBoardTaskList(id);
+
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(taskLists, res.getBody());
     }
 }

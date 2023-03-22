@@ -16,6 +16,7 @@
 package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.List;
 
 import commons.Board;
@@ -33,6 +34,21 @@ public class ServerUtils {
 
     private static final String SERVER = "http://localhost:8080/";
 
+    private List<TaskList> boardData;
+
+    /**
+     * gets the default board from the repository
+     * @return default board
+     */
+    public Board getDefaultBoard() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/default")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>() {
+                });
+    }
+
     /**
      * get task list
      *
@@ -43,6 +59,19 @@ public class ServerUtils {
                 .target(SERVER).path("tasklist") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<TaskList>>() {
+                });
+    }
+
+    /**
+     * get the tasklist of the default board using only the api
+     * @return the task list of the default board
+     */
+    public List<TaskList> getDefaultBoardTaskList() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/1030/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
                 .get(new GenericType<List<TaskList>>() {
                 });
     }

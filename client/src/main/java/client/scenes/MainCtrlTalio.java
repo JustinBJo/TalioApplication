@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
@@ -20,6 +21,7 @@ import java.io.IOException;
 public class MainCtrlTalio {
 
     private Stage primaryStage;
+    private ServerUtils server;
 
     ConnectScreenCtrl connectCtrl;
     Scene connect;
@@ -31,7 +33,6 @@ public class MainCtrlTalio {
     Scene addTitledEntityScene;
 
     AddTaskCtrl addTaskCtrl;
-
     Scene addTaskScene;
 
     TaskListCtrl taskListCtrl;
@@ -63,6 +64,7 @@ public class MainCtrlTalio {
      * @param renameTaskList  the "rename list" screen
      */
     public void initialize(Stage primaryStage,
+                           ServerUtils server,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
@@ -72,6 +74,7 @@ public class MainCtrlTalio {
                            Pair<RenameCtrl, Parent> renameTaskList,
                            Pair<EditTaskCtrl, Parent> editTask) {
         this.primaryStage = primaryStage;
+        this.server = server;
 
         this.connectCtrl = connect.getKey();
         this.connect = new Scene(connect.getValue());
@@ -97,7 +100,7 @@ public class MainCtrlTalio {
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
 
-
+        setActiveBoard(server.getDefaultBoard());
         showConnect();
         primaryStage.show();
     }
