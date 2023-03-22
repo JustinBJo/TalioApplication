@@ -107,7 +107,9 @@ public class BoardController {
         if (!success) return ResponseEntity.badRequest().build();
 
         repo.save(board);
-        return ResponseEntity.ok("Added Task List " + taskListId + " to board " + boardId);
+        return ResponseEntity.ok(
+            "Added Task List " + taskListId + " to Board " + boardId
+        );
     }
 
     /**
