@@ -90,9 +90,12 @@ public class TaskList {
         if (this == o) return true;
         if (o == null || !(o instanceof TaskList)) return false;
         TaskList taskList = (TaskList) o;
-        return getId().equals(taskList.getId())
-                && getTitle().equals(taskList.getTitle())
-                && getTasks().equals(taskList.getTasks());
+        return (getId() == null && taskList.getId() == null
+                    ||  getId().equals(taskList.getId()))
+                && (getTitle() == null && taskList.getTitle() == null
+                    || getTitle().equals(taskList.getTitle()))
+                && (getTasks() == null && taskList.getTasks() == null
+                    || getTasks().equals(taskList.getTasks()));
     }
 
     @Override
