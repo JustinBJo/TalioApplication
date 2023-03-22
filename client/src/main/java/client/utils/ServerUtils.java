@@ -126,11 +126,13 @@ public class ServerUtils {
      * @return          the added task list, null if failed to add
      */
     public TaskList addTaskList(TaskList taskList, Board board) {
+
+        // Add task list to repository
         Response addListResponse =
                 ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                    .path("tasklist") //
-                    .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                    .post(Entity.entity(taskList, APPLICATION_JSON));
+                .path("tasklist") //
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .post(Entity.entity(taskList, APPLICATION_JSON));
 
         // If failed to add list, exit now
         if (addListResponse.getStatus() != Response.Status.OK.getStatusCode()) {
@@ -143,6 +145,7 @@ public class ServerUtils {
 
         addListResponse.close();
 
+        // Link task list to board
         Response linkBoardResponse =
                 linkTaskListToBoard(board, addedList.getId());
 
@@ -168,12 +171,11 @@ public class ServerUtils {
      * @return the endpoint's Response
      */
     private Response linkTaskListToBoard(Board board, long taskListId) {
-        return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+            return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
                 .path("board/addTaskList/" + board.getId() + "/" + taskListId)
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .put(Entity.json(board));
     }
-
 
     /**
      * Method used to fetch the tasks from the database
@@ -211,11 +213,13 @@ public class ServerUtils {
      * @return the tasklist which was deleted
      */
     public String deleteTaskList(TaskList taskList) {
+
+        // Unlink task list from board
         Response unlinkResponse =
                 ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                        .path("board/removeTaskList/" + taskList.getId()) //
-                        .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                        .put(Entity.entity(taskList, APPLICATION_JSON));
+                .path("board/removeTaskList/" + taskList.getId()) //
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(taskList, APPLICATION_JSON));
 
         // If failed to unlink list, exit now
         if (unlinkResponse.getStatus() != Response.Status.OK.getStatusCode()) {
@@ -353,5 +357,23 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Deletes a task from the server
+     * @param task the task to be deleted
+     * @return the removed task
+     */
+    public String deleteTask(Task task) {
+        long id = task.getId();
+        String result = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasks/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(String.class);
+
+        System.out.println(result);
+        return result;
     }
 }

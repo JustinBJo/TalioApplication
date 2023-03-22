@@ -105,6 +105,7 @@ public class BoardController {
         TaskList taskList = taskListRepo.getById(taskListId);
 
         boolean success = board.addTaskList(taskList);
+
         if (!success) return ResponseEntity.badRequest().build();
 
         repo.save(board);

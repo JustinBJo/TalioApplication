@@ -85,8 +85,16 @@ public class EditTaskCtrl {
             String newTitleString = newTitle.getText();
             String newDescriptionString = newDescription.getText();
 
-            server.updateTaskTitle(task, newTitleString);
-            server.updateTaskDescription(task, newDescriptionString);
+            if (newTitleString.length() == 0
+                    && newDescriptionString.length() == 0) {
+                cancel();
+                return;
+            }
+
+            if (newTitleString.length() >= 1)
+                server.updateTaskTitle(task, newTitleString);
+            if (newDescriptionString.length() >= 1)
+                server.updateTaskDescription(task, newDescriptionString);
 
         }
         catch (WebApplicationException e) {

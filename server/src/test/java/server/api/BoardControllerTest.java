@@ -186,7 +186,7 @@ public class BoardControllerTest {
         assertEquals(HttpStatus.OK, res.getStatusCode());
 
         // Check repository
-        Board updatedBoard = repo.findById(0L).get();
+        Board updatedBoard = repo.findById(boardId).get();
         assertTrue(updatedBoard.getTaskLists().contains(taskList));
     }
 
