@@ -10,7 +10,7 @@ import java.util.Objects;
 public class TaskList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     @Column(name = "id")
     private Long id;
 
@@ -86,12 +86,13 @@ public class TaskList {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof TaskList)) return false;
         TaskList taskList = (TaskList) o;
-        return Objects.equals(id, taskList.id)
-                && Objects.equals(title, taskList.title)
-                && Objects.equals(tasks, taskList.tasks);
+        return getId().equals(taskList.getId())
+                && getTitle().equals(taskList.getTitle())
+                && getTasks().equals(taskList.getTasks());
     }
 
     @Override

@@ -1,0 +1,9 @@
+2023-03-21 16:22:26 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * TASK_LIST[*]"; SQL statement:
+SELECT * TASK_LIST [42000-200]
+2023-03-21 16:22:30 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * TASK_LIST[*]"; SQL statement:
+SELECT * TASK_LIST [42000-200]
+2023-03-21 16:22:32 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * TASK_LIST[*]"; SQL statement:
+SELECT * TASK_LIST [42000-200]
