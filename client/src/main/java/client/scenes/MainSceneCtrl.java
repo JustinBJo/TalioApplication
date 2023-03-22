@@ -22,7 +22,7 @@ import java.util.List;
 
 public class MainSceneCtrl {
 
-    private final ServerUtils server;
+    private  ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final RenameCtrl renameCtrl;
 
@@ -62,12 +62,21 @@ public class MainSceneCtrl {
     /**
      * initialize the scene with the listview elements as the TaskList scene
      */
-    public void initialize() {
+    public void initialize(ServerUtils server) {
+        this.server = server;
+
         taskListCtrls = new ArrayList<>();
 
-//        mainCtrl.setActiveBoard(server.getDefaultBoard());
+        if (mainCtrl.getActiveBoard() == null) {
+            mainCtrl.setActiveBoard(server.getDefaultBoard());
+        }
 
         listData = FXCollections.observableArrayList();
+
+        if (lists == null) {
+            lists = new ListView<>();
+        }
+
         lists.setFixedCellSize(0);
         lists.setItems(listData);
         lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
@@ -88,7 +97,7 @@ public class MainSceneCtrl {
     public void refresh() {
 //        listData = FXCollections.observableList(server.getTaskList());
         listData = FXCollections.observableList(
-                server.getDefaultBoardTaskList());
+                server.getBoardData(mainCtrl.getActiveBoard().getId()));
         taskData = FXCollections.observableList(server.getTasks());
         lists.setItems(listData);
         tasks.setItems(taskData);

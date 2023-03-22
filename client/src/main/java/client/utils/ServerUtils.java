@@ -64,6 +64,20 @@ public class ServerUtils {
     }
 
     /**
+     * get task list of the give board
+     * @param boardId the board to fetch the tasklists
+     * @return the tasklists of the board
+     */
+    public List<TaskList> getBoardData(long boardId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + boardId + "/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TaskList>>(){
+                });
+    }
+
+    /**
      * get the tasklist of the default board using only the api
      * @return the task list of the default board
      */

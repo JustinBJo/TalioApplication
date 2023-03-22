@@ -100,7 +100,6 @@ public class MainCtrlTalio {
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
 
-        setActiveBoard(server.getDefaultBoard());
         showConnect();
         primaryStage.show();
     }
@@ -119,6 +118,7 @@ public class MainCtrlTalio {
     public void showMain() {
         primaryStage.setTitle("Talio: Lists");
         primaryStage.setScene(mainScene);
+        mainSceneCtrl.initialize(this.server);
     }
 
     /**
@@ -252,6 +252,11 @@ public class MainCtrlTalio {
      */
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
+
+        if (mainSceneCtrl == null) {
+            mainSceneCtrl = new MainSceneCtrl(server, this, renameCtrl);
+            mainSceneCtrl.initialize(this.server);
+        }
 
         if (activeBoard == null) {
             mainSceneCtrl.sceneTitle.setText("Board X");
