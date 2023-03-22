@@ -50,7 +50,7 @@ Attendees:
 
 - Decisions: 
     - Maria will be the chair
-    - Justing will be the minute-taker
+    - Justin will be the minute-taker
 
 ### Action points summary & Questions (5 min)
 - Discussed topics:
