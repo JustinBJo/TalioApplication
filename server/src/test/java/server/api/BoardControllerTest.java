@@ -229,6 +229,13 @@ public class BoardControllerTest {
     }
 
     @Test
+    void getDefaultBoardFailTest() {
+        var res = sut.getDefaultBoard();
+
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
     void getTaskListTest() {
         Board board = new Board("test");
 
@@ -243,5 +250,19 @@ public class BoardControllerTest {
 
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertEquals(taskLists, res.getBody());
+    }
+
+    @Test
+    void getTaskListInvalidIdTest() {
+        var res = sut.getBoardTaskList(-1);
+
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void getTaskListFailTest() {
+        var res = sut.getBoardTaskList(1);
+
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
     }
 }
