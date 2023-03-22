@@ -23,6 +23,7 @@ import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -32,7 +33,7 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static String SERVER = "http://localhost:8080/";
 
     private List<TaskList> boardData;
 
@@ -89,6 +90,34 @@ public class ServerUtils {
                 .get(new GenericType<List<TaskList>>() {
                 });
     }
+
+    /**
+     * get the server url to empty string
+     */
+    public static void resetServer() {
+        SERVER = "";
+    }
+
+    /**
+     * set the server url by the client's input
+     * @param url the input url
+     */
+    public static void setServer(String url)
+            throws IllegalArgumentException {
+        try {
+            ClientBuilder.newClient(new ClientConfig()) //
+                    .target(url) //
+                    .request(APPLICATION_JSON) //
+                    .accept(APPLICATION_JSON) //
+                    .get();
+        } catch (IllegalArgumentException e2) {
+            throw new IllegalArgumentException("Invalid URL");
+        } catch (ProcessingException e) {
+            throw new ProcessingException("Server not found");
+        }
+        SERVER = url;
+    }
+
 
     /**
      * add a task list to the server
