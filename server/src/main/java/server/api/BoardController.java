@@ -90,7 +90,7 @@ public class BoardController {
      * @param taskListId ID of the task list to be linked
      */
     @PutMapping("addTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<String> addChildTaskList(
+    public ResponseEntity<String> linkBoardToTaskList(
             @PathVariable("boardId") long boardId,
             @PathVariable("taskListId") long taskListId
     ) {
@@ -103,12 +103,43 @@ public class BoardController {
         TaskList taskList = taskListRepo.getById(taskListId);
 
         boolean success = board.addTaskList(taskList);
+
         if (!success) return ResponseEntity.badRequest().build();
 
         repo.save(board);
         return ResponseEntity.ok(
-                "Added Task List " + taskListId + " to board " + boardId
+            "Added Task List " + taskListId + " to Board " + boardId
         );
+    }
+
+    /**
+     * Unlinks a task list from a board in the repository
+     * @param taskListId ID of the task list to be unlinked
+     */
+    @PutMapping("removeTaskList/{taskListId}")
+    public ResponseEntity<Board> unlinkBoardFromTaskList(
+            @PathVariable("taskListId") long taskListId
+    ) {
+        if (taskListId < 0 || !taskListRepo.existsById(taskListId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TaskList taskList = taskListRepo.getById(taskListId);
+        for (Board board : repo.findAll()) {
+            if (!board.getTaskLists().contains(taskList)) {
+                continue;
+            }
+            // If this is reached, board is the board containing taskList
+
+            boolean success = board.removeTaskList(taskList);
+            if (!success) return ResponseEntity.badRequest().build();
+
+            repo.save(board);
+
+            return ResponseEntity.ok(board);
+        }
+        // List doesn't belong to any board
+        return ResponseEntity.badRequest().build();
     }
 
     /**
