@@ -71,4 +71,16 @@ public class TaskListControllerTest {
         assertFalse(repo.findById( (long) 100).isPresent());
     }
 
+    @Test
+    public void updateTaskList() {
+        TaskList l = new TaskList("Old Title");
+        repo.save(l);
+
+        taskListController.update(l.getId(), "New Title");
+
+        assertTrue(repo.findAll().contains(l));
+        String newTitle = repo.getById(l.getId()).getTitle();
+        assertEquals("New Title", newTitle);
+    }
+
 }
