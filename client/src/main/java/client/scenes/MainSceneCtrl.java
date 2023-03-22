@@ -1,6 +1,5 @@
 package client.scenes;
 
-
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
@@ -75,8 +74,11 @@ public class MainSceneCtrl {
 
     /**
      * go back to the connect screen
+     * TODO: delete all the protiential local storage,
+     * since the user want to connect to a different server
      */
     public void back() {
+        ServerUtils.resetServer();
         mainCtrl.showConnect();
     }
 

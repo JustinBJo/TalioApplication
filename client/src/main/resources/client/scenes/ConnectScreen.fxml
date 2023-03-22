@@ -8,12 +8,13 @@
 
 <AnchorPane prefHeight="201.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ConnectScreenCtrl">
    <children>
-      <Label layoutX="211.0" layoutY="37.0" prefHeight="40.0" prefWidth="179.0" text="Enter server address:">
+      <Label layoutX="210.0" layoutY="25.0" prefHeight="40.0" prefWidth="179.0" text="Enter server address:">
          <font>
             <Font size="19.0" />
          </font>
       </Label>
-      <TextField layoutX="221.0" layoutY="88.0" />
+      <TextField fx:id="address" layoutX="221.0" layoutY="77.0" text="http://localhost:8080" />
       <Button layoutX="277.0" layoutY="134.0" mnemonicParsing="false" onAction="#click" text="Join" />
+      <Label fx:id="notification" layoutX="221.0" layoutY="111.0" prefHeight="18.0" prefWidth="291.0" textFill="#f20404" />
    </children>
 </AnchorPane>
