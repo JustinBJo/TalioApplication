@@ -270,4 +270,22 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
+
+    /**
+     * Deletes a task from the server
+     * @param task the task to be deleted
+     * @return the removed task
+     */
+    public String deleteTask(Task task) {
+        long id = task.getId();
+        String result = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasks/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(String.class);
+
+        System.out.println(result);
+        return result;
+    }
 }

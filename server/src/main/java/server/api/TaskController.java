@@ -91,6 +91,28 @@ public class TaskController {
 
     }
 
+    /**
+     * Deletes a task with a given id from the repository
+     * @param id the id of the task to be deleted
+     * @return the deleted task
+     */
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+        if (id < 0)
+            return ResponseEntity.badRequest().body("Invalid id.");
+        if (!repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("The task " +
+                    "you are trying to delete does not exist.");
+        }
+        Task task = repo.getById(id);
+        repo.delete(task);
+        if (repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("The task " +
+                    "was not correctly removed.");
+        }
+        return ResponseEntity.ok("Task " + id + " was removed.");
+    }
+
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

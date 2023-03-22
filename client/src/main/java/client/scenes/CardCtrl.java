@@ -125,4 +125,22 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
             }
         };
     }
+
+    /**
+     * Used to delete a task from a list
+     */
+    public void deleteTask() {
+        taskListCtrl.tasks.getItems().remove(task);
+        server.deleteTask(task);
+        mainCtrl.mainSceneCtrl.refresh();
+    }
+
+    /**
+     * Edit a task
+     * @throws IOException -
+     */
+    public void editTask() throws IOException {
+        Task currentTask = task;
+        mainCtrl.showEditTask(currentTask);
+    }
 }
