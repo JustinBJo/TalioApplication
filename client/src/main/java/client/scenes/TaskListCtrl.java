@@ -79,10 +79,10 @@ public class TaskListCtrl
         this.mainCtrl = mainCtrl;
         this.renameCtrl = renameCtrl;
 
-        this.serverCopy = server;
-        this.mainSceneCtrlCopy = mainSceneCtrl;
-        this.mainCtrlTalioCopy = mainCtrl;
-        this.renameCtrlCopy = renameCtrl;
+        serverCopy = server;
+        mainSceneCtrlCopy = mainSceneCtrl;
+        mainCtrlTalioCopy = mainCtrl;
+        renameCtrlCopy = renameCtrl;
 
         FXMLLoader fxmlLoader = new FXMLLoader((getClass()
                 .getResource("TaskList.fxml")));

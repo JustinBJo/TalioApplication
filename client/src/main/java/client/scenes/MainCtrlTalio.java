@@ -1,11 +1,18 @@
 package client.scenes;
 
+
 import commons.Board;
 import commons.TaskList;
+import commons.User;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 public class MainCtrlTalio {
 
@@ -30,9 +37,20 @@ public class MainCtrlTalio {
     RenameCtrl renameCtrl;
     Scene renameScene;
 
+    JoinBoardCtrl joinBoardCtrl;
+    Scene joinBoardScene;
+
+    BoardCtrl boardCtrl;
+    Scene boardScene;
+
     private TaskList currentTaskList;
 
     private Board activeBoard;
+
+    private List<Board> joinedBoards = new ArrayList<>();
+
+    private User user;
+
 
 
     /**
@@ -49,7 +67,9 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
-                           Pair<RenameCtrl, Parent> renameTaskList) {
+                           Pair<RenameCtrl, Parent> renameTaskList,
+                           Pair<JoinBoardCtrl, Parent> joinBoard,
+                           Pair<BoardCtrl, Parent> board) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -69,6 +89,13 @@ public class MainCtrlTalio {
 
         this.renameCtrl = renameTaskList.getKey();
         this.renameScene = new Scene(renameTaskList.getValue());
+
+        this.joinBoardCtrl = joinBoard.getKey();
+        this.joinBoardScene = new Scene(joinBoard.getValue());
+
+        this.boardCtrl = board.getKey();
+        this.boardScene = new Scene(board.getValue());
+
 
         showConnect();
         primaryStage.show();
@@ -163,6 +190,14 @@ public class MainCtrlTalio {
     }
 
     /**
+     * displays the join board scene
+     */
+    public void showJoinBoard() {
+        primaryStage.setTitle("Join new board");
+        primaryStage.setScene(joinBoardScene);
+    }
+
+    /**
      * Sets current active board and updates the main scene accordingly
      * @param activeBoard new active board
      */
@@ -178,5 +213,22 @@ public class MainCtrlTalio {
 
         mainSceneCtrl.refresh();
         // TODO
+    }
+
+
+    /**
+     * returns current user
+     * @return current user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * sets current user
+     * @param user the user to be set
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 }

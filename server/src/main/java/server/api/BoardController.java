@@ -44,6 +44,21 @@ public class BoardController {
     }
 
     /**
+     * searches for a board based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    @GetMapping("/code/{code}")
+    public ResponseEntity<Board> getByCode(@PathVariable("code") String code) {
+        List<Board> boards = repo.findAll();
+        for (Board k :  boards) {
+            if (k.getCode().equals(code))
+                return ResponseEntity.ok(k);
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    /**
      * Add a board to the database
      * @param board board to add
      * @return ResponseEntity<Board> the added board
@@ -94,6 +109,12 @@ public class BoardController {
         return ResponseEntity.ok("Board " + id + " is removed.");
     }
 
+    /**
+     * checks whether string s is null or empty
+     * @param s the string to be checked
+     * @return true if condition is met,
+     * false otherwise
+     */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

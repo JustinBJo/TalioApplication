@@ -25,6 +25,7 @@ public class ConnectScreenCtrl {
      */
     public void click() {
         mainCtrl.showMain();
+        mainCtrl.mainSceneCtrl.validateUser();
 
     }
 

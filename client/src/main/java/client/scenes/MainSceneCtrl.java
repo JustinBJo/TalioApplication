@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
+import commons.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -27,10 +28,12 @@ public class MainSceneCtrl {
 
     ObservableList<Task> taskData;
 
+    ObservableList<Board> boardData;
+
     @FXML
     Label sceneTitle;
     @FXML
-    ListView boards;
+    ListView<Board> boards;
     @FXML
     ListView<TaskList> lists;
     @FXML
@@ -63,6 +66,14 @@ public class MainSceneCtrl {
         lists.setItems(listData);
         lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
                 renameCtrl));
+
+        boardData = FXCollections.observableArrayList();
+        boards.setFixedCellSize(0);
+        boards.setItems(boardData);
+        boards.setCellFactory(new BoardCtrl(mainCtrl, server, this));
+
+        mainCtrl.setUser(server.checkUser());
+
         refresh();
     }
 
@@ -79,8 +90,11 @@ public class MainSceneCtrl {
     public void refresh() {
         listData = FXCollections.observableList(server.getTaskList());
         taskData = FXCollections.observableList(server.getTasks());
+        boardData =
+                FXCollections.observableList(mainCtrl.getUser().getBoards());
         lists.setItems(listData);
         tasks.setItems(taskData);
+        boards.setItems(boardData);
     }
 
     private int i = 0;
@@ -150,6 +164,21 @@ public class MainSceneCtrl {
      */
     public void addTask() {
         mainCtrl.showAddTask();
+    }
+
+    /**
+     * displays the join board scene
+     */
+    public void joinBoard() {
+        mainCtrl.showJoinBoard();
+    }
+
+    /**
+     * checks whether this user has already been registered
+     */
+    public void validateUser() {
+        User u = server.checkUser();
+        mainCtrl.setUser(u);
     }
 
 }

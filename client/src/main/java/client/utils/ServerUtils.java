@@ -22,6 +22,7 @@ import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import commons.User;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -102,7 +103,7 @@ public class ServerUtils {
                 .target(SERVER).path("tasklist/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete(String.class);
+                .get(String.class);
 
         System.out.println(res);
         return res;
@@ -122,6 +123,20 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
+
+    /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+
     }
 
     /**
@@ -171,4 +186,73 @@ public class ServerUtils {
         System.out.println(res);
         return res;
     }
+
+
+    /**
+     * returns a board based on its ID
+     * @param id the id of the board
+     * @return the board
+     */
+    public Board getBoardById(long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+    /**
+     * checks whether the user has already been
+     * registered into the system
+     * @return the existent user or a new one if
+     * no existent one is found
+     */
+    public User checkUser() {
+        String ip = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/ip")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(String.class);
+
+        List<User> users = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { });
+
+        boolean exists = false;
+        User user = new User(ip);
+        for (User k : users) {
+            if (k.getIp().equals(ip)) {
+                exists = true;
+                user = k;
+            }
+        }
+        if (!exists) {
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).path("user/add")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(user, APPLICATION_JSON));
+        }
+        return user;
+    }
+
+    /**
+     * saves the current state of the user in the database
+     * @param user the user to be saved
+     */
+    public void saveUser(User user) {
+     //   System.out.println(user.getBoards());
+        //System.out.println(user.getBoards());
+        List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/save")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(user, APPLICATION_JSON),
+                        new GenericType<List<Board>>() {});
+        System.out.println(boards);
+    }
+
+
 }

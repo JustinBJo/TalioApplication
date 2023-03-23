@@ -62,9 +62,16 @@ public class Main extends Application {
                 RenameCtrl.class, "client", "scenes",
                 "RenameEntity.fxml");
 
+        var joinBoard = FXML.load(JoinBoardCtrl.class,
+                "client", "scenes", "JoinBoard.fxml");
+
+        var board = FXML.load(BoardCtrl.class,
+                "client", "scenes", "Board.fxml");
+
         var mainCtrl =
                 INJECTOR.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(primaryStage, connect, mainScene,
-                addTitledEntity, addTask, taskList, renameTaskList);
+                addTitledEntity, addTask, taskList,
+                renameTaskList, joinBoard, board);
     }
 }

@@ -149,6 +149,11 @@ public class AddTitledEntityCtrl {
      */
     private void addNewBoard(String title) throws WebApplicationException {
         Board board = new Board(title);
-        mainCtrl.setActiveBoard(server.addBoard(board));
+
+        board = server.addBoard(board);
+        mainCtrl.setActiveBoard(board);
+        mainCtrl.getUser().addBoard(board);
+        System.out.println(mainCtrl.getUser().getBoards());
+        server.saveUser(mainCtrl.getUser());
     }
 }

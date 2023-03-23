@@ -165,4 +165,12 @@ public class BoardControllerTest {
                 response.getBody()
         );
     }
+
+    @Test
+    void getByCode() {
+        Board b = new Board();
+        b.setCode("aaaa");
+        repo.save(b);
+        assertEquals(b, sut.getByCode("aaaa").getBody());
+    }
 }

@@ -71,4 +71,13 @@ public class TaskListControllerTest {
         assertFalse(repo.findById( (long) 100).isPresent());
     }
 
+//    @Test
+//    public void updateTest() {
+//        TaskList tl = new TaskList("test");
+//        repo.save(tl);
+//        //System.out.println(repo.getById(100L));
+//        taskListController.update(0, "newName");
+//        assertEquals("newName", repo.getById( (long) 0).getTitle());
+//    }
+
 }
