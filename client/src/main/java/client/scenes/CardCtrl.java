@@ -139,9 +139,9 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
     }
 
     /**
-     * Edit a task
+     * View the details of a task after clicking twice on the card
      */
-    public void editTask() {
+    public void viewTask() {
         Task currentTask = task;
         root.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -150,7 +150,7 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
                     if (mouseEvent.getClickCount() == 2) {
                         System.out.println("Double clicked");
                         try {
-                            mainCtrl.showEditTask(currentTask);
+                            mainCtrl.showTaskDetails(currentTask);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -159,4 +159,5 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
             }
         });
     }
+
 }
