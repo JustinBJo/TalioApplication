@@ -83,12 +83,7 @@ public class ServerUtils {
      * @return the task list of the default board
      */
     public List<TaskList> getDefaultBoardTaskList() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/1030/tasklist")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<TaskList>>() {
-                });
+        return getBoardData(1030);
     }
 
     /**

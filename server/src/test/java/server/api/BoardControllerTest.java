@@ -172,7 +172,6 @@ public class BoardControllerTest {
     }
 
     @Test
-//    void addChildTaskList() {
     void linkBoardToTaskList() {
         Board board = new Board("Test Board");
         long boardId = repo.save(board).getId();
@@ -191,7 +190,6 @@ public class BoardControllerTest {
     }
 
     @Test
-//    void failAddChildTaskList() {
     void failAddChildTaskList() {
         Board board = new Board("Test Board");
         long boardId = repo.save(board).getId();

@@ -172,13 +172,7 @@ public class BoardController {
      */
     @GetMapping("default")
     public ResponseEntity<Board> getDefaultBoard() {
-        if  (!repo.existsById(DEFAULT_ID)) {
-            return ResponseEntity.badRequest().build();
-        }
-        else {
-            Board board = repo.findById(DEFAULT_ID).get();
-            return ResponseEntity.ok(board);
-        }
+        return getById(DEFAULT_ID);
     }
 
     /**
@@ -190,10 +184,7 @@ public class BoardController {
     public ResponseEntity<List<TaskList>> getBoardTaskList(
             @PathVariable("id") long id
     ) {
-        if (id < 0) {
-            return ResponseEntity.badRequest().build();
-        }
-        if  (!repo.existsById(id)) {
+        if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
 
