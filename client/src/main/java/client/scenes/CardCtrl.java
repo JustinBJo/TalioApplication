@@ -136,11 +136,12 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
     }
 
     /**
-     * Edit a task
+     * View the details of a task
      * @throws IOException -
      */
-    public void editTask() throws IOException {
+    public void viewTask() throws IOException {
         Task currentTask = task;
-        mainCtrl.showEditTask(currentTask);
+        mainCtrl.showTaskDetails(currentTask);
     }
+
 }
