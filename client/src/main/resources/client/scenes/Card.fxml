@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#viewTask" prefHeight="80.0" prefWidth="172.0" style="-fx-background-color: #D9E7EC;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardCtrl">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#editTask" prefHeight="80.0" prefWidth="172.0" style="-fx-background-color: #D9E7EC;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CardCtrl">
    <children>
       <Label fx:id="title" alignment="CENTER" layoutX="10.0" layoutY="12.0" prefHeight="57.0" prefWidth="154.0" text="Label">
          <font>
