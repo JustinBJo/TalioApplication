@@ -65,7 +65,7 @@ public class Main extends Application {
 
         var renameTaskList = FXML.load(
                 RenameCtrl.class, "client", "scenes",
-                "RenameEntity.fxml");
+                "AddTitledEntity.fxml");
 
         var editTask = FXML.load(EditTaskCtrl.class,
                 "client", "scenes", "EditTask.fxml");
