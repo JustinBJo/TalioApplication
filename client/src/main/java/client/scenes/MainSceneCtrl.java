@@ -48,6 +48,7 @@ public class MainSceneCtrl {
 
     /**
      * constructor
+     *
      * @param mainCtrl the main controller
      */
     @Inject
@@ -74,7 +75,7 @@ public class MainSceneCtrl {
 
     /**
      * go back to the connect screen
-     * TODO: delete all the protiential local storage,
+     * TODO: delete all the potential local storage,
      * since the user want to connect to a different server
      */
     public void back() {
@@ -140,8 +141,7 @@ public class MainSceneCtrl {
         Board board = mainCtrl.getActiveBoard();
         if (board == null) {
             System.out.println("This is the default board!");
-        }
-        else {
+        } else {
             String code = board.getCode();
             content.putString(code);
             clipboard.setContent(content);
@@ -166,12 +166,12 @@ public class MainSceneCtrl {
     }
 
     /**
-     * Edit a task
-     * @throws IOException
+     * View the details of a task
+     * @throws IOException -
      */
-    public void editTask() throws IOException {
+    public void viewTask() throws IOException {
         Task currentTask = tasks.getSelectionModel().getSelectedItem();
-        mainCtrl.showEditTask(currentTask);
+        mainCtrl.showTaskDetails(currentTask);
     }
 
 }

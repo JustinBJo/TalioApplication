@@ -46,6 +46,9 @@ public class MainCtrlTalio {
     EditTaskCtrl editTaskCtrl;
     Scene editTaskScene;
 
+    TaskDetailsCtrl taskDetailsCtrl;
+    Scene viewTaskScene;
+
 
     private TaskList currentTaskList;
 
@@ -70,7 +73,8 @@ public class MainCtrlTalio {
                            Pair<TaskListCtrl, Parent> taskList,
                            Pair<CardCtrl, Parent> card,
                            Pair<RenameCtrl, Parent> renameTaskList,
-                           Pair<EditTaskCtrl, Parent> editTask) {
+                           Pair<EditTaskCtrl, Parent> editTask,
+                           Pair<TaskDetailsCtrl, Parent> viewTask) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -96,6 +100,9 @@ public class MainCtrlTalio {
 
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
+
+        this.taskDetailsCtrl = viewTask.getKey();
+        this.viewTaskScene = new Scene(viewTask.getValue());
 
 
         showConnect();
@@ -260,4 +267,37 @@ public class MainCtrlTalio {
         mainSceneCtrl.refresh();
         // TODO
     }
+
+    /**
+     * Shows the detailed view of a task
+     * @param task current task
+     * @throws IOException if the task is not found
+     */
+    public void showTaskDetails(Task task) throws IOException {
+        final FXMLLoader fxmlLoader =
+                new FXMLLoader(getClass().getResource("TaskDetails.fxml"));
+        setCurrentTask(task);
+
+        final Pane root = fxmlLoader.load();
+        ObservableList<Node> children = root.getChildren();
+
+        for (Node child : children) {
+            if (child.getId() != null) {
+                if (child.getId().equals("title")) {
+                    Label title = (Label) child;
+                    title.setText(task.getTitle());
+                }
+                if (child.getId().equals("description")) {
+                    Label description = (Label) child;
+                    description.setText(task.getDescription());
+                }
+            }
+        }
+
+        Scene viewTaskScene = new Scene(root, 600, 400);
+
+        primaryStage.setTitle("Task Details");
+        primaryStage.setScene(viewTaskScene);
+    }
+
 }
