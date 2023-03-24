@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
+import server.service.DefaultBoardService;
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ public class BoardController {
 
     private final BoardRepository repo;
     private final TaskListRepository taskListRepo;
+    private final DefaultBoardService service;
+
+    private static final long DEFAULT_ID = 1030;
 
     /**
      * Constructor
@@ -23,10 +27,12 @@ public class BoardController {
      */
     public BoardController(
             BoardRepository repo,
-            TaskListRepository taskListRepo
+            TaskListRepository taskListRepo,
+            DefaultBoardService service
     ) {
         this.repo = repo;
         this.taskListRepo = taskListRepo;
+        this.service = service;
     }
 
     /**
@@ -49,6 +55,15 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Get the ID of the default board in the system
+     * @return the default ID stored in DefaultBoardService
+     */
+    @GetMapping("defaultId")
+    public long getDefaultId() {
+        return this.service.getDefaultId();
     }
 
     /**
@@ -90,7 +105,7 @@ public class BoardController {
      * @param taskListId ID of the task list to be linked
      */
     @PutMapping("addTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<String> addChildTaskList(
+    public ResponseEntity<String> linkBoardToTaskList(
             @PathVariable("boardId") long boardId,
             @PathVariable("taskListId") long taskListId
     ) {
@@ -103,12 +118,43 @@ public class BoardController {
         TaskList taskList = taskListRepo.getById(taskListId);
 
         boolean success = board.addTaskList(taskList);
+
         if (!success) return ResponseEntity.badRequest().build();
 
         repo.save(board);
         return ResponseEntity.ok(
-                "Added Task List " + taskListId + " to board " + boardId
+                "Added Task List " + taskListId + " to Board " + boardId
         );
+    }
+
+    /**
+     * Unlinks a task list from a board in the repository
+     * @param taskListId ID of the task list to be unlinked
+     */
+    @PutMapping("removeTaskList/{taskListId}")
+    public ResponseEntity<Board> unlinkBoardFromTaskList(
+            @PathVariable("taskListId") long taskListId
+    ) {
+        if (taskListId < 0 || !taskListRepo.existsById(taskListId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TaskList taskList = taskListRepo.getById(taskListId);
+        for (Board board : repo.findAll()) {
+            if (!board.getTaskLists().contains(taskList)) {
+                continue;
+            }
+            // If this is reached, board is the board containing taskList
+
+            boolean success = board.removeTaskList(taskList);
+            if (!success) return ResponseEntity.badRequest().build();
+
+            repo.save(board);
+
+            return ResponseEntity.ok(board);
+        }
+        // List doesn't belong to any board
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -132,4 +178,31 @@ public class BoardController {
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }
+
+    /**
+     * Gets the default board of the application
+     * @return null if the board does not exist, the default board otherwise
+     */
+    @GetMapping("default")
+    public ResponseEntity<Board> getDefaultBoard() {
+        return getById(DEFAULT_ID);
+    }
+
+    /**
+     * Gets the tasklist of a board from the repository
+     * @param id the id of the board
+     * @return the tasklist of the board
+     */
+    @GetMapping("{id}/tasklist")
+    public ResponseEntity<List<TaskList>> getBoardTaskList(
+            @PathVariable("id") long id
+    ) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Board board = repo.findById(id).get();
+        return ResponseEntity.ok(board.getTaskLists());
+    }
+
 }

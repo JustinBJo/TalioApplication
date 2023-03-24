@@ -16,12 +16,14 @@
 package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.List;
 
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -31,7 +33,35 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private static String SERVER = "http://localhost:8080/";
+
+    private List<TaskList> boardData;
+
+    /**
+     * gets the default board from the repository
+     * @return default board
+     */
+    public Board getDefaultBoard() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/default")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>() {
+                });
+    }
+
+    /**
+     * gets the id of the default board in the system
+     * @return the id of the default board
+     */
+    public long getDefaultId() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/defaultId")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Long>() {
+                });
+    }
 
     /**
      * get task list
@@ -48,6 +78,62 @@ public class ServerUtils {
     }
 
     /**
+     * get task list of the give board
+     * @param boardId the board to fetch the tasklists
+     * @return the tasklists of the board
+     */
+    public List<TaskList> getBoardData(long boardId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + boardId + "/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TaskList>>(){
+                });
+    }
+
+    /**
+     * get the tasklist of the default board using only the api
+     * @return the task list of the default board
+     */
+    public List<TaskList> getDefaultBoardTaskList() {
+        long defaultId = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("defaultId")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Long>(){
+                });
+        return getBoardData(defaultId);
+    }
+
+    /**
+     * get the server url to empty string
+     */
+    public static void resetServer() {
+        SERVER = "";
+    }
+
+    /**
+     * set the server url by the client's input
+     * @param url the input url
+     */
+    public static void setServer(String url)
+            throws IllegalArgumentException {
+        try {
+            ClientBuilder.newClient(new ClientConfig()) //
+                    .target(url) //
+                    .request(APPLICATION_JSON) //
+                    .accept(APPLICATION_JSON) //
+                    .get();
+        } catch (IllegalArgumentException e2) {
+            throw new IllegalArgumentException("Invalid URL");
+        } catch (ProcessingException e) {
+            throw new ProcessingException("Server not found");
+        }
+        SERVER = url;
+    }
+
+
+    /**
      * add a task list to the server
      * @param taskList  the task list
      * @param board     the board that the task list belongs to
@@ -55,12 +141,11 @@ public class ServerUtils {
      */
     public TaskList addTaskList(TaskList taskList, Board board) {
 
-        var target = ClientBuilder.newClient(new ClientConfig()).target(SERVER);
-
         // Add task list to repository
-        Response addListResponse = target.path("tasklist") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
+        Response addListResponse =
+                ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("tasklist") //
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .post(Entity.entity(taskList, APPLICATION_JSON));
 
         // If failed to add list, exit now
@@ -75,12 +160,8 @@ public class ServerUtils {
         addListResponse.close();
 
         // Link task list to board
-        Response linkBoardResponse = target.path(
-                "board/addTaskList/" + board.getId() + "/" + addedList.getId()
-            ) //
-            .request(APPLICATION_JSON) //
-            .accept(APPLICATION_JSON) //
-            .put(Entity.json(board));
+        Response linkBoardResponse =
+                linkTaskListToBoard(board, addedList.getId());
 
         int linkStatus = linkBoardResponse.getStatus();
         linkBoardResponse.close();
@@ -92,8 +173,22 @@ public class ServerUtils {
 
         // If failed to link list,
         // remove it from repository to avoid lists with no parents
-        deleteTaskList(addedList);
+        removeTaskList(addedList.getId()).close();
         return null;
+    }
+
+    /**
+     * Link task list that is already in repository to a board that is also
+     * already in repository
+     * @param board board that will be linked to the task list
+     * @param taskListId if of the task list that wll be linked to the board
+     * @return the endpoint's Response
+     */
+    private Response linkTaskListToBoard(Board board, long taskListId) {
+            return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("board/addTaskList/" + board.getId() + "/" + taskListId)
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .put(Entity.json(board));
     }
 
     /**
@@ -132,15 +227,52 @@ public class ServerUtils {
      * @return the tasklist which was deleted
      */
     public String deleteTaskList(TaskList taskList) {
-        long id = taskList.getId();
-        String res =  ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasklist/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(String.class);
 
-        System.out.println(res);
-        return res;
+        // Unlink task list from board
+        Response unlinkResponse =
+                ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("board/removeTaskList/" + taskList.getId()) //
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(taskList, APPLICATION_JSON));
+
+        // If failed to unlink list, exit now
+        if (unlinkResponse.getStatus() != Response.Status.OK.getStatusCode()) {
+            unlinkResponse.close();
+            return "Failed to unlink task list from board";
+        }
+
+        Board unlinkedBoard = unlinkResponse.readEntity(Board.class);
+        unlinkResponse.close();
+
+        // Remove task list from repository
+        Response removeListResponse = removeTaskList(taskList.getId());
+
+        int removeStatus = removeListResponse.getStatus();
+        String removeValue = removeListResponse.readEntity(String.class);
+        removeListResponse.close();
+
+        // If succeeded to link list, wrap up and exit
+        if (removeStatus == Response.Status.OK.getStatusCode()) {
+            return removeValue;
+        }
+
+        // If failed to remove list, link it back to board
+        // to avoid lists with no parents
+        linkTaskListToBoard(unlinkedBoard, taskList.getId()).close();
+        return null;
+
+    }
+
+
+    /**
+     * Remove task list from repository without unlinking it from board
+     * @param taskListId id of task list to be removed
+     */
+    private Response removeTaskList(long taskListId) {
+        return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("tasklist/delete/" + taskListId) //
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .delete();
     }
 
     /**
@@ -239,5 +371,23 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Deletes a task from the server
+     * @param task the task to be deleted
+     * @return the removed task
+     */
+    public String deleteTask(Task task) {
+        long id = task.getId();
+        String result = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasks/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(String.class);
+
+        System.out.println(result);
+        return result;
     }
 }

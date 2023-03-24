@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
@@ -15,9 +16,12 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 
+
+
 public class MainCtrlTalio {
 
     private Stage primaryStage;
+    private ServerUtils server;
 
     ConnectScreenCtrl connectCtrl;
     Scene connect;
@@ -29,17 +33,22 @@ public class MainCtrlTalio {
     Scene addTitledEntityScene;
 
     AddTaskCtrl addTaskCtrl;
-
     Scene addTaskScene;
 
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
+
+    CardCtrl cardCtrl;
+    Scene cardScene;
 
     RenameCtrl renameCtrl;
     Scene renameScene;
 
     EditTaskCtrl editTaskCtrl;
     Scene editTaskScene;
+
+    TaskDetailsCtrl taskDetailsCtrl;
+    Scene viewTaskScene;
 
 
     private TaskList currentTaskList;
@@ -58,14 +67,18 @@ public class MainCtrlTalio {
      * @param renameTaskList  the "rename list" screen
      */
     public void initialize(Stage primaryStage,
+                           ServerUtils server,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<TaskListCtrl, Parent> taskList,
+                           Pair<CardCtrl, Parent> card,
                            Pair<RenameCtrl, Parent> renameTaskList,
-                           Pair<EditTaskCtrl, Parent> editTask) {
+                           Pair<EditTaskCtrl, Parent> editTask,
+                           Pair<TaskDetailsCtrl, Parent> viewTask) {
         this.primaryStage = primaryStage;
+        this.server = server;
 
         this.connectCtrl = connect.getKey();
         this.connect = new Scene(connect.getValue());
@@ -82,11 +95,18 @@ public class MainCtrlTalio {
         this.taskListCtrl = taskList.getKey();
         this.taskListScene = new Scene(taskList.getValue());
 
+        this.cardCtrl = card.getKey();
+        this.cardScene = new Scene(card.getValue());
+
         this.renameCtrl = renameTaskList.getKey();
         this.renameScene = new Scene(renameTaskList.getValue());
 
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
+
+        this.taskDetailsCtrl = viewTask.getKey();
+        this.viewTaskScene = new Scene(viewTask.getValue());
+
 
         showConnect();
         primaryStage.show();
@@ -106,6 +126,7 @@ public class MainCtrlTalio {
     public void showMain() {
         primaryStage.setTitle("Talio: Lists");
         primaryStage.setScene(mainScene);
+        mainSceneCtrl.initialize(this.server);
     }
 
     /**
@@ -166,6 +187,7 @@ public class MainCtrlTalio {
         currentTask = task;
     }
 
+
     /**
      * switches to addTask scene
      */
@@ -218,6 +240,7 @@ public class MainCtrlTalio {
         primaryStage.setScene(editTaskScene);
     }
 
+
     /**
      * Switches scene to rename board scene
      */
@@ -238,6 +261,11 @@ public class MainCtrlTalio {
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
 
+        if (mainSceneCtrl == null) {
+            mainSceneCtrl = new MainSceneCtrl(server, this, renameCtrl);
+            mainSceneCtrl.initialize(this.server);
+        }
+
         if (activeBoard == null) {
             mainSceneCtrl.sceneTitle.setText("Board X");
         }
@@ -248,4 +276,37 @@ public class MainCtrlTalio {
         mainSceneCtrl.refresh();
         // TODO
     }
+
+    /**
+     * Shows the detailed view of a task
+     * @param task current task
+     * @throws IOException if the task is not found
+     */
+    public void showTaskDetails(Task task) throws IOException {
+        final FXMLLoader fxmlLoader =
+                new FXMLLoader(getClass().getResource("TaskDetails.fxml"));
+        setCurrentTask(task);
+
+        final Pane root = fxmlLoader.load();
+        ObservableList<Node> children = root.getChildren();
+
+        for (Node child : children) {
+            if (child.getId() != null) {
+                if (child.getId().equals("title")) {
+                    Label title = (Label) child;
+                    title.setText(task.getTitle());
+                }
+                if (child.getId().equals("description")) {
+                    Label description = (Label) child;
+                    description.setText(task.getDescription());
+                }
+            }
+        }
+
+        Scene viewTaskScene = new Scene(root, 600, 400);
+
+        primaryStage.setTitle("Task Details");
+        primaryStage.setScene(viewTaskScene);
+    }
+
 }

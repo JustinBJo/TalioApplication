@@ -58,4 +58,23 @@ public class TaskListTest {
         assertEquals(a.getTasks(), tasks);
         assertTrue(a.getTasks().size() == 2);
     }
+
+    @Test
+    public void addTaskTest() {
+        TaskList a = new TaskList("Test List");
+        Task one = new Task("task1", "example task 1", new ArrayList<>(),
+                new ArrayList<>());
+        Task two = new Task("task2", "example task 2", new ArrayList<>(),
+                new ArrayList<>());
+
+        a.addTask(one);
+        a.addTask(two);
+
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(one);
+        tasks.add(two);
+
+        assertEquals(a.getTasks(), tasks);
+        assertTrue(a.getTasks().size() == 2);
+    }
 }
