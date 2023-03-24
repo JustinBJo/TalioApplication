@@ -2,12 +2,15 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
@@ -136,12 +139,25 @@ public class CardCtrl implements Callback<ListView<Task>, ListCell<Task>> {
     }
 
     /**
-     * View the details of a task
-     * @throws IOException -
+     * View the details of a task after clicking twice on the card
      */
-    public void viewTask() throws IOException {
+    public void viewTask() {
         Task currentTask = task;
-        mainCtrl.showTaskDetails(currentTask);
+        root.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    if (mouseEvent.getClickCount() == 2) {
+                        System.out.println("Double clicked");
+                        try {
+                            mainCtrl.showTaskDetails(currentTask);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 }
