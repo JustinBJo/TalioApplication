@@ -16,7 +16,9 @@ public class AddTitledEntityCtrl {
 
     enum Type {
         TaskList,
-        Board
+        Board,
+        RenameTaskList,
+        RenameBoard
     }
 
     private final ServerUtils server;
@@ -57,6 +59,12 @@ public class AddTitledEntityCtrl {
                 break;
             case Board:
                 setHeader("Add new board");
+                break;
+            case RenameTaskList:
+                setHeader("Edit list");
+                break;
+            case RenameBoard:
+                setHeader("Edit current board");
                 break;
 
             // Error handling (very unlikely, as it is an enum)
@@ -104,6 +112,12 @@ public class AddTitledEntityCtrl {
                 case Board:
                     addNewBoard(title);
                     break;
+                case RenameTaskList:
+                    editTaskList(title);
+                    break;
+                case RenameBoard:
+                    editBoard(title);
+                    break;
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
@@ -149,7 +163,7 @@ public class AddTitledEntityCtrl {
         }
 
         server.addTaskList(taskList, parentBoard);
-        mainCtrl.mainSceneCtrl.lists.getItems().add(taskList);
+        mainCtrl.mainSceneCtrl.refresh();
     }
 
     /**
@@ -159,5 +173,18 @@ public class AddTitledEntityCtrl {
     private void addNewBoard(String title) throws WebApplicationException {
         Board board = new Board(title);
         mainCtrl.setActiveBoard(server.addBoard(board));
+    }
+
+    private void editTaskList(String title) {
+       server.updateTaskList(mainCtrl.getCurrentTaskList(), title);
+    }
+
+    private void editBoard(String title) {
+        Board updatedBoard =
+           server.updateBoard(
+                mainCtrl.getActiveBoard(),
+                title
+            );
+        mainCtrl.setActiveBoard(updatedBoard);
     }
 }
