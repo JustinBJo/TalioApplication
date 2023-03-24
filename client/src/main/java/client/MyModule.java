@@ -16,9 +16,9 @@
 package client;
 
 import client.scenes.*;
-import com.google.inject.Binder;
+import client.utils.ServerUtils;
+import com.google.inject.*;
 import com.google.inject.Module;
-import com.google.inject.Scopes;
 
 public class MyModule implements Module {
 
@@ -27,6 +27,12 @@ public class MyModule implements Module {
         binder.bind(MainCtrlTalio.class).in(Scopes.SINGLETON);
         binder.bind(ConnectScreenCtrl.class).in(Scopes.SINGLETON);
         binder.bind(MainSceneCtrl.class).in(Scopes.SINGLETON);
-        //binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(AddTitledEntityCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(AddTaskCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(TaskListCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(CardCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(RenameCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(EditTaskCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
     }
 }

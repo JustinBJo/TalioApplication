@@ -88,14 +88,16 @@ public class TaskList {
     public boolean equals(Object o) {
 
         if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
         if (o == null || !(o instanceof TaskList)) return false;
+
         TaskList taskList = (TaskList) o;
         return (getId() == null && taskList.getId() == null
-                    ||  getId().equals(taskList.getId()))
+                ||  getId().equals(taskList.getId()))
                 && (getTitle() == null && taskList.getTitle() == null
-                    || getTitle().equals(taskList.getTitle()))
+                || getTitle().equals(taskList.getTitle()))
                 && (getTasks() == null && taskList.getTasks() == null
-                    || getTasks().equals(taskList.getTasks()));
+                || getTasks().equals(taskList.getTasks()));
     }
 
     @Override

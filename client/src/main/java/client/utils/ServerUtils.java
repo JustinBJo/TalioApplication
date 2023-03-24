@@ -16,6 +16,7 @@
 package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.List;
 
 import commons.Board;
@@ -34,6 +35,34 @@ public class ServerUtils {
 
     private static String SERVER = "http://localhost:8080/";
 
+    private List<TaskList> boardData;
+
+    /**
+     * gets the default board from the repository
+     * @return default board
+     */
+    public Board getDefaultBoard() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/default")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>() {
+                });
+    }
+
+    /**
+     * gets the id of the default board in the system
+     * @return the id of the default board
+     */
+    public long getDefaultId() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/defaultId")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Long>() {
+                });
+    }
+
     /**
      * get task list
      *
@@ -46,6 +75,34 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<TaskList>>() {
                 });
+    }
+
+    /**
+     * get task list of the give board
+     * @param boardId the board to fetch the tasklists
+     * @return the tasklists of the board
+     */
+    public List<TaskList> getBoardData(long boardId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + boardId + "/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TaskList>>(){
+                });
+    }
+
+    /**
+     * get the tasklist of the default board using only the api
+     * @return the task list of the default board
+     */
+    public List<TaskList> getDefaultBoardTaskList() {
+        long defaultId = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("defaultId")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Long>(){
+                });
+        return getBoardData(defaultId);
     }
 
     /**
@@ -74,7 +131,6 @@ public class ServerUtils {
         }
         SERVER = url;
     }
-
 
 
     /**

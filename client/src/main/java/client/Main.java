@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
+import client.utils.ServerUtils;
 import com.google.inject.Injector;
 
 import javafx.application.Application;
@@ -44,6 +45,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+
+        ServerUtils server = INJECTOR.getInstance(ServerUtils.class);
 
         var connect = FXML.load(ConnectScreenCtrl.class,
                 "client", "scenes", "ConnectScreen.fxml");
@@ -76,7 +79,7 @@ public class Main extends Application {
 
         var mainCtrl =
                 INJECTOR.getInstance(MainCtrlTalio.class);
-        mainCtrl.initialize(primaryStage, connect, mainScene,
+        mainCtrl.initialize(primaryStage, server, connect, mainScene,
                 addTitledEntity, addTask, taskList, task,
                 renameTaskList, editTask, viewTask);
     }
