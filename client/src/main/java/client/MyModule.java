@@ -27,6 +27,5 @@ public class MyModule implements Module {
         binder.bind(MainCtrlTalio.class).in(Scopes.SINGLETON);
         binder.bind(ConnectScreenCtrl.class).in(Scopes.SINGLETON);
         binder.bind(MainSceneCtrl.class).in(Scopes.SINGLETON);
-        //binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
     }
 }

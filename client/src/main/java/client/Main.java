@@ -15,21 +15,16 @@
  */
 package client;
 
-import static com.google.inject.Guice.createInjector;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
-import com.google.inject.Injector;
+import client.utils.BuildUtils;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
 
     /**
      * main method
@@ -45,36 +40,46 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        var connect = FXML.load(ConnectScreenCtrl.class,
-                "client", "scenes", "ConnectScreen.fxml");
+        var connect = BuildUtils.loadFXML(
+                ConnectScreenCtrl.class,
+                "ConnectScreen.fxml"
+        );
 
-        var mainScene = FXML.load(MainSceneCtrl.class,
-                "client", "scenes", "MainScene.fxml");
+        var mainScene = BuildUtils.loadFXML(
+                MainSceneCtrl.class,
+                "MainScene.fxml"
+        );
 
-        var addTitledEntity = FXML.load(AddTitledEntityCtrl.class,
-                "client", "scenes", "AddTitledEntity.fxml");
+        var addTitledEntity = BuildUtils.loadFXML(
+                AddTitledEntityCtrl.class,
+                "AddTitledEntity.fxml"
+        );
 
-        var addTask = FXML.load(AddTaskCtrl.class,
-                "client", "scenes", "AddTask.fxml");
+        var addTask = BuildUtils.loadFXML(
+                AddTaskCtrl.class,
+                "AddTask.fxml"
+        );
 
-        var taskList = FXML.load(TaskListCtrl.class,
-                "client", "scenes", "TaskList.fxml");
-
-        var task = FXML.load(CardCtrl.class,
-                "client", "scenes", "Card.fxml");
-
-        var renameTaskList = FXML.load(
-                RenameCtrl.class, "client", "scenes",
-                "AddTitledEntity.fxml");
-
-        var editTask = FXML.load(EditTaskCtrl.class,
-                "client", "scenes", "EditTask.fxml");
+        var task = BuildUtils.loadFXML(
+                CardCtrl.class,
+                "Card.fxml"
+        );
 
 
-        var mainCtrl =
-                INJECTOR.getInstance(MainCtrlTalio.class);
-        mainCtrl.initialize(primaryStage, connect, mainScene,
-                addTitledEntity, addTask, taskList, task,
-                renameTaskList, editTask);
+        var editTask = BuildUtils.loadFXML(
+                EditTaskCtrl.class,
+                "EditTask.fxml"
+        );
+
+
+        var mainCtrl = BuildUtils.getInstance(MainCtrlTalio.class);
+        mainCtrl.initialize(
+                primaryStage,
+                connect,
+                mainScene,
+                addTitledEntity,
+                addTask,
+                task,
+                editTask);
     }
 }
