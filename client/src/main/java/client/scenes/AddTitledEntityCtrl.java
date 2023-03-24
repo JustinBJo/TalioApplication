@@ -139,7 +139,16 @@ public class AddTitledEntityCtrl {
      */
     private void addNewTaskList(String title) throws WebApplicationException {
         TaskList taskList = new TaskList(title);
-        server.addTaskList(taskList);
+        Board parentBoard = mainCtrl.getActiveBoard();
+
+        if (parentBoard == null) {
+            // Error handling
+            alertError("Lists must be created within boards!");
+            pressCancel();
+            return;
+        }
+
+        server.addTaskList(taskList, parentBoard);
         mainCtrl.mainSceneCtrl.lists.getItems().add(taskList);
     }
 

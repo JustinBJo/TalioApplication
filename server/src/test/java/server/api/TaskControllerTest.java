@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -64,6 +63,49 @@ public class TaskControllerTest {
         assertTrue(tasks.contains(a));
         assertTrue(tasks.contains(b));
         assertEquals(2, tasks.size());
+    }
+
+    @Test
+    void updateTitleTest() {
+        Task task = new Task("OldTitle",
+                "Old Description",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.updateTitle(task.getId(), "New Title");
+
+        assertTrue(repo.findAll().contains(task));
+        String newTitle = repo.getById(task.getId()).getTitle();
+        assertEquals("New Title", newTitle);
+    }
+
+    @Test
+    void updateDescriptionTest() {
+        Task task = new Task("Old Title",
+                "Old Description",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.updateDescription(task.getId(), "new description");
+
+        assertTrue(repo.findAll().contains(task));
+        String newDescription = repo.getById(task.getId()).getDescription();
+        assertEquals(newDescription, "new description");
+    }
+
+    @Test
+    void deleteTaskTest() {
+        Task task = new Task("t",
+                "d",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.delete(task.getId());
+
+        assertFalse(repo.findById(task.getId()).isPresent());
     }
 
 }

@@ -66,13 +66,6 @@ public class TaskListController {
      */
     @GetMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") long id) {
-//        if (id < 0 || !repo.existsById(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        TaskList param = repo.getById(id);
-//        repo.delete(param);
-//        return ResponseEntity.ok(param);
-
         if (id < 0) {
             return ResponseEntity.badRequest().body("Invalid id!");
         }

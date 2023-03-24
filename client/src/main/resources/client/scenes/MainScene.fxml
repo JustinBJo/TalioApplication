@@ -25,5 +25,6 @@
       <Button fx:id="renameBoard" layoutX="732.0" layoutY="2.0" mnemonicParsing="false" onAction="#renameBoard" prefHeight="22.0" prefWidth="92.0" text="Rename board" />
       <Button fx:id="copyCode" layoutX="732.0" layoutY="30.0" mnemonicParsing="false" onAction="#copyBoardCode" prefHeight="22.0" prefWidth="92.0" text="Copy code" />
       <Button layoutX="755.0" layoutY="123.0" mnemonicParsing="false" onAction="#joinBoard" text="Join Board" />
+      <ListView fx:id="tasks" layoutX="551.0" layoutY="60.0" onMouseClicked="#viewTask" prefHeight="539.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

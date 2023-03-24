@@ -1,14 +1,19 @@
 package client.scenes;
 
-
 import commons.Board;
+import commons.Task;
 import commons.TaskList;
 import commons.User;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +39,9 @@ public class MainCtrlTalio {
     TaskListCtrl taskListCtrl;
     Scene taskListScene;
 
+    CardCtrl cardCtrl;
+    Scene cardScene;
+
     RenameCtrl renameCtrl;
     Scene renameScene;
 
@@ -43,6 +51,13 @@ public class MainCtrlTalio {
     BoardCtrl boardCtrl;
     Scene boardScene;
 
+    EditTaskCtrl editTaskCtrl;
+    Scene editTaskScene;
+
+    TaskDetailsCtrl taskDetailsCtrl;
+    Scene viewTaskScene;
+
+
     private TaskList currentTaskList;
 
     private Board activeBoard;
@@ -51,6 +66,8 @@ public class MainCtrlTalio {
 
     private User user;
 
+
+    private Task currentTask;
 
 
     /**
@@ -69,7 +86,11 @@ public class MainCtrlTalio {
                            Pair<TaskListCtrl, Parent> taskList,
                            Pair<RenameCtrl, Parent> renameTaskList,
                            Pair<JoinBoardCtrl, Parent> joinBoard,
-                           Pair<BoardCtrl, Parent> board) {
+                           Pair<BoardCtrl, Parent> board,
+                           Pair<CardCtrl, Parent> card,
+                           Pair<EditTaskCtrl, Parent> editTask,
+                           Pair<TaskDetailsCtrl, Parent> viewTask
+                           ) {
         this.primaryStage = primaryStage;
 
         this.connectCtrl = connect.getKey();
@@ -87,6 +108,9 @@ public class MainCtrlTalio {
         this.taskListCtrl = taskList.getKey();
         this.taskListScene = new Scene(taskList.getValue());
 
+        this.cardCtrl = card.getKey();
+        this.cardScene = new Scene(card.getValue());
+
         this.renameCtrl = renameTaskList.getKey();
         this.renameScene = new Scene(renameTaskList.getValue());
 
@@ -95,6 +119,13 @@ public class MainCtrlTalio {
 
         this.boardCtrl = board.getKey();
         this.boardScene = new Scene(board.getValue());
+
+
+        this.editTaskCtrl = editTask.getKey();
+        this.editTaskScene = new Scene(editTask.getValue());
+
+        this.taskDetailsCtrl = viewTask.getKey();
+        this.viewTaskScene = new Scene(viewTask.getValue());
 
 
         showConnect();
@@ -160,6 +191,23 @@ public class MainCtrlTalio {
     }
 
     /**
+     * Returns the current Task we want to edit
+     * @return current task
+     */
+    public Task getCurrentTask() {
+        return currentTask;
+    }
+
+    /**
+     * Updates title and description of current task
+     * @param task
+     */
+    public void setCurrentTask(Task task) {
+        currentTask = task;
+    }
+
+
+    /**
      * switches to addTask scene
      */
     public void showAddTask() {
@@ -175,6 +223,42 @@ public class MainCtrlTalio {
         primaryStage.setScene(addTitledEntityScene);
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.Board);
     }
+
+    /**
+     * Switches scene to "Edit Task" scene,
+     * that shows the current task's information.
+     */
+    public void showEditTask(Task task) throws IOException {
+        final FXMLLoader fxmlLoader =
+                new FXMLLoader(getClass().getResource("EditTask.fxml"));
+        setCurrentTask(task);
+
+        final Pane root = fxmlLoader.load();
+        ObservableList<Node> children = root.getChildren();
+
+        //Pane root1 = (Pane) editTaskScene.getWindow().getScene().getRoot();
+        //ObservableList<Node> children= root1.getChildren();
+
+
+        for (Node child : children) {
+            if (child.getId() != null) {
+                if (child.getId().equals("currentTitle")) {
+                    Label currentTitle = (Label) child;
+                    currentTitle.setText(task.getTitle());
+                }
+                if (child.getId().equals("currentDescription")) {
+                    Label currentDescription = (Label) child;
+                    currentDescription.setText(task.getDescription());
+                }
+            }
+        }
+
+        Scene editTaskScene = new Scene(root, 570, 310);
+
+        primaryStage.setTitle("Edit Task");
+        primaryStage.setScene(editTaskScene);
+    }
+
 
     /**
      * Switches scene to rename board scene
@@ -215,6 +299,36 @@ public class MainCtrlTalio {
         // TODO
     }
 
+    /**
+     * Shows the detailed view of a task
+     * @param task current task
+     * @throws IOException if the task is not found
+     */
+    public void showTaskDetails(Task task) throws IOException {
+        final FXMLLoader fxmlLoader =
+                new FXMLLoader(getClass().getResource("TaskDetails.fxml"));
+        setCurrentTask(task);
+
+        final Pane root = fxmlLoader.load();
+        ObservableList<Node> children = root.getChildren();
+
+        for (Node child : children) {
+            if (child.getId() != null) {
+                if (child.getId().equals("title")) {
+                    Label title = (Label) child;
+                    title.setText(task.getTitle());
+                }
+                if (child.getId().equals("description")) {
+                    Label description = (Label) child;
+                    description.setText(task.getDescription());
+                }
+            }
+        }
+        Scene viewTaskScene = new Scene(root, 600, 400);
+
+        primaryStage.setTitle("Task Details");
+        primaryStage.setScene(viewTaskScene); }
+
 
     /**
      * returns current user
@@ -231,4 +345,8 @@ public class MainCtrlTalio {
     public void setUser(User user) {
         this.user = user;
     }
-}
+
+
+
+
+                }

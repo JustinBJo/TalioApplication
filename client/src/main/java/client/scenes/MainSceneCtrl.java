@@ -17,12 +17,17 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final RenameCtrl renameCtrl;
 
+    List<TaskListCtrl> taskListCtrls;
 
     ObservableList<TaskList> listData;
 
@@ -47,6 +52,7 @@ public class MainSceneCtrl {
 
     /**
      * constructor
+     *
      * @param mainCtrl the main controller
      */
     @Inject
@@ -61,11 +67,14 @@ public class MainSceneCtrl {
      * initialize the scene with the listview elements as the TaskList scene
      */
     public void initialize() {
+        taskListCtrls = new ArrayList<>();
+
         listData = FXCollections.observableArrayList();
         lists.setFixedCellSize(0);
         lists.setItems(listData);
-        lists.setCellFactory(new TaskListCtrl(server, this, mainCtrl,
-                renameCtrl));
+        lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
+                server, this, mainCtrl, renameCtrl), this));
+
 
         boardData = FXCollections.observableArrayList();
         boards.setFixedCellSize(0);
@@ -79,8 +88,11 @@ public class MainSceneCtrl {
 
     /**
      * go back to the connect screen
+     * TODO: delete all the potential local storage,
+     * since the user want to connect to a different server
      */
     public void back() {
+        ServerUtils.resetServer();
         mainCtrl.showConnect();
     }
 
@@ -94,6 +106,10 @@ public class MainSceneCtrl {
                 FXCollections.observableList(mainCtrl.getUser().getBoards());
         lists.setItems(listData);
         tasks.setItems(taskData);
+
+        for (TaskListCtrl taskListCtrl : taskListCtrls) {
+            taskListCtrl.refresh();
+        }
         boards.setItems(boardData);
     }
 
@@ -141,8 +157,7 @@ public class MainSceneCtrl {
         Board board = mainCtrl.getActiveBoard();
         if (board == null) {
             System.out.println("This is the default board!");
-        }
-        else {
+        } else {
             String code = board.getCode();
             content.putString(code);
             clipboard.setContent(content);
@@ -179,6 +194,15 @@ public class MainSceneCtrl {
     public void validateUser() {
         User u = server.checkUser();
         mainCtrl.setUser(u);
+    }
+
+    /**
+     * View the details of a task
+     * @throws IOException -
+     */
+    public void viewTask() throws IOException {
+        Task currentTask = tasks.getSelectionModel().getSelectedItem();
+        mainCtrl.showTaskDetails(currentTask);
     }
 
 }
