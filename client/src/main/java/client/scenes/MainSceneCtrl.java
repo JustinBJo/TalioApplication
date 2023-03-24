@@ -1,12 +1,11 @@
 package client.scenes;
 
-import client.utils.BuildUtils;
+import client.utils.ChildrenManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -22,8 +21,7 @@ public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
-
-    private final Map<TaskList, Parent> taskListUIMap;
+    private final ChildrenManager<TaskList> taskListChildrenManager;
 
     @FXML
     Label sceneTitle;
@@ -46,7 +44,11 @@ public class MainSceneCtrl {
     public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.taskListUIMap = new Hashtable<>();
+        this.taskListChildrenManager = new ChildrenManager<>(
+                taskListsContainer,
+                TaskListCtrl.class,
+                "TaskList.fxml"
+        );
     }
 
     /**
@@ -60,36 +62,11 @@ public class MainSceneCtrl {
     }
 
     /**
-     * Refresh the view, showing all tasks
+     * Refresh the view, showing all task lists
      */
     public void refresh() {
         List<TaskList> taskLists = server.getAllTaskLists();
-
-        // Create UI elements for new task lists
-        for (TaskList taskList: taskLists) {
-            boolean hasUIElement = taskListUIMap.containsKey(taskList);
-
-            if (hasUIElement) { continue; }
-
-            // Instantiate task list UI element
-            var loadedTaskList = BuildUtils.loadFXML(TaskListCtrl.class, "TaskList.fxml");
-            // Add it to its container
-            taskListsContainer.getChildren().add(loadedTaskList.getValue());
-            // Initialize its controller with this task list
-            loadedTaskList.getKey().setTaskList(taskList);
-            // Add its reference to the map
-            taskListUIMap.put(taskList, loadedTaskList.getValue());
-        }
-
-        // Remove UI elements for removed task lists
-        for (TaskList taskList: taskListUIMap.keySet()) {
-            boolean existsInServer = taskLists.contains(taskList);
-
-            if (existsInServer) { continue; }
-
-            // Remove UI element from its parent container and from task list from map at the same time
-            taskListsContainer.getChildren().remove(taskListUIMap.remove(taskList));
-        }
+        taskListChildrenManager.updateChildren(taskLists);
     }
 
     /**

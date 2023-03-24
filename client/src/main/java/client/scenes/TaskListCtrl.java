@@ -10,7 +10,7 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 
-public class TaskListCtrl {
+public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
     AnchorPane root;
     @FXML
@@ -37,7 +37,7 @@ public class TaskListCtrl {
      * Set the TaskList instance that this Scene holds
      * @param taskList the TaskList instance to be set
      */
-    public void setTaskList(TaskList taskList) {
+    public void setEntity(TaskList taskList) {
         this.taskList = taskList;
         if (taskList.getTitle() == null) {
             taskList.setTitle("Untitled");
