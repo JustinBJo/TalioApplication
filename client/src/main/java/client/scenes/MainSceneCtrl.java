@@ -1,44 +1,36 @@
 package client.scenes;
 
+import client.utils.BuildUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
-import commons.Task;
 import commons.TaskList;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
-    private final RenameCtrl renameCtrl;
 
-    List<TaskListCtrl> taskListCtrls;
-
-    ObservableList<TaskList> listData;
-
-    ObservableList<Task> taskData;
+    private final Map<TaskList, Parent> taskListUIMap;
 
     @FXML
     Label sceneTitle;
     @FXML
-    ListView boards;
+    VBox boardsContainer;
     @FXML
-    ListView<TaskList> lists;
-    @FXML
-    ListView<Task> tasks;
+    HBox taskListsContainer;
     @FXML
     Button renameBoard;
     @FXML
@@ -51,25 +43,10 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl,
-                         RenameCtrl renameCtrl) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.renameCtrl = renameCtrl;
-    }
-
-    /**
-     * initialize the scene with the listview elements as the TaskList scene
-     */
-    public void initialize() {
-        taskListCtrls = new ArrayList<>();
-
-        listData = FXCollections.observableArrayList();
-        lists.setFixedCellSize(0);
-        lists.setItems(listData);
-        lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
-                server, this, mainCtrl, renameCtrl), this));
-        refresh();
+        this.taskListUIMap = new Hashtable<>();
     }
 
     /**
@@ -83,20 +60,37 @@ public class MainSceneCtrl {
     }
 
     /**
-     * refresh the list
+     * Refresh the view, showing all tasks
      */
     public void refresh() {
-        listData = FXCollections.observableList(server.getTaskList());
-        taskData = FXCollections.observableList(server.getTasks());
-        lists.setItems(listData);
-        tasks.setItems(taskData);
+        List<TaskList> taskLists = server.getAllTaskLists();
 
-        for (TaskListCtrl taskListCtrl : taskListCtrls) {
-            taskListCtrl.refresh();
+        // Create UI elements for new task lists
+        for (TaskList taskList: taskLists) {
+            boolean hasUIElement = taskListUIMap.containsKey(taskList);
+
+            if (hasUIElement) { continue; }
+
+            // Instantiate task list UI element
+            var loadedTaskList = BuildUtils.loadFXML(TaskListCtrl.class, "TaskList.fxml");
+            // Add it to its container
+            taskListsContainer.getChildren().add(loadedTaskList.getValue());
+            // Initialize its controller with this task list
+            loadedTaskList.getKey().setTaskList(taskList);
+            // Add its reference to the map
+            taskListUIMap.put(taskList, loadedTaskList.getValue());
+        }
+
+        // Remove UI elements for removed task lists
+        for (TaskList taskList: taskListUIMap.keySet()) {
+            boolean existsInServer = taskLists.contains(taskList);
+
+            if (existsInServer) { continue; }
+
+            // Remove UI element from its parent container and from task list from map at the same time
+            taskListsContainer.getChildren().remove(taskListUIMap.remove(taskList));
         }
     }
-
-    private int i = 0;
 
     /**
      * add a board to the list
@@ -156,22 +150,6 @@ public class MainSceneCtrl {
      */
     public void addList() {
         mainCtrl.showAddList();
-    }
-
-    /**
-     * add a task to the list
-     */
-    public void addTask() {
-        mainCtrl.showAddTask();
-    }
-
-    /**
-     * Edit a task
-     * @throws IOException
-     */
-    public void editTask() throws IOException {
-        Task currentTask = tasks.getSelectionModel().getSelectedItem();
-        mainCtrl.showEditTask(currentTask);
     }
 
 }

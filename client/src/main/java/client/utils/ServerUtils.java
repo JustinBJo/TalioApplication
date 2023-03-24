@@ -35,11 +35,11 @@ public class ServerUtils {
     private static String SERVER = "http://localhost:8080/";
 
     /**
-     * get task list
+     * Gets all task lists in repository
      *
-     * @return the task list
+     * @return a list containing all task lists
      */
-    public List<TaskList> getTaskList() {
+    public List<TaskList> getAllTaskLists() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("tasklist") //
                 .request(APPLICATION_JSON) //

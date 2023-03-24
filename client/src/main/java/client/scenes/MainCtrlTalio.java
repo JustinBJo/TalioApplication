@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
@@ -15,6 +17,7 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 
+import static com.google.inject.Guice.createInjector;
 
 
 public class MainCtrlTalio {
@@ -31,17 +34,10 @@ public class MainCtrlTalio {
     Scene addTitledEntityScene;
 
     AddTaskCtrl addTaskCtrl;
-
     Scene addTaskScene;
-
-    TaskListCtrl taskListCtrl;
-    Scene taskListScene;
 
     CardCtrl cardCtrl;
     Scene cardScene;
-
-    RenameCtrl renameCtrl;
-    Scene renameScene;
 
     EditTaskCtrl editTaskCtrl;
     Scene editTaskScene;
@@ -60,16 +56,13 @@ public class MainCtrlTalio {
      * @param connect         the "connect" screen
      * @param mainScene       the main screen
      * @param addTitledEntity the "add titled entity" screen
-     * @param renameTaskList  the "rename list" screen
      */
     public void initialize(Stage primaryStage,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
-                           Pair<TaskListCtrl, Parent> taskList,
                            Pair<CardCtrl, Parent> card,
-                           Pair<RenameCtrl, Parent> renameTaskList,
                            Pair<EditTaskCtrl, Parent> editTask) {
         this.primaryStage = primaryStage;
 
@@ -85,18 +78,11 @@ public class MainCtrlTalio {
         this.addTaskCtrl = addTask.getKey();
         this.addTaskScene = new Scene(addTask.getValue());
 
-        this.taskListCtrl = taskList.getKey();
-        this.taskListScene = new Scene(taskList.getValue());
-
         this.cardCtrl = card.getKey();
         this.cardScene = new Scene(card.getValue());
 
-        this.renameCtrl = renameTaskList.getKey();
-        this.renameScene = new Scene(renameTaskList.getValue());
-
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
-
 
         showConnect();
         primaryStage.show();
@@ -132,8 +118,8 @@ public class MainCtrlTalio {
      */
     public void showRenameList() {
         primaryStage.setTitle("Rename the List");
-        primaryStage.setScene(renameScene);
-        renameCtrl.initialize(RenameCtrl.Type.TaskList);
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameTaskList);
     }
 
     /**
@@ -239,8 +225,8 @@ public class MainCtrlTalio {
             return;
         }
         primaryStage.setTitle("Rename the Board");
-        primaryStage.setScene(renameScene);
-        renameCtrl.initialize(RenameCtrl.Type.Board);
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameBoard);
     }
 
     /**
