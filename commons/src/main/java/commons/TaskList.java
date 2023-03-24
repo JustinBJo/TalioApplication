@@ -84,6 +84,18 @@ public class TaskList {
         this.tasks = tasks;
     }
 
+    /**
+     * Add a new task to this tasklist
+     * @param task the task that is being added to this list
+     * @return true if the task has been added successfully, false otherwise
+     */
+    public boolean addTask(Task task) {
+        if (this.tasks == null) {
+            this.tasks = new ArrayList<>();
+        }
+        return this.tasks.add(task);
+    }
+
     @Override
     public boolean equals(Object o) {
 

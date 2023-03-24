@@ -2,23 +2,28 @@ package server.api;
 
 import java.util.List;
 
+import commons.Task;
 import commons.TaskList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.TaskListRepository;
+import server.database.TaskRepository;
 
 @RestController
 @RequestMapping("/tasklist")
 public class TaskListController {
 
     private final TaskListRepository repo;
+    private final TaskRepository taskRepo;
 
     /**
      * constructor
      * @param repo the task list repository
      */
-    public TaskListController(TaskListRepository repo) {
+    public TaskListController(TaskListRepository repo,
+                              TaskRepository taskRepo) {
         this.repo = repo;
+        this.taskRepo = taskRepo;
     }
 
     /**
@@ -59,6 +64,34 @@ public class TaskListController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Add a task to a specific list
+     * @param taskListId the id of the list that the task is being added to
+     * @param taskId the id of the task that is being added
+     * @return OK if the task has been added to the tasklist,
+     *         BAD_REQUEST otherwise
+     */
+    @PutMapping("addTask/{taskListId}/{taskId}")
+    public ResponseEntity<String> addChildTask(
+            @PathVariable("taskListId") long taskListId,
+            @PathVariable("taskId") long taskId
+    ) {
+        if (taskListId < 0 || !repo.existsById(taskListId)
+                || taskId < 0 || !taskRepo.existsById(taskId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TaskList taskList = repo.getById(taskListId);
+        Task task = taskRepo.getById(taskId);
+
+        boolean success = taskList.addTask(task);
+        if (!success) return ResponseEntity.badRequest().build();
+
+        repo.save(taskList);
+        return ResponseEntity.ok(
+                "Added Task " + taskId + " to List " + taskListId
+        );
+    }
 
     /**
      * Deletes from the repository a tasklist with the provided id
