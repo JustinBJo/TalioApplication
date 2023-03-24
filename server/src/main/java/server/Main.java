@@ -21,6 +21,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import server.api.BoardController;
 import server.database.BoardRepository;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 @EntityScan(basePackages = { "commons", "server" })
 public class Main {
 
-    private static final long DEFAULT_ID = 1030;
+    private static long DEFAULT_ID;
 
     /**
      * start the server
@@ -46,8 +47,12 @@ public class Main {
      * @return
      */
     @Bean
-    public CommandLineRunner defaultBoardCheck(BoardRepository repo) {
+    public CommandLineRunner defaultBoardCheck(
+            BoardController ctrl,
+            BoardRepository repo
+    ) {
         return (args) -> {
+            DEFAULT_ID = ctrl.getDefaultId();
             if (!repo.findById(DEFAULT_ID).isPresent()) {
                 Board defaultBoard = new Board(
                         "DEFAULT", "Default Board", new ArrayList<>());

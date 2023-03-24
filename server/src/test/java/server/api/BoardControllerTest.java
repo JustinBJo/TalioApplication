@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
+import server.service.DefaultBoardService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class BoardControllerTest {
 
     private BoardRepository repo;
     private TaskListRepository listRepo;
+    private DefaultBoardService service;
     private BoardController sut;
 
 
@@ -25,7 +27,8 @@ public class BoardControllerTest {
     void setUp() {
         repo = new TestBoardRepository();
         listRepo = new TestTaskListRepository();
-        sut = new BoardController(repo, listRepo);
+        service = new DefaultBoardService();
+        sut = new BoardController(repo, listRepo, service);
     }
 
     @Test
@@ -299,5 +302,11 @@ public class BoardControllerTest {
         var res = sut.getBoardTaskList(1);
 
         assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void getDefaultId() {
+        var res = sut.getDefaultId();
+        assertEquals(res, 1030);
     }
 }

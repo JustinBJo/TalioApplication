@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
+import server.service.DefaultBoardService;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class BoardController {
 
     private final BoardRepository repo;
     private final TaskListRepository taskListRepo;
+    private final DefaultBoardService service;
 
     private static final long DEFAULT_ID = 1030;
 
@@ -25,10 +27,12 @@ public class BoardController {
      */
     public BoardController(
             BoardRepository repo,
-            TaskListRepository taskListRepo
+            TaskListRepository taskListRepo,
+            DefaultBoardService service
     ) {
         this.repo = repo;
         this.taskListRepo = taskListRepo;
+        this.service = service;
     }
 
     /**
@@ -51,6 +55,15 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Get the ID of the default board in the system
+     * @return the default ID stored in DefaultBoardService
+     */
+    @GetMapping("defaultId")
+    public long getDefaultId() {
+        return this.service.getDefaultId();
     }
 
     /**
