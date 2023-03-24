@@ -27,6 +27,8 @@ public class MainSceneCtrl {
     private final MainCtrlTalio mainCtrl;
     private final RenameCtrl renameCtrl;
 
+    private final long DEFAULT_ID;
+
     List<TaskListCtrl> taskListCtrls;
 
     ObservableList<TaskList> listData;
@@ -59,6 +61,8 @@ public class MainSceneCtrl {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.renameCtrl = renameCtrl;
+
+        this.DEFAULT_ID = server.getDefaultId();
     }
 
     /**
@@ -125,6 +129,18 @@ public class MainSceneCtrl {
      * Rename the current board
      */
     public void renameBoard() {
+        Board board = mainCtrl.getActiveBoard();
+        if (board == null) {
+            System.out.println("Cannot rename board: this is a dummy board!");
+            return;
+        }
+        if (board.getId() == DEFAULT_ID) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("You cannot rename the default board!");
+            alert.showAndWait();
+            return;
+        }
         mainCtrl.showRenameBoard();
     }
 
@@ -139,7 +155,7 @@ public class MainSceneCtrl {
             System.out.println("Cannot delete board: this is a dummy board!");
             return;
         }
-        if (board.getId() == 1030) {
+        if (board.getId() == DEFAULT_ID) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText("You cannot delete the default board!");

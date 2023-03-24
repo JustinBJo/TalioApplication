@@ -307,6 +307,7 @@ public class BoardControllerTest {
     @Test
     void getDefaultId() {
         var res = sut.getDefaultId();
-        assertEquals(res, 1030);
+        long defaultId = service.getDefaultId();
+        assertEquals(res, defaultId);
     }
 }
