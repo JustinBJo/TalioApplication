@@ -22,6 +22,7 @@
 ### Agenda 1 - Checking up on the sprint (10 min)
 - Are we keeping up with our desired timeline for this sprint?
 - How many issues will we be able to close by the end of the sprint?
+- Should we tackle another epic? Is what we have planned enough?
 
 ### Agenda 2 - Discussing the product pitch (15 - 20 min)
 - How are we going to structure the video?
