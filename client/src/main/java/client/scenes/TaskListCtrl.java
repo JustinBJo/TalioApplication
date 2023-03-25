@@ -96,8 +96,10 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * add a task to the list
      */
     public void addTask() {
-        // TODO
-        mainCtrl.showAddTask();
+        if (taskList == null) {
+            return; // TODO alert error
+        }
+        mainCtrl.showAddTask(taskList);
     }
 
     /**

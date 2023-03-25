@@ -172,12 +172,12 @@ public class MainCtrlTalio {
         currentTask = task;
     }
 
-
     /**
      * switches to addTask scene
      */
-    public void showAddTask() {
+    public void showAddTask(TaskList parentTaskList) {
         primaryStage.setTitle("Add a new task");
+        addTaskCtrl.setParentTaskList(parentTaskList);
         primaryStage.setScene(addTaskScene);
     }
 

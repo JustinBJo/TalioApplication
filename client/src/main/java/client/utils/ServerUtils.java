@@ -214,12 +214,13 @@ public class ServerUtils {
      * Method used to insert a task into the database
      *
      * @param task the task to be added to the database
+     * @param parentTaskList task list that will hold this task
      * @return the added task, in order for future operations
      * with it to be possible
      */
-    public Task addTask(Task task) {
+    public Task addTask(Task task, TaskList parentTaskList) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks") //
+                .target(SERVER).path("tasks/" + parentTaskList.getId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
