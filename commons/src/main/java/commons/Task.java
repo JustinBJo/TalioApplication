@@ -72,7 +72,7 @@ public class Task {
      * get the id of the task
      * @return the id of the task
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -136,11 +136,17 @@ public class Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Task)) return false;
 
-        Task task = (Task) o;
-
-        return getId() == task.getId();
+        Task other = (Task) o;
+        return (getId() == null && other.getId() == null
+                ||  getId().equals(other.getId()))
+                && (getTitle() == null && other.getTitle() == null
+                || getTitle().equals(other.getTitle()))
+                && (getSubtasks() == null && other.getSubtasks() == null
+                || getSubtasks().equals(other.getSubtasks()))
+                && (getTags() == null && other.getTags() == null
+                || getTags().equals(other.getTags()));
     }
 
     @Override
