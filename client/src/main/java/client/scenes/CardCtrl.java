@@ -71,11 +71,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     if (mouseEvent.getClickCount() == 2) {
                         System.out.println("Double clicked");
-                        try {
-                            mainCtrl.showTaskDetails(currentTask);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        mainCtrl.showTaskDetails(currentTask);
                     }
                 }
             }

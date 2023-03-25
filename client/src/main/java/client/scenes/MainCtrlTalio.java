@@ -3,17 +3,10 @@ package client.scenes;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
-import java.io.IOException;
 
 
 public class MainCtrlTalio {
@@ -41,11 +34,8 @@ public class MainCtrlTalio {
     TaskDetailsCtrl taskDetailsCtrl;
     Scene viewTaskScene;
 
-
     // TODO remove this
     private TaskList currentTaskList;
-    private Task currentTask;
-
 
     /**
      * initialize the main controller
@@ -101,7 +91,8 @@ public class MainCtrlTalio {
      * show the main screen
      */
     public void showMain() {
-        primaryStage.setTitle("Talio: Lists");
+        primaryStage.setTitle("Talio");
+        mainSceneCtrl.refresh();
         primaryStage.setScene(mainScene);
     }
 
@@ -157,22 +148,6 @@ public class MainCtrlTalio {
     }
 
     /**
-     * Returns the current Task we want to edit
-     * @return current task
-     */
-    public Task getCurrentTask() {
-        return currentTask;
-    }
-
-    /**
-     * Updates title and description of current task
-     * @param task
-     */
-    public void setCurrentTask(Task task) {
-        currentTask = task;
-    }
-
-    /**
      * switches to addTask scene
      */
     public void showAddTask(TaskList parentTaskList) {
@@ -194,34 +169,9 @@ public class MainCtrlTalio {
      * Switches scene to "Edit Task" scene,
      * that shows the current task's information.
      */
-    public void showEditTask(Task task) throws IOException {
-        final FXMLLoader fxmlLoader =
-                new FXMLLoader(getClass().getResource("EditTask.fxml"));
-        setCurrentTask(task);
-
-        final Pane root = fxmlLoader.load();
-        ObservableList<Node> children = root.getChildren();
-
-        //Pane root1 = (Pane) editTaskScene.getWindow().getScene().getRoot();
-        //ObservableList<Node> children= root1.getChildren();
-
-
-        for (Node child : children) {
-            if (child.getId() != null) {
-                if (child.getId().equals("currentTitle")) {
-                    Label currentTitle = (Label) child;
-                    currentTitle.setText(task.getTitle());
-                }
-                if (child.getId().equals("currentDescription")) {
-                    Label currentDescription = (Label) child;
-                    currentDescription.setText(task.getDescription());
-                }
-            }
-        }
-
-        Scene editTaskScene = new Scene(root, 570, 310);
-
+    public void showEditTask(Task task) {
         primaryStage.setTitle("Edit Task");
+        editTaskCtrl.setEditedTask(task);
         primaryStage.setScene(editTaskScene);
     }
 
@@ -238,32 +188,10 @@ public class MainCtrlTalio {
     /**
      * Shows the detailed view of a task
      * @param task current task
-     * @throws IOException if the task is not found
      */
-    public void showTaskDetails(Task task) throws IOException {
-        final FXMLLoader fxmlLoader =
-                new FXMLLoader(getClass().getResource("TaskDetails.fxml"));
-        setCurrentTask(task);
-
-        final Pane root = fxmlLoader.load();
-        ObservableList<Node> children = root.getChildren();
-
-        for (Node child : children) {
-            if (child.getId() != null) {
-                if (child.getId().equals("title")) {
-                    Label title = (Label) child;
-                    title.setText(task.getTitle());
-                }
-                if (child.getId().equals("description")) {
-                    Label description = (Label) child;
-                    description.setText(task.getDescription());
-                }
-            }
-        }
-
-        Scene viewTaskScene = new Scene(root, 600, 400);
-
+    public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
+        taskDetailsCtrl.setTask(task);
         primaryStage.setScene(viewTaskScene);
     }
 

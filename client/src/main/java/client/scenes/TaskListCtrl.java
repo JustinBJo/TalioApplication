@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
@@ -100,15 +99,5 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
             return; // TODO alert error
         }
         mainCtrl.showAddTask(taskList);
-    }
-
-    /**
-     * Edit a task
-     * @throws IOException
-     */
-    public void editTask() throws IOException {
-        // TODO
-//        Task selectedTask = taskContainer.getSelectionModel().getSelectedItem();
-//        mainCtrl.showEditTask(selectedTask);
     }
 }
