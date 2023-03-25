@@ -27,6 +27,8 @@ public class MainSceneCtrl {
 
     private final long defaultBoardID;
 
+    private Board activeBoard;
+
     @FXML
     Label sceneTitle;
     @FXML
@@ -55,19 +57,33 @@ public class MainSceneCtrl {
 
 
     /**
-     * Create children manager after FXML components are initialized
+     * This is called only once by the FXML builder, after FXML components are initialized.
      */
     public void initialize() {
+        // Create children manager (needs FXML container)
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
                 TaskListCtrl.class,
                 "TaskList.fxml"
         );
 
-        if (mainCtrl.getActiveBoard() == null) {
-            mainCtrl.setActiveBoard(server.getDefaultBoard());
-        }
+        // Set default board as current board (needs FXML title)
+        setActiveBoard(server.getDefaultBoard());
+    }
 
+    public Board getActiveBoard() {
+        return activeBoard;
+    }
+
+    /**
+     * Sets current active board and updates the main scene accordingly
+     * @param activeBoard new active board
+     */
+    public void setActiveBoard(Board activeBoard) {
+        this.activeBoard = activeBoard;
+        sceneTitle.setText(activeBoard.getTitle());
+
+        refresh();
     }
 
     /**
@@ -84,7 +100,7 @@ public class MainSceneCtrl {
      * Refresh the view, showing all task lists
      */
     public void refresh() {
-        List<TaskList> taskLists = server.getAllTaskLists();
+        List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
         taskListChildrenManager.updateChildren(taskLists);
         for (TaskListCtrl taskListCtrl: taskListChildrenManager.getChildrenCtrls()) {
             taskListCtrl.refresh();
@@ -102,12 +118,7 @@ public class MainSceneCtrl {
      * Rename the current board
      */
     public void renameBoard() {
-        Board board = mainCtrl.getActiveBoard();
-        if (board == null) {
-            System.out.println("Cannot rename board: this is a dummy board!");
-            return;
-        }
-        if (board.getId() == defaultBoardID) {
+        if (activeBoard.getId() == defaultBoardID) {
             // TODO make error alerts a mainctrl method
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
@@ -124,21 +135,15 @@ public class MainSceneCtrl {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        Board board = mainCtrl.getActiveBoard();
-        if (board == null) {
-            System.out.println("Cannot delete board: this is a dummy board!");
-            return;
-        }
-        if (board.getId() == defaultBoardID) {
+        if (activeBoard.getId() == defaultBoardID) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText("You cannot delete the default board!");
             alert.showAndWait();
             return;
         }
-        mainCtrl.setActiveBoard(server.getDefaultBoard());
-        server.deleteBoard(board);
-        refresh();
+        server.deleteBoard(activeBoard);
+        setActiveBoard(server.getDefaultBoard());
     }
 
     /**
@@ -150,17 +155,12 @@ public class MainSceneCtrl {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
 
-        Board board = mainCtrl.getActiveBoard();
-        if (board == null) {
-            System.out.println("This is the default board!");
-        } else {
-            String code = board.getCode();
-            content.putString(code);
-            clipboard.setContent(content);
+        String code = activeBoard.getCode();
+        content.putString(code);
+        clipboard.setContent(content);
 
-            System.out.println("The code for this board is copied!");
-            System.out.println("Code: " + code);
-        }
+        System.out.println("The code for this board is copied!");
+        System.out.println("Code: " + code);
     }
 
     /**

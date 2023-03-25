@@ -42,10 +42,8 @@ public class MainCtrlTalio {
     Scene viewTaskScene;
 
 
+    // TODO remove this
     private TaskList currentTaskList;
-
-    private Board activeBoard;
-
     private Task currentTask;
 
 
@@ -130,7 +128,16 @@ public class MainCtrlTalio {
      * @return the active board
      */
     public Board getActiveBoard() {
-        return this.activeBoard;
+        return mainSceneCtrl.getActiveBoard();
+    }
+
+    /**
+     * Sets the currently active board.
+     * Does nothing if the parameter is null.
+     */
+    public void setActiveBoard(Board board) {
+        if (board == null) return;
+        mainSceneCtrl.setActiveBoard(board);
     }
 
     /**
@@ -223,31 +230,9 @@ public class MainCtrlTalio {
      * Switches scene to rename board scene
      */
     public void showRenameBoard() {
-        if (this.activeBoard == null) {
-            System.out.println("Cannot rename board: this is a dummy board!");
-            return;
-        }
         primaryStage.setTitle("Rename the Board");
         primaryStage.setScene(addTitledEntityScene);
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameBoard);
-    }
-
-    /**
-     * Sets current active board and updates the main scene accordingly
-     * @param activeBoard new active board
-     */
-    public void setActiveBoard(Board activeBoard) {
-        this.activeBoard = activeBoard;
-
-        if (activeBoard == null) {
-            mainSceneCtrl.sceneTitle.setText("Board X");
-        }
-        else {
-            mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
-        }
-
-        mainSceneCtrl.refresh();
-        // TODO
     }
 
     /**
