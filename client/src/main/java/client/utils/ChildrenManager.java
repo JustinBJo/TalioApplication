@@ -27,6 +27,19 @@ public class ChildrenManager<T, TCtrl extends IEntityRepresentation<T>> {
     }
 
     public void updateChildren(List<T> children) {
+        // Remove UI elements for removed task lists
+        List<T> toBeRemoved = new ArrayList<>();
+        for (T child: childUIMap.keySet()) {
+            boolean existsInUpdatedList = children.contains(child);
+            // Tag child to be removed later. Not done here because removing
+            // from a list you're iterating over causes errors.
+            if (!existsInUpdatedList) { toBeRemoved.add(child); }
+        }
+        for (T child: toBeRemoved) {
+            // Remove UI element from its parent container and from task list from map at the same time
+            childrenContainer.getChildren().remove(childUIMap.remove(child).getValue());
+        }
+
         // Create UI elements for new children
         for (T child: children) {
             boolean hasUIElement = childUIMap.containsKey(child);
@@ -41,19 +54,6 @@ public class ChildrenManager<T, TCtrl extends IEntityRepresentation<T>> {
             loadedChild.getKey().setEntity(child);
             // Add its reference to the map
             childUIMap.put(child, loadedChild);
-        }
-
-        // Remove UI elements for removed task lists
-        List<T> toBeRemoved = new ArrayList<>();
-        for (T child: childUIMap.keySet()) {
-            boolean existsInUpdatedList = children.contains(child);
-            // Tag child to be removed later. Not done here because removing
-            // from a list you're iterating over causes errors.
-            if (!existsInUpdatedList) { toBeRemoved.add(child); }
-        }
-        for (T child: toBeRemoved) {
-            // Remove UI element from its parent container and from task list from map at the same time
-            childrenContainer.getChildren().remove(childUIMap.remove(child).getValue());
         }
     }
 
