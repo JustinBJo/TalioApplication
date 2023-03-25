@@ -85,8 +85,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Switches to the rename scene and refreshes main scene
      */
     public void rename() {
-        mainCtrl.setCurrentTaskList(taskList);
-        mainCtrl.showRenameList();
+        mainCtrl.showRenameList(taskList);
         mainCtrl.mainSceneCtrl.refresh();
     }
 

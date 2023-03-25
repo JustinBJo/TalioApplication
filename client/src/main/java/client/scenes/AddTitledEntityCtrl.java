@@ -25,6 +25,7 @@ public class AddTitledEntityCtrl {
     private final MainCtrlTalio mainCtrl;
 
     private Type type;
+    private TaskList taskListToEdit;
 
     @FXML
     Button cancel;
@@ -74,6 +75,10 @@ public class AddTitledEntityCtrl {
         }
     }
 
+    public void setTaskListToEdit(TaskList taskListToEdit) {
+        this.taskListToEdit = taskListToEdit;
+    }
+
     /**
      * Sets the text in the scene's header
      * @param text new header text
@@ -113,6 +118,10 @@ public class AddTitledEntityCtrl {
                     addNewBoard(title);
                     break;
                 case RenameTaskList:
+                    if (taskListToEdit == null) {
+                        alertError("No task list to edit!");
+                        break;
+                    }
                     editTaskList(title);
                     break;
                 case RenameBoard:
@@ -151,7 +160,7 @@ public class AddTitledEntityCtrl {
      * Add a new task list
      * @param title task list title
      */
-    private void addNewTaskList(String title) throws WebApplicationException {
+    private void addNewTaskList(String title) {
         TaskList taskList = new TaskList(title);
         Board parentBoard = mainCtrl.getActiveBoard();
 
@@ -170,13 +179,13 @@ public class AddTitledEntityCtrl {
      * Add a new board
      * @param title board title
      */
-    private void addNewBoard(String title) throws WebApplicationException {
+    private void addNewBoard(String title) {
         Board board = new Board(title);
         mainCtrl.setActiveBoard(server.addBoard(board));
     }
 
     private void editTaskList(String title) {
-       server.updateTaskList(mainCtrl.getCurrentTaskList(), title);
+       server.updateTaskList(taskListToEdit, title);
     }
 
     private void editBoard(String title) {

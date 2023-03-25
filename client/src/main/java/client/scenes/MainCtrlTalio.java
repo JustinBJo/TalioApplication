@@ -34,8 +34,6 @@ public class MainCtrlTalio {
     TaskDetailsCtrl taskDetailsCtrl;
     Scene viewTaskScene;
 
-    // TODO remove this
-    private TaskList currentTaskList;
 
     /**
      * initialize the main controller
@@ -108,9 +106,10 @@ public class MainCtrlTalio {
     /**
      * changes to rename list scene
      */
-    public void showRenameList() {
+    public void showRenameList(TaskList taskList) {
         primaryStage.setTitle("Rename the List");
         primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.setTaskListToEdit(taskList);
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameTaskList);
     }
 
@@ -129,22 +128,6 @@ public class MainCtrlTalio {
     public void setActiveBoard(Board board) {
         if (board == null) return;
         mainSceneCtrl.setActiveBoard(board);
-    }
-
-    /**
-     * Gets the current TaskList stored in the mainCtrl
-     * @return the current task list
-     */
-    public TaskList getCurrentTaskList() {
-        return currentTaskList;
-    }
-
-    /**
-     * sets the current task list to the value given
-     * @param currentTaskList the task list to be set
-     */
-    public void setCurrentTaskList(TaskList currentTaskList) {
-        this.currentTaskList = currentTaskList;
     }
 
     /**
