@@ -2,14 +2,13 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Callback;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -62,10 +61,25 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     }
 
     /**
-     * Edit a task
-     * @throws IOException -
+     * View the details of a task after clicking twice on the card
      */
-    public void editTask() throws IOException {
-        mainCtrl.showEditTask(task);
+    public void viewTask() {
+        Task currentTask = task;
+        root.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                    if (mouseEvent.getClickCount() == 2) {
+                        System.out.println("Double clicked");
+                        try {
+                            mainCtrl.showTaskDetails(currentTask);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        });
     }
+
 }

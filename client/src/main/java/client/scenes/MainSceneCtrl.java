@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -13,8 +14,9 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 
-import java.io.IOException;
+
 import java.util.*;
 
 public class MainSceneCtrl {
@@ -22,6 +24,8 @@ public class MainSceneCtrl {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
+
+    private final long defaultBoardID;
 
     @FXML
     Label sceneTitle;
@@ -38,12 +42,15 @@ public class MainSceneCtrl {
 
     /**
      * constructor
+     *
      * @param mainCtrl the main controller
      */
     @Inject
     public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+
+        this.defaultBoardID = server.getDefaultId();
     }
 
 
@@ -56,11 +63,16 @@ public class MainSceneCtrl {
                 TaskListCtrl.class,
                 "TaskList.fxml"
         );
+
+        if (mainCtrl.getActiveBoard() == null) {
+            mainCtrl.setActiveBoard(server.getDefaultBoard());
+        }
+
     }
 
     /**
      * go back to the connect screen
-     * TODO: delete all the protiential local storage,
+     * TODO: delete all the potential local storage,
      * since the user want to connect to a different server
      */
     public void back() {
@@ -90,6 +102,19 @@ public class MainSceneCtrl {
      * Rename the current board
      */
     public void renameBoard() {
+        Board board = mainCtrl.getActiveBoard();
+        if (board == null) {
+            System.out.println("Cannot rename board: this is a dummy board!");
+            return;
+        }
+        if (board.getId() == defaultBoardID) {
+            // TODO make error alerts a mainctrl method
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("You cannot rename the default board!");
+            alert.showAndWait();
+            return;
+        }
         mainCtrl.showRenameBoard();
     }
 
@@ -104,9 +129,16 @@ public class MainSceneCtrl {
             System.out.println("Cannot delete board: this is a dummy board!");
             return;
         }
-        mainCtrl.setActiveBoard(null);
+        if (board.getId() == defaultBoardID) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("You cannot delete the default board!");
+            alert.showAndWait();
+            return;
+        }
+        mainCtrl.setActiveBoard(server.getDefaultBoard());
         server.deleteBoard(board);
-        mainCtrl.showConnect();
+        refresh();
     }
 
     /**
@@ -121,8 +153,7 @@ public class MainSceneCtrl {
         Board board = mainCtrl.getActiveBoard();
         if (board == null) {
             System.out.println("This is the default board!");
-        }
-        else {
+        } else {
             String code = board.getCode();
             content.putString(code);
             clipboard.setContent(content);
@@ -138,6 +169,5 @@ public class MainSceneCtrl {
     public void addList() {
         mainCtrl.showAddList();
     }
-
 }
 
