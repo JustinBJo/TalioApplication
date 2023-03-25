@@ -21,7 +21,7 @@ public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
-    private final ChildrenManager<TaskList> taskListChildrenManager;
+    private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
 
     @FXML
     Label sceneTitle;
@@ -44,6 +44,13 @@ public class MainSceneCtrl {
     public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
+
+
+    /**
+     * Create children manager after FXML components are initialized
+     */
+    public void initialize() {
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
                 TaskListCtrl.class,
@@ -67,6 +74,9 @@ public class MainSceneCtrl {
     public void refresh() {
         List<TaskList> taskLists = server.getAllTaskLists();
         taskListChildrenManager.updateChildren(taskLists);
+        for (TaskListCtrl taskListCtrl: taskListChildrenManager.getChildrenCtrls()) {
+            taskListCtrl.refresh();
+        }
     }
 
     /**

@@ -3,20 +3,22 @@ package client.utils;
 import client.scenes.IEntityRepresentation;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChildrenManager<T> {
+public class ChildrenManager<T, TCtrl extends IEntityRepresentation<T>> {
     private final Pane childrenContainer;
-    private final Map<T, Parent> childUIMap;
-    private final Class<? extends IEntityRepresentation<T>> childSceneCtrl;
+    private final Map<T, Pair<TCtrl, Parent>> childUIMap;
+    private final Class<TCtrl> childSceneCtrl;
     private final String childFxmlFileName;
 
     public ChildrenManager(
             Pane childrenContainer,
-            Class<? extends IEntityRepresentation<T>> childSceneCtrl,
+            Class<TCtrl> childSceneCtrl,
             String childFxmlFileName) {
         this.childrenContainer = childrenContainer;
         this.childSceneCtrl = childSceneCtrl;
@@ -38,17 +40,28 @@ public class ChildrenManager<T> {
             // Initialize its controller with this task list
             loadedChild.getKey().setEntity(child);
             // Add its reference to the map
-            childUIMap.put(child, loadedChild.getValue());
+            childUIMap.put(child, loadedChild);
         }
 
         // Remove UI elements for removed task lists
+        List<T> toBeRemoved = new ArrayList<>();
         for (T child: childUIMap.keySet()) {
             boolean existsInUpdatedList = children.contains(child);
-
-            if (existsInUpdatedList) { continue; }
-
-            // Remove UI element from its parent container and from task list from map at the same time
-            childrenContainer.getChildren().remove(childUIMap.remove(child));
+            // Tag child to be removed later. Not done here because removing
+            // from a list you're iterating over causes errors.
+            if (!existsInUpdatedList) { toBeRemoved.add(child); }
         }
+        for (T child: toBeRemoved) {
+            // Remove UI element from its parent container and from task list from map at the same time
+            childrenContainer.getChildren().remove(childUIMap.remove(child).getValue());
+        }
+    }
+
+    public List<TCtrl> getChildrenCtrls() {
+        List<TCtrl> ctrlList = new ArrayList<>();
+        for (var ctrlAndParent: childUIMap.values()) {
+            ctrlList.add(ctrlAndParent.getKey());
+        }
+        return ctrlList;
     }
 }
