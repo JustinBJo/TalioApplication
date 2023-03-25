@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
@@ -67,7 +68,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     }
 
     public void refresh() {
-        var tasks = server.getTasks(); // TODO should be tasks of this list
+        if (taskList == null) { taskChildrenManager.updateChildren(new ArrayList<>()); }
+        var tasks = server.getTaskListData(taskList);
         taskChildrenManager.updateChildren(tasks);
     }
 
@@ -76,6 +78,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void delete() {
         server.deleteTaskList(taskList);
+        taskList = null;
         mainCtrl.mainSceneCtrl.refresh();
     }
 

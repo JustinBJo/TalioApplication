@@ -171,6 +171,18 @@ public class ServerUtils {
     }
 
     /**
+     * Gets all tasks belonging to a certain task list
+     * @param taskList parent of desired tasks
+     * @return list of tasks belonging to task list
+     */
+    public List<Task> getTaskListData(TaskList taskList) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Task>>() {});
+    }
+
+    /**
      * Link task list that is already in repository to a board that is also
      * already in repository
      * @param board board that will be linked to the task list
