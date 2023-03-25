@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
+import server.service.DefaultBoardService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +19,7 @@ public class BoardControllerTest {
 
     private BoardRepository repo;
     private TaskListRepository listRepo;
+    private DefaultBoardService service;
     private BoardController sut;
 
 
@@ -24,7 +27,8 @@ public class BoardControllerTest {
     void setUp() {
         repo = new TestBoardRepository();
         listRepo = new TestTaskListRepository();
-        sut = new BoardController(repo, listRepo);
+        service = new DefaultBoardService();
+        sut = new BoardController(repo, listRepo, service);
     }
 
     @Test
@@ -189,7 +193,7 @@ public class BoardControllerTest {
     }
 
     @Test
-    void failLinkBoardToTaskList() {
+    void failAddChildTaskList() {
         Board board = new Board("Test Board");
         long boardId = repo.save(board).getId();
 
@@ -244,5 +248,74 @@ public class BoardControllerTest {
         b.setCode("aaaa");
         repo.save(b);
         assertEquals(b, sut.getByCode("aaaa").getBody());
+    }
+
+    @Test
+    void updateIdTest() {
+        Board board = new Board("test");
+        long oldId = repo.save(board).getId();
+        long newId = oldId + 1;
+
+        repo.updateBoardId(oldId, newId);
+
+        assertTrue(repo.getById(oldId) == null);
+        assertFalse(repo.getById(newId) == null);
+    }
+
+    @Test
+    void getDefaultBoardTest() {
+        Board defaultBoard = new Board("default");
+        long oldId = repo.save(defaultBoard).getId();
+
+        repo.updateBoardId(oldId, 1030L);
+
+        var res = sut.getDefaultBoard();
+
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+    }
+
+    @Test
+    void getDefaultBoardFailTest() {
+        var res = sut.getDefaultBoard();
+
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void getTaskListTest() {
+        Board board = new Board("test");
+
+        List<TaskList> taskLists = new ArrayList<>();
+        taskLists.add(new TaskList("list 1"));
+        taskLists.add(new TaskList("list 2"));
+
+        board.setTaskLists(taskLists);
+        long id = repo.save(board).getId();
+
+        var res = sut.getBoardTaskList(id);
+
+        assertEquals(HttpStatus.OK, res.getStatusCode());
+        assertEquals(taskLists, res.getBody());
+    }
+
+    @Test
+    void getTaskListInvalidIdTest() {
+        var res = sut.getBoardTaskList(-1);
+
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void getTaskListFailTest() {
+        var res = sut.getBoardTaskList(1);
+
+        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
+    }
+
+    @Test
+    void getDefaultId() {
+        var res = sut.getDefaultId();
+        long defaultId = service.getDefaultId();
+        assertEquals(res, defaultId);
     }
 }

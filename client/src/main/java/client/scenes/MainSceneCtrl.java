@@ -10,12 +10,14 @@ import commons.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.stage.Modality;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,9 +25,11 @@ import java.util.List;
 
 public class MainSceneCtrl {
 
-    private final ServerUtils server;
+    private  ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final RenameCtrl renameCtrl;
+
+    private final long DEFAULT_ID;
 
     List<TaskListCtrl> taskListCtrls;
 
@@ -61,15 +65,28 @@ public class MainSceneCtrl {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.renameCtrl = renameCtrl;
+
+        this.DEFAULT_ID = server.getDefaultId();
     }
 
     /**
      * initialize the scene with the listview elements as the TaskList scene
      */
-    public void initialize() {
+    public void initialize(ServerUtils server) {
+        this.server = server;
+
         taskListCtrls = new ArrayList<>();
 
+        if (mainCtrl.getActiveBoard() == null) {
+            mainCtrl.setActiveBoard(server.getDefaultBoard());
+        }
+
         listData = FXCollections.observableArrayList();
+
+        if (lists == null) {
+            lists = new ListView<>();
+        }
+
         lists.setFixedCellSize(0);
         lists.setItems(listData);
         lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
@@ -100,7 +117,9 @@ public class MainSceneCtrl {
      * refresh the list
      */
     public void refresh() {
-        listData = FXCollections.observableList(server.getTaskList());
+//        listData = FXCollections.observableList(server.getTaskList());
+        listData = FXCollections.observableList(
+                server.getBoardData(mainCtrl.getActiveBoard().getId()));
         taskData = FXCollections.observableList(server.getTasks());
         boardData =
                 FXCollections.observableList(mainCtrl.getUser().getBoards());
@@ -126,6 +145,18 @@ public class MainSceneCtrl {
      * Rename the current board
      */
     public void renameBoard() {
+        Board board = mainCtrl.getActiveBoard();
+        if (board == null) {
+            System.out.println("Cannot rename board: this is a dummy board!");
+            return;
+        }
+        if (board.getId() == DEFAULT_ID) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("You cannot rename the default board!");
+            alert.showAndWait();
+            return;
+        }
         mainCtrl.showRenameBoard();
     }
 
@@ -140,9 +171,16 @@ public class MainSceneCtrl {
             System.out.println("Cannot delete board: this is a dummy board!");
             return;
         }
-        mainCtrl.setActiveBoard(null);
+        if (board.getId() == DEFAULT_ID) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText("You cannot delete the default board!");
+            alert.showAndWait();
+            return;
+        }
+        mainCtrl.setActiveBoard(server.getDefaultBoard());
         server.deleteBoard(board);
-        mainCtrl.showConnect();
+        refresh();
     }
 
     /**

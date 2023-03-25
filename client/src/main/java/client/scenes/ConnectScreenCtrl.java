@@ -36,9 +36,9 @@ public class ConnectScreenCtrl {
             notification.setText(e.getMessage());
             return;
         }
+        mainCtrl.mainSceneCtrl.validateUser();
         notification.setText("");
         mainCtrl.showMain();
-        mainCtrl.mainSceneCtrl.validateUser();
         address.setText("");
 
     }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
+import server.service.DefaultBoardService;
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ public class BoardController {
 
     private final BoardRepository repo;
     private final TaskListRepository taskListRepo;
+    private final DefaultBoardService service;
+
+    private static final long DEFAULT_ID = 1030;
 
     /**
      * Constructor
@@ -23,10 +27,12 @@ public class BoardController {
      */
     public BoardController(
             BoardRepository repo,
-            TaskListRepository taskListRepo
+            TaskListRepository taskListRepo,
+            DefaultBoardService service
     ) {
         this.repo = repo;
         this.taskListRepo = taskListRepo;
+        this.service = service;
     }
 
     /**
@@ -49,6 +55,15 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Get the ID of the default board in the system
+     * @return the default ID stored in DefaultBoardService
+     */
+    @GetMapping("defaultId")
+    public long getDefaultId() {
+        return this.service.getDefaultId();
     }
 
     /**
@@ -123,7 +138,7 @@ public class BoardController {
 
         repo.save(board);
         return ResponseEntity.ok(
-            "Added Task List " + taskListId + " to Board " + boardId
+                "Added Task List " + taskListId + " to Board " + boardId
         );
     }
 
@@ -184,4 +199,31 @@ public class BoardController {
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }
+
+    /**
+     * Gets the default board of the application
+     * @return null if the board does not exist, the default board otherwise
+     */
+    @GetMapping("default")
+    public ResponseEntity<Board> getDefaultBoard() {
+        return getById(DEFAULT_ID);
+    }
+
+    /**
+     * Gets the tasklist of a board from the repository
+     * @param id the id of the board
+     * @return the tasklist of the board
+     */
+    @GetMapping("{id}/tasklist")
+    public ResponseEntity<List<TaskList>> getBoardTaskList(
+            @PathVariable("id") long id
+    ) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Board board = repo.findById(id).get();
+        return ResponseEntity.ok(board.getTaskLists());
+    }
+
 }

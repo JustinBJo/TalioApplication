@@ -1,23 +1,29 @@
 package server.api;
+import commons.Task;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.database.TaskListRepository;
+import server.database.TaskRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class TaskListControllerTest {
 
     private TaskListRepository repo;
+    private TaskRepository taskRepo;
     private TaskListController taskListController;
 
     @BeforeEach
     public void setup() {
         repo = new TestTaskListRepository();
-        taskListController = new TaskListController(repo);
+        taskRepo = new TestTaskRepository();
+        taskListController = new TaskListController(repo, taskRepo);
     }
 
     @Test
@@ -59,6 +65,34 @@ public class TaskListControllerTest {
     public void addWithNullTitle() {
         TaskList tl = new TaskList(null);
         var result = taskListController.add(tl);
+        assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void addTaskTest() {
+        TaskList tasklist = new TaskList("test list");
+        long listId = repo.save(tasklist).getId();
+
+        Task task = new Task("test task", "description",
+                new ArrayList<>(), new ArrayList<>());
+        long taskId = taskRepo.save(task).getId();
+
+        var result = taskListController.addChildTask(listId, taskId);
+
+        String targetString = "Added Task " + taskId
+                + " to List " + listId;
+
+        assertEquals(OK, result.getStatusCode());
+        assertEquals(targetString, result.getBody());
+    }
+
+    @Test
+    public void addNonExistentTaskTest() {
+        TaskList tasklist = new TaskList("test list");
+        long listId = repo.save(tasklist).getId();
+
+        var result = taskListController.addChildTask(listId, 1);
+
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 

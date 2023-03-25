@@ -9,7 +9,7 @@
 
 <AnchorPane prefHeight="165.0" prefWidth="427.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.JoinBoardCtrl">
    <children>
-      <Label layoutX="155.0" layoutY="34.0" text="Enter board id:">
+      <Label layoutX="155.0" layoutY="34.0" text="Enter board code:">
          <font>
             <Font size="18.0" />
          </font>
