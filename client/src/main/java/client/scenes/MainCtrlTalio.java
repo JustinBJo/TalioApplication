@@ -13,22 +13,22 @@ public class MainCtrlTalio {
 
     private Stage primaryStage;
 
-    Scene connect;
+    private Scene connect;
 
-    MainSceneCtrl mainSceneCtrl;
-    Scene mainScene;
+    private MainSceneCtrl mainSceneCtrl;
+    private Scene mainScene;
 
-    AddTitledEntityCtrl addTitledEntityCtrl;
-    Scene addTitledEntityScene;
+    private AddTitledEntityCtrl addTitledEntityCtrl;
+    private Scene addTitledEntityScene;
 
-    AddTaskCtrl addTaskCtrl;
-    Scene addTaskScene;
+    private AddTaskCtrl addTaskCtrl;
+    private Scene addTaskScene;
 
-    EditTaskCtrl editTaskCtrl;
-    Scene editTaskScene;
+    private EditTaskCtrl editTaskCtrl;
+    private Scene editTaskScene;
 
-    TaskDetailsCtrl taskDetailsCtrl;
-    Scene viewTaskScene;
+    private TaskDetailsCtrl taskDetailsCtrl;
+    private Scene viewTaskScene;
 
 
     /**
@@ -83,6 +83,10 @@ public class MainCtrlTalio {
         primaryStage.setTitle("Talio");
         mainSceneCtrl.refresh();
         primaryStage.setScene(mainScene);
+    }
+
+    public void refreshBoard() {
+        mainSceneCtrl.refresh();
     }
 
     /**

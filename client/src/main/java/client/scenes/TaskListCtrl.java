@@ -79,7 +79,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     public void delete() {
         server.deleteTaskList(taskList);
         taskList = null;
-        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.refreshBoard();
     }
 
     /**
@@ -87,7 +87,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void rename() {
         mainCtrl.showRenameList(taskList);
-        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.refreshBoard();
     }
 
 

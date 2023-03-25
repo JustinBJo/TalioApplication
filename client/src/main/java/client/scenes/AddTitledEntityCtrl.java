@@ -91,7 +91,6 @@ public class AddTitledEntityCtrl {
      */
     public void pressCancel() {
         textField.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -140,7 +139,6 @@ public class AddTitledEntityCtrl {
         }
 
         textField.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -160,7 +158,7 @@ public class AddTitledEntityCtrl {
         }
 
         server.addTaskList(taskList, parentBoard);
-        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.refreshBoard();
     }
 
     /**

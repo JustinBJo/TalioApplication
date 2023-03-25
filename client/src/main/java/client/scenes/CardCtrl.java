@@ -57,7 +57,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      */
     public void deleteTask() {
         server.deleteTask(task);
-        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.refreshBoard();
     }
 
     /**

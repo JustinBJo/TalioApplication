@@ -46,7 +46,6 @@ public class AddTaskCtrl {
      */
     public void cancel() {
         clearFields();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -67,7 +66,6 @@ public class AddTaskCtrl {
 
         clearFields();
         parentTaskList = null;
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
