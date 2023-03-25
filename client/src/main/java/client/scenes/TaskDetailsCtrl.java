@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import commons.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import java.io.IOException;
 
 public class TaskDetailsCtrl {
     private final MainCtrlTalio mainCtrl;
@@ -30,6 +29,9 @@ public class TaskDetailsCtrl {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * @param task task whose details are shown in the scene
+     */
     public void setTask(Task task) {
         if (task == null) return;
 

@@ -33,6 +33,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     private ChildrenManager<Task, CardCtrl> taskChildrenManager;
     private TaskList taskList;
 
+    /**
+     * Constructor with dependency injection
+     */
     @Inject
     public TaskListCtrl(ServerUtils server,
                         MainCtrlTalio mainCtrl) {
@@ -67,8 +70,14 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         refresh();
     }
 
+    /**
+     * Updates this list's tasks
+     */
     public void refresh() {
-        if (taskList == null) { taskChildrenManager.updateChildren(new ArrayList<>()); }
+        if (taskList == null) {
+            // no children if there's no task list
+            taskChildrenManager.updateChildren(new ArrayList<>());
+        }
         var tasks = server.getTaskListData(taskList);
         taskChildrenManager.updateChildren(tasks);
     }

@@ -36,6 +36,9 @@ public class EditTaskCtrl {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * @param editedTask task which will be edited
+     */
     public void setEditedTask(Task editedTask) {
         if (editedTask == null) return;
 

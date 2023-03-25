@@ -74,6 +74,10 @@ public class AddTitledEntityCtrl {
         }
     }
 
+    /**
+     * @param taskListToEdit task list which will be edited
+     *                       if type is RenameTaskList
+     */
     public void setTaskListToEdit(TaskList taskListToEdit) {
         this.taskListToEdit = taskListToEdit;
     }
@@ -128,7 +132,9 @@ public class AddTitledEntityCtrl {
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
-                    ErrorUtils.alertError("Something went wrong, please try again!");
+                    ErrorUtils.alertError(
+                        "Something went wrong, please try again!"
+                    );
                     pressCancel();
                     break;
             }

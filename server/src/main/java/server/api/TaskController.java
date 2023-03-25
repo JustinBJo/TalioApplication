@@ -22,7 +22,10 @@ public class TaskController {
      * @param repo               the task repository
      * @param taskListRepository task list repository
      */
-    public TaskController(TaskRepository repo, TaskListRepository taskListRepository) {
+    public TaskController(
+            TaskRepository repo,
+            TaskListRepository taskListRepository
+    ) {
         this.repo = repo;
         this.taskListRepository = taskListRepository;
     }
@@ -130,7 +133,7 @@ public class TaskController {
         Task task = repo.getById(id);
 
         TaskList parent = null;
-        for (TaskList taskList: taskListRepository.findAll()){
+        for (TaskList taskList : taskListRepository.findAll()) {
             if (taskList.getTasks().contains(task)) {
                 parent = taskList;
                 break;

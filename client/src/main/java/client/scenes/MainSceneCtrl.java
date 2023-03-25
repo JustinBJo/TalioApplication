@@ -56,7 +56,8 @@ public class MainSceneCtrl {
 
 
     /**
-     * This is called only once by the FXML builder, after FXML components are initialized.
+     * This is called only once by the FXML builder,
+     * after FXML components are initialized.
      */
     public void initialize() {
         // Create children manager (needs FXML container)
@@ -70,6 +71,9 @@ public class MainSceneCtrl {
         setActiveBoard(server.getDefaultBoard());
     }
 
+    /**
+     * @return board currently shown in scene
+     */
     public Board getActiveBoard() {
         return activeBoard;
     }
@@ -101,7 +105,8 @@ public class MainSceneCtrl {
     public void refresh() {
         List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
         taskListChildrenManager.updateChildren(taskLists);
-        for (TaskListCtrl taskListCtrl: taskListChildrenManager.getChildrenCtrls()) {
+        for (TaskListCtrl taskListCtrl :
+                taskListChildrenManager.getChildrenCtrls()) {
             taskListCtrl.refresh();
         }
     }

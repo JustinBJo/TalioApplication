@@ -11,7 +11,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
 
