@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -51,7 +52,7 @@ public class TaskDetailsCtrl {
      */
     public void editTask() {
         if (task == null) {
-            // TODO alert error
+            ErrorUtils.alertError("No task to edit!");
             exit();
         }
         mainCtrl.showEditTask(task);
@@ -62,7 +63,7 @@ public class TaskDetailsCtrl {
      */
     public void deleteTask() {
         if (task == null) {
-            // TODO alert error
+            ErrorUtils.alertError("No task to delete!");
             exit();
         }
         server.deleteTask(task);

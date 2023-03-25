@@ -1,12 +1,12 @@
 package client.scenes;
 
 import client.utils.ChildrenManager;
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -14,7 +14,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 
 
 import java.util.*;
@@ -119,11 +118,7 @@ public class MainSceneCtrl {
      */
     public void renameBoard() {
         if (activeBoard.getId() == defaultBoardID) {
-            // TODO make error alerts a mainctrl method
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("You cannot rename the default board!");
-            alert.showAndWait();
+            ErrorUtils.alertError("You cannot rename the default board!");
             return;
         }
         mainCtrl.showRenameBoard();
@@ -136,10 +131,7 @@ public class MainSceneCtrl {
      */
     public void removeBoard() {
         if (activeBoard.getId() == defaultBoardID) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("You cannot delete the default board!");
-            alert.showAndWait();
+            ErrorUtils.alertError("You cannot delete the default board!");
             return;
         }
         server.deleteBoard(activeBoard);

@@ -1,14 +1,13 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 
 public class EditTaskCtrl {
     private final MainCtrlTalio mainCtrl;
@@ -60,7 +59,7 @@ public class EditTaskCtrl {
      */
     public void saveChanges() {
         if (editedTask == null) {
-            // TODO alert error
+            ErrorUtils.alertError("No task to edit!");
             cancel();
         }
 
@@ -81,11 +80,7 @@ public class EditTaskCtrl {
 
         }
         catch (WebApplicationException e) {
-            // TODO replace with mainctrl alert
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            ErrorUtils.alertError(e.getMessage());
             return;
         }
 

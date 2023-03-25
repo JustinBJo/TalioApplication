@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ChildrenManager;
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -95,7 +96,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void addTask() {
         if (taskList == null) {
-            return; // TODO alert error
+            ErrorUtils.alertError("No list to add task to!");
+            return;
         }
         mainCtrl.showAddTask(taskList);
     }
