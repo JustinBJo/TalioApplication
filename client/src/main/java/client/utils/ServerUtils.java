@@ -35,7 +35,6 @@ public class ServerUtils {
 
     private static String SERVER = "http://localhost:8080/";
 
-    private List<TaskList> boardData;
 
     /**
      * gets the default board from the repository
@@ -95,14 +94,8 @@ public class ServerUtils {
      * get the tasklist of the default board using only the api
      * @return the task list of the default board
      */
-    public List<TaskList> getDefaultBoardTaskList() {
-        long defaultId = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("defaultId")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Long>(){
-                });
-        return getBoardData(defaultId);
+    public List<TaskList> getDefaultBoardData() {
+        return getBoardData(getDefaultId());
     }
 
     /**
