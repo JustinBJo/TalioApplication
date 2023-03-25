@@ -1,12 +1,15 @@
 package client.scenes;
 
+import client.utils.ChildrenManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Task;
 import commons.TaskList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -21,9 +24,12 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     Button addTask;
     @FXML
     Button rename;
+    @FXML
+    VBox taskContainer;
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private ChildrenManager<Task, CardCtrl> taskChildrenManager;
     private TaskList taskList;
 
     @Inject
@@ -31,6 +37,19 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
                         MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
+
+
+    /**
+     * Create children manager after FXML components are initialized
+     */
+    public void initialize() {
+        this.taskChildrenManager =
+                new ChildrenManager<>(
+                    taskContainer,
+                    CardCtrl.class,
+                    "Card.fxml"
+                );
     }
 
     /**
@@ -44,10 +63,12 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         }
         title.setText(taskList.getTitle());
 
-//        if (taskList.getTasks() == null) {
-//            return;
-//        }
-        //tasks.getItems().addAll(taskList.getTasks());
+        refresh();
+    }
+
+    public void refresh() {
+        var tasks = server.getTasks(); // TODO should be tasks of this list
+        taskChildrenManager.updateChildren(tasks);
     }
 
     /**
@@ -73,7 +94,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void addTask() {
         // TODO
-//        mainCtrl.showAddTask();
+        mainCtrl.showAddTask();
     }
 
     /**
@@ -82,7 +103,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void editTask() throws IOException {
         // TODO
-//        Task currentTask = tasks.getSelectionModel().getSelectedItem();
-//        mainCtrl.showEditTask(currentTask);
+//        Task selectedTask = taskContainer.getSelectionModel().getSelectedItem();
+//        mainCtrl.showEditTask(selectedTask);
     }
 }
