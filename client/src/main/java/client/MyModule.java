@@ -25,7 +25,6 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrlTalio.class).in(Scopes.SINGLETON);
-        binder.bind(MainSceneCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
     }
 }

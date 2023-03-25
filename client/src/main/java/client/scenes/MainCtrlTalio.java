@@ -13,7 +13,6 @@ public class MainCtrlTalio {
 
     private Stage primaryStage;
 
-    ConnectScreenCtrl connectCtrl;
     Scene connect;
 
     MainSceneCtrl mainSceneCtrl;
@@ -24,9 +23,6 @@ public class MainCtrlTalio {
 
     AddTaskCtrl addTaskCtrl;
     Scene addTaskScene;
-
-    CardCtrl cardCtrl;
-    Scene cardScene;
 
     EditTaskCtrl editTaskCtrl;
     Scene editTaskScene;
@@ -47,12 +43,10 @@ public class MainCtrlTalio {
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
-                           Pair<CardCtrl, Parent> card,
                            Pair<EditTaskCtrl, Parent> editTask,
                            Pair<TaskDetailsCtrl, Parent> viewTask) {
         this.primaryStage = primaryStage;
 
-        this.connectCtrl = connect.getKey();
         this.connect = new Scene(connect.getValue());
 
         this.mainSceneCtrl = mainScene.getKey();
@@ -63,9 +57,6 @@ public class MainCtrlTalio {
 
         this.addTaskCtrl = addTask.getKey();
         this.addTaskScene = new Scene(addTask.getValue());
-
-        this.cardCtrl = card.getKey();
-        this.cardScene = new Scene(card.getValue());
 
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());

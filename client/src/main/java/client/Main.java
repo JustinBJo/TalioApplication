@@ -60,11 +60,6 @@ public class Main extends Application {
                 "AddTask.fxml"
         );
 
-        var task = BuildUtils.loadFXML(
-                CardCtrl.class,
-                "Card.fxml"
-        );
-
         var viewTask = BuildUtils.loadFXML(
                 TaskDetailsCtrl.class,
                 "TaskDetails.fxml"
@@ -84,7 +79,6 @@ public class Main extends Application {
                 mainScene,
                 addTitledEntity,
                 addTask,
-                task,
                 editTask,
                 viewTask);
     }
