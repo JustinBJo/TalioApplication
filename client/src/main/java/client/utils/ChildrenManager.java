@@ -44,13 +44,19 @@ public class ChildrenManager<T, C extends IEntityRepresentation<T>> {
             // from a list you're iterating over causes errors.
             if (!existsInUpdatedList) toBeRemoved.add(child);
         }
+        List<Integer> removedIndexes = new ArrayList<>();
         for (T child : toBeRemoved) {
             // Remove UI element from its container
             // and child from map at the same time
-            childrenContainer.getChildren().remove(
-                childUIMap.remove(child).getValue()
+            var uiElement = childUIMap.remove(child).getValue();
+            removedIndexes.add(
+                childrenContainer.getChildren().indexOf(uiElement)
             );
+            childrenContainer.getChildren().remove(uiElement);
         }
+
+        // Handles indexes for replaced (removed then added) children
+        var indexIterator = removedIndexes.iterator();
 
         // Create UI elements for new children
         for (T child : children) {
@@ -62,7 +68,14 @@ public class ChildrenManager<T, C extends IEntityRepresentation<T>> {
             var loadedChild =
                     BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
             // Add it to its container
-            childrenContainer.getChildren().add(loadedChild.getValue());
+            if (indexIterator.hasNext()) {
+                // At previous position if it was just removed
+                childrenContainer.getChildren()
+                        .add(indexIterator.next(), loadedChild.getValue());
+            } else {
+                childrenContainer.getChildren()
+                        .add(loadedChild.getValue());
+            }
             // Initialize its controller with this task list
             loadedChild.getKey().setEntity(child);
             // Add its reference to the map
