@@ -9,6 +9,8 @@ import commons.TaskList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -27,6 +29,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     Button rename;
     @FXML
     VBox taskContainer;
+    @FXML
+    ImageView editIcon;
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
@@ -54,6 +58,10 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
                     CardCtrl.class,
                     "Card.fxml"
                 );
+
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        this.editIcon.setImage(editIcon);
     }
 
     /**

@@ -17,13 +17,13 @@
       </Label>
       <Button fx:id="delete" layoutX="148.0" layoutY="3.0" mnemonicParsing="false" onAction="#deleteTask" prefHeight="18.0" prefWidth="18.0" style="-fx-background-color: #FF0000;" text="X" textFill="WHITE" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
          <font>
-            <Font name="Arial" size="10.0" />
+            <Font name="Arial" size="11.0" />
          </font>
          <padding>
             <Insets left="-10.0" right="-10.0" />
          </padding>
       </Button>
-      <Button fx:id="edit" layoutX="130.0" layoutY="3.0" mnemonicParsing="false" onAction="#editTask" prefHeight="18.0" prefWidth="19.0" style="-fx-background-color: #17D50A;" textFill="WHITE">
+      <Button fx:id="edit" layoutX="130.0" layoutY="3.0" mnemonicParsing="false" onAction="#editTask" prefHeight="18.0" prefWidth="19.0" style="-fx-background-color: #0278FD;" textFill="WHITE">
          <font>
             <Font name="Arial" size="10.0" />
          </font>
