@@ -3,6 +3,7 @@ package commons;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -25,7 +26,8 @@ public class Task {
      * empty constructor for object mapper
      */
     public Task() {
-
+        this.subtasks = new ArrayList<>();
+        this.tags = new ArrayList<>();
     }
 
     /**
@@ -44,10 +46,33 @@ public class Task {
     }
 
     /**
+     * Creates a new task given only a title
+     * @param title task title
+     */
+    public Task(String title) {
+        this.title = title;
+        this.description = "";
+        this.subtasks = new ArrayList<>();
+        this.tags = new ArrayList<>();
+    }
+
+    /**
+     * Creates a new task given only a title and description
+     * @param title task title
+     * @param description task description
+     */
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+        this.subtasks = new ArrayList<>();
+        this.tags = new ArrayList<>();
+    }
+
+    /**
      * get the id of the task
      * @return the id of the task
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -111,11 +136,17 @@ public class Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Task)) return false;
 
-        Task task = (Task) o;
-
-        return getId() == task.getId();
+        Task other = (Task) o;
+        return (getId() == null && other.getId() == null
+                ||  getId().equals(other.getId()))
+                && (getTitle() == null && other.getTitle() == null
+                || getTitle().equals(other.getTitle()))
+                && (getSubtasks() == null && other.getSubtasks() == null
+                || getSubtasks().equals(other.getSubtasks()))
+                && (getTags() == null && other.getTags() == null
+                || getTags().equals(other.getTags()));
     }
 
     @Override

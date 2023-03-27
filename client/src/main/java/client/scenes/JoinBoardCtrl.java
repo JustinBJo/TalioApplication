@@ -34,7 +34,7 @@ public class JoinBoardCtrl {
     public void cancel() {
         code.clear();
         mainCtrl.showMain();
-        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.getMainSceneCtrl().refresh();
     }
 
     /**
@@ -47,7 +47,7 @@ public class JoinBoardCtrl {
         boolean added;
         try {
             Board b = server.getBoardByCode(boardCode);
-            if(mainCtrl.getUser().getBoards().contains(b)) {
+            if (mainCtrl.getUser().getBoards().contains(b)) {
                 var alert = new Alert(Alert.AlertType.ERROR);
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.setContentText("This board has already been joined!");
@@ -69,7 +69,7 @@ public class JoinBoardCtrl {
             }
             code.clear();
             mainCtrl.showMain();
-            mainCtrl.mainSceneCtrl.refresh();
+            mainCtrl.getMainSceneCtrl().refresh();
         } catch (WebApplicationException e) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);

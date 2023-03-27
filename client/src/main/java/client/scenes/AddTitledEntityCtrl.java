@@ -1,28 +1,30 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 
 public class AddTitledEntityCtrl {
 
     enum Type {
         TaskList,
-        Board
+        Board,
+        RenameTaskList,
+        RenameBoard
     }
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
 
     private Type type;
+    private TaskList taskListToEdit;
 
     @FXML
     Button cancel;
@@ -58,12 +60,26 @@ public class AddTitledEntityCtrl {
             case Board:
                 setHeader("Add new board");
                 break;
+            case RenameTaskList:
+                setHeader("Edit list");
+                break;
+            case RenameBoard:
+                setHeader("Edit current board");
+                break;
 
             // Error handling (very unlikely, as it is an enum)
             default:
                 pressCancel();
                 break;
         }
+    }
+
+    /**
+     * @param taskListToEdit task list which will be edited
+     *                       if type is RenameTaskList
+     */
+    public void setTaskListToEdit(TaskList taskListToEdit) {
+        this.taskListToEdit = taskListToEdit;
     }
 
     /**
@@ -79,7 +95,6 @@ public class AddTitledEntityCtrl {
      */
     public void pressCancel() {
         textField.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -104,59 +119,59 @@ public class AddTitledEntityCtrl {
                 case Board:
                     addNewBoard(title);
                     break;
+                case RenameTaskList:
+                    if (taskListToEdit == null) {
+                        ErrorUtils.alertError("No task list to edit!");
+                        break;
+                    }
+                    editTaskList(title);
+                    break;
+                case RenameBoard:
+                    editBoard(title);
+                    break;
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
-                    alertError("Something went wrong, please try again!");
+                    ErrorUtils.alertError(
+                        "Something went wrong, please try again!"
+                    );
                     pressCancel();
                     break;
             }
 
         } catch (WebApplicationException e) {
-            alertError(e.getMessage());
+            ErrorUtils.alertError(e.getMessage());
             return;
         }
 
         textField.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
-    }
-
-    /**
-     * Creates an error alert with given text
-     * @param text text shown in error alert
-     */
-    private void alertError(String text) {
-        var alert = new Alert(Alert.AlertType.ERROR);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setContentText(text);
-        alert.showAndWait();
     }
 
     /**
      * Add a new task list
      * @param title task list title
      */
-    private void addNewTaskList(String title) throws WebApplicationException {
+    private void addNewTaskList(String title) {
         TaskList taskList = new TaskList(title);
         Board parentBoard = mainCtrl.getActiveBoard();
 
         if (parentBoard == null) {
             // Error handling
-            alertError("Lists must be created within boards!");
+            ErrorUtils.alertError("Lists must be created within boards!");
             pressCancel();
             return;
         }
 
         server.addTaskList(taskList, parentBoard);
-        mainCtrl.mainSceneCtrl.lists.getItems().add(taskList);
+        mainCtrl.refreshBoard();
     }
 
     /**
      * Add a new board
      * @param title board title
      */
-    private void addNewBoard(String title) throws WebApplicationException {
+    private void addNewBoard(String title) {
         Board board = new Board(title);
 
         board = server.addBoard(board);
@@ -164,5 +179,18 @@ public class AddTitledEntityCtrl {
         mainCtrl.getUser().addBoard(board);
         System.out.println(mainCtrl.getUser().getBoards());
         server.saveUser(mainCtrl.getUser());
+    }
+
+    private void editTaskList(String title) {
+       server.updateTaskList(taskListToEdit, title);
+    }
+
+    private void editBoard(String title) {
+        Board updatedBoard =
+           server.updateBoard(
+                mainCtrl.getActiveBoard(),
+                title
+            );
+        mainCtrl.setActiveBoard(updatedBoard);
     }
 }

@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Task;
+import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,26 +15,29 @@ import static org.springframework.http.HttpStatus.OK;
 public class TaskControllerTest {
 
     private TestTaskRepository repo;
+    private TestTaskListRepository taskListRepository;
 
     private TaskController sut;
 
     @BeforeEach
     public void setup() {
         repo = new TestTaskRepository();
-        sut = new TaskController(repo);
+        taskListRepository = new TestTaskListRepository();
+        sut = new TaskController(repo, taskListRepository);
     }
 
     @Test
     public void addTest() {
-        var a = new Task("Task Title", "Description",
-        new ArrayList<>(), new ArrayList<>());
-        var comp = sut.add(a);
+        var a = new Task("Task Title", "Description");
+        var tl = new TaskList("Test List");
+        long tlID = taskListRepository.save(tl).getId();
+        var comp = sut.add(a, tlID);
         assertEquals(OK, comp.getStatusCode());
     }
 
     @Test
     public void failAddTest() {
-        var a = sut.add(getTask(null));
+        var a = sut.add(getTask(null), 0);
         assertEquals(BAD_REQUEST, a.getStatusCode());
     }
 

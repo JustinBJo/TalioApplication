@@ -1,74 +1,46 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
 import commons.User;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 
 public class MainCtrlTalio {
 
     private Stage primaryStage;
-    private ServerUtils server;
 
-    ConnectScreenCtrl connectCtrl;
-    Scene connect;
+    private Scene connect;
 
-    MainSceneCtrl mainSceneCtrl;
-    Scene mainScene;
+    private MainSceneCtrl mainSceneCtrl;
+    private Scene mainScene;
 
-    AddTitledEntityCtrl addTitledEntityCtrl;
-    Scene addTitledEntityScene;
+    private AddTitledEntityCtrl addTitledEntityCtrl;
+    private Scene addTitledEntityScene;
 
-    AddTaskCtrl addTaskCtrl;
-    Scene addTaskScene;
+    private AddTaskCtrl addTaskCtrl;
+    private Scene addTaskScene;
 
-    TaskListCtrl taskListCtrl;
-    Scene taskListScene;
+    private EditTaskCtrl editTaskCtrl;
+    private Scene editTaskScene;
 
-    CardCtrl cardCtrl;
-    Scene cardScene;
+    private TaskDetailsCtrl taskDetailsCtrl;
+    private Scene viewTaskScene;
 
-    RenameCtrl renameCtrl;
-    Scene renameScene;
+    private JoinBoardCtrl joinBoardCtrl;
+    private Scene joinBoardScene;
 
-    JoinBoardCtrl joinBoardCtrl;
-    Scene joinBoardScene;
-
-    BoardCtrl boardCtrl;
-    Scene boardScene;
-
-    EditTaskCtrl editTaskCtrl;
-    Scene editTaskScene;
-
-    TaskDetailsCtrl taskDetailsCtrl;
-    Scene viewTaskScene;
-
-
-    private TaskList currentTaskList;
-
-    private Board activeBoard;
-
-    private List<Board> joinedBoards = new ArrayList<>();
+    private BoardCtrl boardCtrl;
+    private Scene boardScene;
 
     private User user;
-
-
-    private Task currentTask;
+    private Board activeBoard;
 
 
     /**
@@ -77,26 +49,18 @@ public class MainCtrlTalio {
      * @param connect         the "connect" screen
      * @param mainScene       the main screen
      * @param addTitledEntity the "add titled entity" screen
-     * @param renameTaskList  the "rename list" screen
      */
     public void initialize(Stage primaryStage,
-                           ServerUtils server,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
-                           Pair<TaskListCtrl, Parent> taskList,
-                           Pair<RenameCtrl, Parent> renameTaskList,
-                           Pair<JoinBoardCtrl, Parent> joinBoard,
-                           Pair<BoardCtrl, Parent> board,
-                           Pair<CardCtrl, Parent> card,
                            Pair<EditTaskCtrl, Parent> editTask,
-                           Pair<TaskDetailsCtrl, Parent> viewTask
-                           ) {
+                           Pair<TaskDetailsCtrl, Parent> viewTask,
+                           Pair<JoinBoardCtrl, Parent> joinBoard,
+                           Pair<BoardCtrl, Parent> board) {
         this.primaryStage = primaryStage;
-        this.server = server;
 
-        this.connectCtrl = connect.getKey();
         this.connect = new Scene(connect.getValue());
 
         this.mainSceneCtrl = mainScene.getKey();
@@ -108,28 +72,17 @@ public class MainCtrlTalio {
         this.addTaskCtrl = addTask.getKey();
         this.addTaskScene = new Scene(addTask.getValue());
 
-        this.taskListCtrl = taskList.getKey();
-        this.taskListScene = new Scene(taskList.getValue());
-
-        this.cardCtrl = card.getKey();
-        this.cardScene = new Scene(card.getValue());
-
-        this.renameCtrl = renameTaskList.getKey();
-        this.renameScene = new Scene(renameTaskList.getValue());
-
-        this.joinBoardCtrl = joinBoard.getKey();
-        this.joinBoardScene = new Scene(joinBoard.getValue());
-
-        this.boardCtrl = board.getKey();
-        this.boardScene = new Scene(board.getValue());
-
-
         this.editTaskCtrl = editTask.getKey();
         this.editTaskScene = new Scene(editTask.getValue());
 
         this.taskDetailsCtrl = viewTask.getKey();
         this.viewTaskScene = new Scene(viewTask.getValue());
 
+        this.joinBoardCtrl = joinBoard.getKey();
+        this.joinBoardScene = new Scene(joinBoard.getValue());
+
+        this.boardCtrl = board.getKey();
+        this.boardScene = new Scene(board.getValue());
 
         showConnect();
         primaryStage.show();
@@ -147,9 +100,16 @@ public class MainCtrlTalio {
      * show the main screen
      */
     public void showMain() {
-        primaryStage.setTitle("Talio: Lists");
+        primaryStage.setTitle("Talio");
+        mainSceneCtrl.refresh();
         primaryStage.setScene(mainScene);
-        mainSceneCtrl.initialize(this.server);
+    }
+
+    /**
+     * Refreshes the active board
+     */
+    public void refreshBoard() {
+        mainSceneCtrl.refresh();
     }
 
     /**
@@ -164,10 +124,11 @@ public class MainCtrlTalio {
     /**
      * changes to rename list scene
      */
-    public void showRenameList() {
+    public void showRenameList(TaskList taskList) {
         primaryStage.setTitle("Rename the List");
-        primaryStage.setScene(renameScene);
-        renameCtrl.initialize(RenameCtrl.Type.TaskList);
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.setTaskListToEdit(taskList);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameTaskList);
     }
 
     /**
@@ -175,47 +136,24 @@ public class MainCtrlTalio {
      * @return the active board
      */
     public Board getActiveBoard() {
-        return this.activeBoard;
+        return mainSceneCtrl.getActiveBoard();
     }
 
     /**
-     * Gets the current TaskList stored in the mainCtrl
-     * @return the current task list
+     * Sets the currently active board.
+     * Does nothing if the parameter is null.
      */
-    public TaskList getCurrentTaskList() {
-        return currentTaskList;
+    public void setActiveBoard(Board board) {
+        if (board == null) return;
+        mainSceneCtrl.setActiveBoard(board);
     }
-
-    /**
-     * sets the current task list to the value given
-     * @param currentTaskList the task list to be set
-     */
-    public void setCurrentTaskList(TaskList currentTaskList) {
-        this.currentTaskList = currentTaskList;
-    }
-
-    /**
-     * Returns the current Task we want to edit
-     * @return current task
-     */
-    public Task getCurrentTask() {
-        return currentTask;
-    }
-
-    /**
-     * Updates title and description of current task
-     * @param task
-     */
-    public void setCurrentTask(Task task) {
-        currentTask = task;
-    }
-
 
     /**
      * switches to addTask scene
      */
-    public void showAddTask() {
+    public void showAddTask(TaskList parentTaskList) {
         primaryStage.setTitle("Add a new task");
+        addTaskCtrl.setParentTaskList(parentTaskList);
         primaryStage.setScene(addTaskScene);
     }
 
@@ -232,34 +170,9 @@ public class MainCtrlTalio {
      * Switches scene to "Edit Task" scene,
      * that shows the current task's information.
      */
-    public void showEditTask(Task task) throws IOException {
-        final FXMLLoader fxmlLoader =
-                new FXMLLoader(getClass().getResource("EditTask.fxml"));
-        setCurrentTask(task);
-
-        final Pane root = fxmlLoader.load();
-        ObservableList<Node> children = root.getChildren();
-
-        //Pane root1 = (Pane) editTaskScene.getWindow().getScene().getRoot();
-        //ObservableList<Node> children= root1.getChildren();
-
-
-        for (Node child : children) {
-            if (child.getId() != null) {
-                if (child.getId().equals("currentTitle")) {
-                    Label currentTitle = (Label) child;
-                    currentTitle.setText(task.getTitle());
-                }
-                if (child.getId().equals("currentDescription")) {
-                    Label currentDescription = (Label) child;
-                    currentDescription.setText(task.getDescription());
-                }
-            }
-        }
-
-        Scene editTaskScene = new Scene(root, 570, 310);
-
+    public void showEditTask(Task task) {
         primaryStage.setTitle("Edit Task");
+        editTaskCtrl.setEditedTask(task);
         primaryStage.setScene(editTaskScene);
     }
 
@@ -268,13 +181,9 @@ public class MainCtrlTalio {
      * Switches scene to rename board scene
      */
     public void showRenameBoard() {
-        if (this.activeBoard == null) {
-            System.out.println("Cannot rename board: this is a dummy board!");
-            return;
-        }
         primaryStage.setTitle("Rename the Board");
-        primaryStage.setScene(renameScene);
-        renameCtrl.initialize(RenameCtrl.Type.Board);
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameBoard);
     }
 
     /**
@@ -285,57 +194,37 @@ public class MainCtrlTalio {
         primaryStage.setScene(joinBoardScene);
     }
 
-    /**
-     * Sets current active board and updates the main scene accordingly
-     * @param activeBoard new active board
-     */
-    public void setActiveBoard(Board activeBoard) {
-        this.activeBoard = activeBoard;
-
-        if (mainSceneCtrl == null) {
-            mainSceneCtrl = new MainSceneCtrl(server, this, renameCtrl);
-            mainSceneCtrl.initialize(this.server);
-        }
-
-        if (activeBoard == null) {
-            mainSceneCtrl.sceneTitle.setText("Board X");
-        }
-        else {
-            mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
-        }
-
-        mainSceneCtrl.refresh();
-        // TODO
-    }
+//    /**
+//     * Sets current active board and updates the main scene accordingly
+//     * @param activeBoard new active board
+//     */
+//    public void setActiveBoard(Board activeBoard) {
+//        this.activeBoard = activeBoard;
+//
+//        if (mainSceneCtrl == null) {
+//            mainSceneCtrl = new MainSceneCtrl(server, this, renameCtrl);
+//            mainSceneCtrl.initialize(this.server);
+//        }
+//
+//        if (activeBoard == null) {
+//            mainSceneCtrl.sceneTitle.setText("Board X");
+//        }
+//        else {
+//            mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
+//        }
+//
+//        mainSceneCtrl.refresh();
+//        // TODO
+//    }
 
     /**
      * Shows the detailed view of a task
      * @param task current task
-     * @throws IOException if the task is not found
      */
-    public void showTaskDetails(Task task) throws IOException {
-        final FXMLLoader fxmlLoader =
-                new FXMLLoader(getClass().getResource("TaskDetails.fxml"));
-        setCurrentTask(task);
-
-        final Pane root = fxmlLoader.load();
-        ObservableList<Node> children = root.getChildren();
-
-        for (Node child : children) {
-            if (child.getId() != null) {
-                if (child.getId().equals("title")) {
-                    Label title = (Label) child;
-                    title.setText(task.getTitle());
-                }
-                if (child.getId().equals("description")) {
-                    Label description = (Label) child;
-                    description.setText(task.getDescription());
-                }
-            }
-        }
-        Scene viewTaskScene = new Scene(root, 600, 400);
-
+    public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
+        taskDetailsCtrl.setTask(task);
+        primaryStage.setScene(viewTaskScene);
         primaryStage.setScene(viewTaskScene); }
 
 
@@ -355,7 +244,11 @@ public class MainCtrlTalio {
         this.user = user;
     }
 
-
-
-
-                }
+    /**
+     * getter for the mainCtrl
+     * @return the currently used mainCtrl
+     */
+    public MainSceneCtrl getMainSceneCtrl() {
+        return mainSceneCtrl;
+    }
+}

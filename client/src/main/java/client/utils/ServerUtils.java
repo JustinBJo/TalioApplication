@@ -36,7 +36,6 @@ public class ServerUtils {
 
     private static String SERVER = "http://localhost:8080/";
 
-    private List<TaskList> boardData;
 
     /**
      * gets the default board from the repository
@@ -65,11 +64,11 @@ public class ServerUtils {
     }
 
     /**
-     * get task list
+     * Gets all task lists in repository
      *
-     * @return the task list
+     * @return a list containing all task lists
      */
-    public List<TaskList> getTaskList() {
+    public List<TaskList> getAllTaskLists() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("tasklist") //
                 .request(APPLICATION_JSON) //
@@ -96,14 +95,8 @@ public class ServerUtils {
      * get the tasklist of the default board using only the api
      * @return the task list of the default board
      */
-    public List<TaskList> getDefaultBoardTaskList() {
-        long defaultId = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("defaultId")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Long>(){
-                });
-        return getBoardData(defaultId);
+    public List<TaskList> getDefaultBoardData() {
+        return getBoardData(getDefaultId());
     }
 
     /**
@@ -179,6 +172,18 @@ public class ServerUtils {
     }
 
     /**
+     * Gets all tasks belonging to a certain task list
+     * @param taskList parent of desired tasks
+     * @return list of tasks belonging to task list
+     */
+    public List<Task> getTaskListData(TaskList taskList) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Task>>() {});
+    }
+
+    /**
      * Link task list that is already in repository to a board that is also
      * already in repository
      * @param board board that will be linked to the task list
@@ -210,12 +215,13 @@ public class ServerUtils {
      * Method used to insert a task into the database
      *
      * @param task the task to be added to the database
+     * @param parentTaskList task list that will hold this task
      * @return the added task, in order for future operations
      * with it to be possible
      */
-    public Task addTask(Task task) {
+    public Task addTask(Task task, TaskList parentTaskList) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks") //
+                .target(SERVER).path("tasks/" + parentTaskList.getId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
@@ -228,12 +234,12 @@ public class ServerUtils {
      * @return the tasklist which was deleted
      */
     public String deleteTaskList(TaskList taskList) {
-        long id = taskList.getId();
-        String res =  ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasklist/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(String.class);
+//        long id = taskList.getId();
+//        String res =  ClientBuilder.newClient(new ClientConfig())
+//                .target(SERVER).path("/tasklist/delete/" + id)
+//                .request(APPLICATION_JSON)
+//                .accept(APPLICATION_JSON)
+//                .delete(String.class);
 
         // Unlink task list from board
         Response unlinkResponse =

@@ -3,6 +3,7 @@ import commons.Task;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
@@ -117,13 +118,23 @@ public class TaskListControllerTest {
         assertEquals("New Title", newTitle);
     }
 
-//    @Test
-//    public void updateTest() {
-//        TaskList tl = new TaskList("test");
-//        repo.save(tl);
-//        //System.out.println(repo.getById(100L));
-//        taskListController.update(0, "newName");
-//        assertEquals("newName", repo.getById( (long) 0).getTitle());
-//    }
+    @Test
+    void getChildTasks() {
+        TaskList tl = new TaskList("test");
+        Task taskA = new Task("a");
+        Task taskB = new Task("b");
+        tl.addTask(taskA);
+        tl.addTask(taskB);
+        long tlID = repo.save(tl).getId();
 
+        assertTrue(repo.findAll().contains(tl));
+
+        var response = taskListController.getChildTasks(tlID);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        List<Task> tasks = response.getBody();
+        assert tasks != null;
+        assertTrue(tasks.contains(taskA));
+        assertTrue(tasks.contains(taskB));
+    }
 }

@@ -1,58 +1,50 @@
 package client.scenes;
 
-
+import client.utils.ChildrenManager;
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
-import commons.Task;
 import commons.TaskList;
 import commons.User;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Modality;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 public class MainSceneCtrl {
 
-    private  ServerUtils server;
+    private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
-    private final RenameCtrl renameCtrl;
+    private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
+    private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
-    private final long DEFAULT_ID;
+    private final long defaultBoardID;
 
-    List<TaskListCtrl> taskListCtrls;
-
-    ObservableList<TaskList> listData;
-
-    ObservableList<Task> taskData;
-
-    ObservableList<Board> boardData;
+    private Board activeBoard;
 
     @FXML
     Label sceneTitle;
     @FXML
-    ListView<Board> boards;
+    VBox boardsContainer;
     @FXML
-    ListView<TaskList> lists;
-    @FXML
-    ListView<Task> tasks;
+    HBox taskListsContainer;
     @FXML
     Button renameBoard;
     @FXML
     Button removeBoard;
     @FXML
     Button copyCode;
+    @FXML
+    Button joinBoard;
 
     /**
      * constructor
@@ -60,45 +52,51 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl,
-                         RenameCtrl renameCtrl) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.renameCtrl = renameCtrl;
 
-        this.DEFAULT_ID = server.getDefaultId();
+        this.defaultBoardID = server.getDefaultId();
+    }
+
+
+    /**
+     * This is called only once by the FXML builder,
+     * after FXML components are initialized.
+     */
+    public void initialize() {
+        // Create children manager (needs FXML container)
+        validateUser();
+        this.taskListChildrenManager = new ChildrenManager<>(
+                taskListsContainer,
+                TaskListCtrl.class,
+                "TaskList.fxml"
+        );
+
+        this.boardListChildrenManager = new ChildrenManager<>(
+                boardsContainer,
+                BoardCtrl.class,
+                "Board.fxml"
+        );
+
+        // Set default board as current board (needs FXML title)
+        setActiveBoard(server.getDefaultBoard());
     }
 
     /**
-     * initialize the scene with the listview elements as the TaskList scene
+     * @return board currently shown in scene
      */
-    public void initialize(ServerUtils server) {
-        this.server = server;
+    public Board getActiveBoard() {
+        return activeBoard;
+    }
 
-        taskListCtrls = new ArrayList<>();
-
-        if (mainCtrl.getActiveBoard() == null) {
-            mainCtrl.setActiveBoard(server.getDefaultBoard());
-        }
-
-        listData = FXCollections.observableArrayList();
-
-        if (lists == null) {
-            lists = new ListView<>();
-        }
-
-        lists.setFixedCellSize(0);
-        lists.setItems(listData);
-        lists.setCellFactory(taskListView -> new TaskListCell(new TaskListCtrl(
-                server, this, mainCtrl, renameCtrl), this));
-
-
-        boardData = FXCollections.observableArrayList();
-        boards.setFixedCellSize(0);
-        boards.setItems(boardData);
-        boards.setCellFactory(new BoardCtrl(mainCtrl, server, this));
-
-        mainCtrl.setUser(server.checkUser());
+    /**
+     * Sets current active board and updates the main scene accordingly
+     * @param activeBoard new active board
+     */
+    public void setActiveBoard(Board activeBoard) {
+        this.activeBoard = activeBoard;
+        sceneTitle.setText(activeBoard.getTitle());
 
         refresh();
     }
@@ -114,25 +112,18 @@ public class MainSceneCtrl {
     }
 
     /**
-     * refresh the list
+     * Refresh the view, showing all task lists
      */
     public void refresh() {
-//        listData = FXCollections.observableList(server.getTaskList());
-        listData = FXCollections.observableList(
-                server.getBoardData(mainCtrl.getActiveBoard().getId()));
-        taskData = FXCollections.observableList(server.getTasks());
-        boardData =
-                FXCollections.observableList(mainCtrl.getUser().getBoards());
-        lists.setItems(listData);
-        tasks.setItems(taskData);
-
-        for (TaskListCtrl taskListCtrl : taskListCtrls) {
+        List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
+        taskListChildrenManager.updateChildren(taskLists);
+        for (TaskListCtrl taskListCtrl :
+                taskListChildrenManager.getChildrenCtrls()) {
             taskListCtrl.refresh();
         }
-        boards.setItems(boardData);
+        List<Board> joinedBoards = mainCtrl.getUser().getBoards();
+        boardListChildrenManager.updateChildren(joinedBoards);
     }
-
-    private int i = 0;
 
     /**
      * add a board to the list
@@ -145,16 +136,8 @@ public class MainSceneCtrl {
      * Rename the current board
      */
     public void renameBoard() {
-        Board board = mainCtrl.getActiveBoard();
-        if (board == null) {
-            System.out.println("Cannot rename board: this is a dummy board!");
-            return;
-        }
-        if (board.getId() == DEFAULT_ID) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("You cannot rename the default board!");
-            alert.showAndWait();
+        if (activeBoard.getId() == defaultBoardID) {
+            ErrorUtils.alertError("You cannot rename the default board!");
             return;
         }
         mainCtrl.showRenameBoard();
@@ -166,21 +149,12 @@ public class MainSceneCtrl {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        Board board = mainCtrl.getActiveBoard();
-        if (board == null) {
-            System.out.println("Cannot delete board: this is a dummy board!");
+        if (activeBoard.getId() == defaultBoardID) {
+            ErrorUtils.alertError("You cannot delete the default board!");
             return;
         }
-        if (board.getId() == DEFAULT_ID) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("You cannot delete the default board!");
-            alert.showAndWait();
-            return;
-        }
-        mainCtrl.setActiveBoard(server.getDefaultBoard());
-        server.deleteBoard(board);
-        refresh();
+        server.deleteBoard(activeBoard);
+        setActiveBoard(server.getDefaultBoard());
     }
 
     /**
@@ -192,17 +166,12 @@ public class MainSceneCtrl {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
 
-        Board board = mainCtrl.getActiveBoard();
-        if (board == null) {
-            System.out.println("This is the default board!");
-        } else {
-            String code = board.getCode();
-            content.putString(code);
-            clipboard.setContent(content);
+        String code = activeBoard.getCode();
+        content.putString(code);
+        clipboard.setContent(content);
 
-            System.out.println("The code for this board is copied!");
-            System.out.println("Code: " + code);
-        }
+        System.out.println("The code for this board is copied!");
+        System.out.println("Code: " + code);
     }
 
     /**
@@ -210,13 +179,6 @@ public class MainSceneCtrl {
      */
     public void addList() {
         mainCtrl.showAddList();
-    }
-
-    /**
-     * add a task to the list
-     */
-    public void addTask() {
-        mainCtrl.showAddTask();
     }
 
     /**
@@ -234,14 +196,6 @@ public class MainSceneCtrl {
         mainCtrl.setUser(u);
     }
 
-    /**
-     * View the details of a task
-     * @throws IOException -
-     */
-    public void viewTask() throws IOException {
-        Task currentTask = tasks.getSelectionModel().getSelectedItem();
-        mainCtrl.showTaskDetails(currentTask);
-    }
 
 }
 

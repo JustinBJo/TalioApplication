@@ -65,6 +65,24 @@ public class TaskListController {
     }
 
     /**
+     * Gets all tasks belonging to a given task list
+     * @param taskListId ID of the task list whose tasks wil be retrieved
+     * @return BAD_REQUEST if the task list doesn't exist,
+     *         OK with the list of tasks in body if it does
+     */
+    @GetMapping("getTasks/{taskListId}")
+    public ResponseEntity<List<Task>> getChildTasks(
+            @PathVariable("taskListId") long taskListId
+    ) {
+        if (taskListId < 0 || !repo.existsById(taskListId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TaskList taskList = repo.getById(taskListId);
+        return ResponseEntity.ok(taskList.getTasks());
+    }
+
+    /**
      * Add a task to a specific list
      * @param taskListId the id of the list that the task is being added to
      * @param taskId the id of the task that is being added
@@ -97,7 +115,7 @@ public class TaskListController {
      * Deletes from the repository a tasklist with the provided id
      * @param id the id of the tasklist to be removed
      */
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") long id) {
         if (id < 0) {
             return ResponseEntity.badRequest().body("Invalid id!");

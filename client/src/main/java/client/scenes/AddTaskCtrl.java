@@ -1,22 +1,23 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
+import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 
 public class AddTaskCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
 
+    private TaskList parentTaskList;
+
     @FXML
     private TextField title;
-
     @FXML
     private TextField description;
 
@@ -30,9 +31,14 @@ public class AddTaskCtrl {
     public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-
     }
 
+    /**
+     * @param parentTaskList task list to which the new task will be added
+     */
+    public void setParentTaskList(TaskList parentTaskList) {
+        this.parentTaskList = parentTaskList;
+    }
 
     /**
      * Method cancel for cancelling the insertion of a new task
@@ -40,7 +46,6 @@ public class AddTaskCtrl {
      */
     public void cancel() {
         clearFields();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -53,18 +58,14 @@ public class AddTaskCtrl {
      */
     public void confirm() {
         try {
-            server.addTask(getTask());
+            server.addTask(getTask(), parentTaskList);
         } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            ErrorUtils.alertError(e.getMessage());
             return;
         }
 
         clearFields();
-        mainCtrl.mainSceneCtrl.refresh();
+        parentTaskList = null;
         mainCtrl.showMain();
     }
 
