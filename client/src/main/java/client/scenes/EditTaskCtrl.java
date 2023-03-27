@@ -1,48 +1,29 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 
 public class EditTaskCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
 
-    private static ServerUtils serverCopy;
-    private static MainCtrlTalio mainCtrlTalioCopy;
+    private Task editedTask;
 
     @FXML
     private TextField newTitle;
-
     @FXML
     private TextField newDescription;
-
     @FXML
     private Label currentTitle;
-
     @FXML
     private Label currentDescription;
 
-    /**
-     * Empty constructor
-     */
-    public EditTaskCtrl() {
-        if (serverCopy != null) {
-            this.server = serverCopy;
-            this.mainCtrl = mainCtrlTalioCopy;
-        }
-        else {
-            this.server = null;
-            this.mainCtrl = null;
-        }
-
-    }
 
     /**
      * Constructor for the EditTask
@@ -53,17 +34,18 @@ public class EditTaskCtrl {
     public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-
-        this.serverCopy = server;
-        this.mainCtrlTalioCopy = mainCtrl;
     }
 
     /**
-     * initialize method for EditTask
+     * @param editedTask task which will be edited
      */
-    @FXML
-    public void initialize() {
+    public void setEditedTask(Task editedTask) {
+        if (editedTask == null) return;
 
+        this.editedTask = editedTask;
+
+        currentTitle.setText(editedTask.getTitle());
+        currentDescription.setText(editedTask.getDescription());
     }
 
     /**
@@ -71,7 +53,6 @@ public class EditTaskCtrl {
      * returns to main scene
      */
     public void cancel() {
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -80,8 +61,12 @@ public class EditTaskCtrl {
      * task title and description
      */
     public void saveChanges() {
+        if (editedTask == null) {
+            ErrorUtils.alertError("No task to edit!");
+            cancel();
+        }
+
         try {
-            Task task = mainCtrl.getCurrentTask();
             String newTitleString = newTitle.getText();
             String newDescriptionString = newDescription.getText();
 
@@ -92,22 +77,18 @@ public class EditTaskCtrl {
             }
 
             if (newTitleString.length() >= 1)
-                server.updateTaskTitle(task, newTitleString);
+                server.updateTaskTitle(editedTask, newTitleString);
             if (newDescriptionString.length() >= 1)
-                server.updateTaskDescription(task, newDescriptionString);
+                server.updateTaskDescription(editedTask, newDescriptionString);
 
         }
         catch (WebApplicationException e) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            ErrorUtils.alertError(e.getMessage());
             return;
         }
 
         newTitle.clear();
         newDescription.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 }
