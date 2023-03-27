@@ -6,6 +6,9 @@ import com.google.inject.Inject;
 import commons.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 public class TaskDetailsCtrl {
     private final MainCtrlTalio mainCtrl;
@@ -17,6 +20,10 @@ public class TaskDetailsCtrl {
     private Label title;
     @FXML
     private Label description;
+    @FXML
+    private ImageView editIcon;
+    @FXML
+    private ImageView deleteIcon;
 
     /**
      * Constructor for the task details
@@ -27,6 +34,20 @@ public class TaskDetailsCtrl {
     public TaskDetailsCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * This is called only once by the FXML builder,
+     * after FXML components are initialized.
+     */
+    public void initialize() {
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        this.editIcon.setImage(editIcon);
+
+        Image deleteIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/deleteicon.png"));
+        this.deleteIcon.setImage(deleteIcon);
     }
 
     /**
@@ -68,8 +89,14 @@ public class TaskDetailsCtrl {
             ErrorUtils.alertError("No task to delete!");
             exit();
         }
-        server.deleteTask(task);
-        exit();
+
+        boolean confirmation = server.confirmDeletion("task");
+
+        // Check the user's response and perform the desired action
+        if (confirmation) {
+            server.deleteTask(task);
+            exit();
+        }
     }
 
 }
