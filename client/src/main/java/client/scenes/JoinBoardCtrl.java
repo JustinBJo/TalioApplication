@@ -47,15 +47,24 @@ public class JoinBoardCtrl {
         boolean added;
         try {
             Board b = server.getBoardByCode(boardCode);
+            if(mainCtrl.getUser().getBoards().contains(b)) {
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.setContentText("This board has already been joined!");
+                alert.showAndWait();
+                return;
+            }
             added = addBoard(b);
 
-            server.saveUser(mainCtrl.getUser());
-            if (added)
+
+            if (added) {
                 mainCtrl.setActiveBoard(b);
+                server.saveUser(mainCtrl.getUser());
+            }
             else {
                 var alert = new Alert(Alert.AlertType.ERROR);
                 alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText("This board has already been added!");
+                alert.setContentText("There is no board with this code!");
                 alert.showAndWait();
             }
             code.clear();
@@ -64,7 +73,7 @@ public class JoinBoardCtrl {
         } catch (WebApplicationException e) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("There is no board with this code!");
+            alert.setContentText("The board with this code does not exist!");
             alert.showAndWait();
         }
 
