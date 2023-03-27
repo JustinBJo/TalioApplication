@@ -24,7 +24,7 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="94.0" style="-fx-background-color: transparent;">
+            <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="94.0" style="-fx-background-color: transparent;" AnchorPane.leftAnchor="6.0">
               <items>
                 <MenuItem fx:id="createBoardMenu" mnemonicParsing="false" onAction="#addBoard" text="Create new Board" />
                   <MenuItem fx:id="renameBoardMenu" mnemonicParsing="false" onAction="#renameBoard" text="Rename this Board" />
@@ -40,7 +40,7 @@
                   </ImageView>
                </graphic>
             </MenuButton>
-            <Button layoutX="62.0" layoutY="2.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="50.0" style="-fx-background-color: transparent;" textAlignment="CENTER" wrapText="true">
+            <Button layoutX="62.0" layoutY="2.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="50.0" style="-fx-background-color: transparent;" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="62.0">
                <graphic>
                   <Pane prefHeight="32.0" prefWidth="34.0">
                      <children>
@@ -54,7 +54,7 @@
                   </Pane>
                </graphic>
             </Button>
-            <VBox layoutX="686.0" layoutY="2.0" prefHeight="57.0" prefWidth="138.0">
+            <VBox layoutX="672.0" layoutY="2.0" prefHeight="57.0" prefWidth="152.0" AnchorPane.rightAnchor="7.0">
                <children>
                   <HBox prefHeight="31.0" prefWidth="150.0">
                      <children>
