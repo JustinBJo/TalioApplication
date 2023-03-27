@@ -7,9 +7,7 @@ import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,7 +15,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
@@ -97,21 +94,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Deletes this task list
      */
     public void delete() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete list?");
-        alert.setHeaderText("Delete List");
-        alert.setContentText("Are you sure you want to delete this list?");
+        boolean confirmation = server.confirmDeletion("list");
 
-        ButtonType confirmButton = new ButtonType("Confirm");
-        ButtonType cancelButton = new ButtonType("Cancel");
-
-        // Remove the default buttons and add Confirm and Cancel buttons
-        alert.getButtonTypes().setAll(confirmButton, cancelButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        // Check the user's response and perform the desired action
-        if (result.isPresent() && result.get() == confirmButton) {
+        if (confirmation) {
             server.deleteTaskList(taskList);
             taskList = null;
             mainCtrl.refreshBoard();
