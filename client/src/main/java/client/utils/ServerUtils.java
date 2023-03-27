@@ -18,6 +18,7 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
+import java.util.Optional;
 
 import commons.Board;
 import commons.Task;
@@ -26,6 +27,8 @@ import commons.TaskList;
 import commons.User;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -225,6 +228,35 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Displays an alert which asks for the confirmation of deletion
+     * @param type the string which contains
+     *             the type of the entity that the user is trying to delete
+     * @return true if confirm is clicked, false otherwise
+     */
+    public boolean confirmDeletion(String type) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete " + type + "?");
+        alert.setHeaderText("Delete " + type);
+        alert.setContentText("Are you sure you want to delete this "
+                + type + "?");
+
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        // Remove the default buttons and add Confirm and Cancel buttons
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == confirmButton) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**

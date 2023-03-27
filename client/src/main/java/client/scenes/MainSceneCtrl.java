@@ -9,9 +9,11 @@ import commons.TaskList;
 import commons.User;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
@@ -37,14 +39,29 @@ public class MainSceneCtrl {
     VBox boardsContainer;
     @FXML
     HBox taskListsContainer;
+
     @FXML
-    Button renameBoard;
+    MenuItem createBoardMenu;
     @FXML
-    Button removeBoard;
+    MenuItem renameBoardMenu;
     @FXML
-    Button copyCode;
+    MenuItem deleteBoardMenu;
     @FXML
-    Button joinBoard;
+    MenuItem joinBoardMenu;
+    @FXML
+    MenuItem joinServerMenu;
+
+    @FXML
+    ImageView menuIcon;
+    @FXML
+    ImageView adminIcon;
+    @FXML
+    ImageView copyIcon;
+
+    @FXML
+    Label boardCode;
+    @FXML
+    Label serverAddr;
 
     /**
      * constructor
@@ -85,6 +102,20 @@ public class MainSceneCtrl {
                 "Board.fxml"
         );
 
+        Image menu = new Image(getClass()
+                .getResourceAsStream("/client/images/menuicon.png"));
+        menuIcon.setImage(menu);
+
+        Image admin = new Image(getClass()
+                .getResourceAsStream("/client/images/adminicon.png"));
+        adminIcon.setImage(admin);
+
+        Image copy = new Image(getClass()
+                .getResourceAsStream("/client/images/copyicon.png"));
+        copyIcon.setImage(copy);
+
+
+
         // Set default board as current board (needs FXML title)
         setActiveBoard(server.getDefaultBoard());
     }
@@ -103,6 +134,7 @@ public class MainSceneCtrl {
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
         sceneTitle.setText(activeBoard.getTitle());
+        boardCode.setText(activeBoard.getCode());
 
         refresh();
     }
@@ -159,12 +191,17 @@ public class MainSceneCtrl {
             ErrorUtils.alertError("You cannot delete the default board!");
             return;
         }
-        Board b = activeBoard;
-        mainCtrl.getUser().getBoards().remove(b);
-        server.saveUser(mainCtrl.getUser());
-        setActiveBoard(server.getDefaultBoard());
-        System.out.println(server.deleteBoard(b));
 
+        boolean confirmation = server.confirmDeletion("board");
+
+        // Check the user's response and perform the desired action
+        if (confirmation) {
+            Board b = activeBoard;
+            mainCtrl.getUser().getBoards().remove(b);
+            server.saveUser(mainCtrl.getUser());
+            setActiveBoard(server.getDefaultBoard());
+            System.out.println(server.deleteBoard(b));
+        }
     }
 
     /**
@@ -182,6 +219,14 @@ public class MainSceneCtrl {
 
         System.out.println("The code for this board is copied!");
         System.out.println("Code: " + code);
+    }
+
+    /**
+     * set the server address to be displayed
+     * @param address the address to be displayed
+     */
+    public void setServerAddr(String address) {
+        this.serverAddr.setText(address);
     }
 
     /**
