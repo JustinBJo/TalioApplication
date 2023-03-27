@@ -6,6 +6,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -25,6 +27,10 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     Label title;
     @FXML
     Button delete;
+    @FXML
+    Button edit;
+    @FXML
+    ImageView editIcon;
 
 
     /**
@@ -40,6 +46,16 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     }
 
     /**
+     * This is called only once by the FXML builder,
+     * after FXML components are initialized.
+     */
+    public void initialize() {
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        this.editIcon.setImage(editIcon);
+    }
+
+    /**
      * Set the Task entity that this controller holds
      * @param task the task that is being saved to this controller
      */
@@ -49,6 +65,13 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
         }
         title.setText(task.getTitle());
+    }
+
+    /**
+     * Show edit task scene for this task
+     */
+    public void editTask() {
+        mainCtrl.showEditTask(this.task);
     }
 
     /**
