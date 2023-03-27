@@ -48,6 +48,8 @@ public class JoinBoardCtrl {
             Board b = server.getBoardByCode(boardCode);
             if (mainCtrl.getUser().getBoards().contains(b)) {
                 mainCtrl.setActiveBoard(b);
+                code.clear();
+                mainCtrl.showMain();
                 return;
             }
             added = addBoard(b);
