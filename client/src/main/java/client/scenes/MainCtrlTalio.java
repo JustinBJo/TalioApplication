@@ -36,11 +36,8 @@ public class MainCtrlTalio {
     private JoinBoardCtrl joinBoardCtrl;
     private Scene joinBoardScene;
 
-    private BoardCtrl boardCtrl;
-    private Scene boardScene;
 
     private User user;
-    private Board activeBoard;
 
 
     /**
@@ -57,8 +54,7 @@ public class MainCtrlTalio {
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<EditTaskCtrl, Parent> editTask,
                            Pair<TaskDetailsCtrl, Parent> viewTask,
-                           Pair<JoinBoardCtrl, Parent> joinBoard,
-                           Pair<BoardCtrl, Parent> board) {
+                           Pair<JoinBoardCtrl, Parent> joinBoard) {
         this.primaryStage = primaryStage;
 
         this.connect = new Scene(connect.getValue());
@@ -81,8 +77,6 @@ public class MainCtrlTalio {
         this.joinBoardCtrl = joinBoard.getKey();
         this.joinBoardScene = new Scene(joinBoard.getValue());
 
-        this.boardCtrl = board.getKey();
-        this.boardScene = new Scene(board.getValue());
 
         showConnect();
         primaryStage.show();
@@ -194,28 +188,6 @@ public class MainCtrlTalio {
         primaryStage.setScene(joinBoardScene);
     }
 
-//    /**
-//     * Sets current active board and updates the main scene accordingly
-//     * @param activeBoard new active board
-//     */
-//    public void setActiveBoard(Board activeBoard) {
-//        this.activeBoard = activeBoard;
-//
-//        if (mainSceneCtrl == null) {
-//            mainSceneCtrl = new MainSceneCtrl(server, this, renameCtrl);
-//            mainSceneCtrl.initialize(this.server);
-//        }
-//
-//        if (activeBoard == null) {
-//            mainSceneCtrl.sceneTitle.setText("Board X");
-//        }
-//        else {
-//            mainSceneCtrl.sceneTitle.setText(activeBoard.getTitle());
-//        }
-//
-//        mainSceneCtrl.refresh();
-//        // TODO
-//    }
 
     /**
      * Shows the detailed view of a task
@@ -244,11 +216,5 @@ public class MainCtrlTalio {
         this.user = user;
     }
 
-    /**
-     * getter for the mainCtrl
-     * @return the currently used mainCtrl
-     */
-    public MainSceneCtrl getMainSceneCtrl() {
-        return mainSceneCtrl;
-    }
+
 }

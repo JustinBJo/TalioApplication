@@ -5,13 +5,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="60.0" prefWidth="84.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
+<AnchorPane fx:id="root" maxWidth="1.7976931348623157E308" prefHeight="60.0" prefWidth="84.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.BoardCtrl">
    <children>
-      <Button fx:id="leave" layoutX="66.0" layoutY="2.0" mnemonicParsing="false" onAction="#leave" prefHeight="11.0" prefWidth="24.0" text="X">
+      <Button fx:id="leave" layoutX="66.0" layoutY="2.0" mnemonicParsing="false" onAction="#leave" prefHeight="11.0" prefWidth="24.0" text="X" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="2.0">
          <font>
             <Font size="9.0" />
          </font></Button>
-      <Label fx:id="boardName" layoutX="4.0" layoutY="11.0" prefHeight="17.0" prefWidth="60.0" text="Label" />
-      <Button fx:id="access" layoutX="18.0" layoutY="34.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="Access" />
+      <Label fx:id="boardName" layoutX="4.0" layoutY="11.0" prefHeight="17.0" prefWidth="60.0" text="Label" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="11.0" />
+      <Button fx:id="access" alignment="CENTER" layoutX="12.0" layoutY="34.0" mnemonicParsing="false" onAction="#access" prefHeight="17.0" prefWidth="60.0" text="Access" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="5.0" />
    </children>
+
 </AnchorPane>

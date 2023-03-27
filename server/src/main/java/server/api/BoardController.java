@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
 import server.service.DefaultBoardService;
-
 import java.util.List;
 
 @RestController
@@ -178,7 +177,7 @@ public class BoardController {
      * @return the deleted board
      */
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteBoard(@PathVariable("id") long id) {
         if (id < 0) {
             return ResponseEntity.badRequest().body("Invalid id!");
         }
@@ -186,6 +185,7 @@ public class BoardController {
             return ResponseEntity.badRequest().body("Board does not exist.");
         }
         Board board = repo.findById(id).get();
+        System.out.println(board.getCode());
         repo.delete(board);
         return ResponseEntity.ok("Board " + id + " is removed.");
     }

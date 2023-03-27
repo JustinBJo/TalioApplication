@@ -149,7 +149,7 @@ public class BoardControllerTest {
         board.setId(2001);
         repo.save(board);
 
-        ResponseEntity<String> response = sut.delete(board.getId());
+        ResponseEntity<String> response = sut.deleteBoard(board.getId());
 
         // Check endpoint
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -164,7 +164,7 @@ public class BoardControllerTest {
 
     @Test
     void failedDeleteTest() {
-        ResponseEntity<String> response = sut.delete(2001);
+        ResponseEntity<String> response = sut.deleteBoard(2001);
 
         // Check endpoint
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

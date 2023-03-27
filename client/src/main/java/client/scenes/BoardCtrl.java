@@ -1,6 +1,7 @@
 package client.scenes;
 
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
@@ -14,7 +15,6 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
 
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
-    private final MainSceneCtrl mainSceneCtrl;
     private Board board;
 
 
@@ -22,15 +22,11 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * Main constructor for the board class
      * @param mainCtrl inject the main controller used
      * @param server inject the server used
-     * @param mainSceneCtrl inject the main scene controller used
      */
     @Inject
-    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server,
-                     MainSceneCtrl mainSceneCtrl) {
+    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-        this.mainSceneCtrl = mainSceneCtrl;
-
     }
 
     @FXML
@@ -64,14 +60,20 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * Allows the user to leave a board
      */
     public void leave() {
-        Board copy = board;
-//       mainCtrl.mainSceneCtrl.boards.getItems().remove(copy);
-//       mainCtrl.mainSceneCtrl.boardData.remove(copy);
-//       mainCtrl.getUser().removeBoard(copy);
-//       server.saveUser(mainCtrl.getUser());
+        if (board.getId() != server.getDefaultId()) {
         mainCtrl.getUser().removeBoard(board);
         server.saveUser(mainCtrl.getUser());
         board = null;
+        mainCtrl.refreshBoard(); }
+        else
+            ErrorUtils.alertError("You cannot leave the default board!");
+    }
+
+    /**
+     * accesses the chosen board
+     */
+    public void access() {
+        mainCtrl.setActiveBoard(board);
         mainCtrl.refreshBoard();
     }
 }

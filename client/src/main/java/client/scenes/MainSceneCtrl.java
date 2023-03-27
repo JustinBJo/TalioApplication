@@ -67,6 +67,12 @@ public class MainSceneCtrl {
     public void initialize() {
         // Create children manager (needs FXML container)
         validateUser();
+        Board defaultBoard = server.getBoardById(defaultBoardID);
+        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
+            mainCtrl.getUser().getBoards().add(defaultBoard);
+            server.saveUser(mainCtrl.getUser());
+        }
+
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
                 TaskListCtrl.class,
@@ -153,8 +159,12 @@ public class MainSceneCtrl {
             ErrorUtils.alertError("You cannot delete the default board!");
             return;
         }
-        server.deleteBoard(activeBoard);
+        Board b = activeBoard;
+        mainCtrl.getUser().getBoards().remove(b);
+        server.saveUser(mainCtrl.getUser());
         setActiveBoard(server.getDefaultBoard());
+        System.out.println(server.deleteBoard(b));
+
     }
 
     /**
@@ -195,7 +205,6 @@ public class MainSceneCtrl {
         User u = server.checkUser();
         mainCtrl.setUser(u);
     }
-
 
 }
 

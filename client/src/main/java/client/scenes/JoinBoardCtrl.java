@@ -1,13 +1,13 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
+
 
 public class JoinBoardCtrl {
 
@@ -34,7 +34,6 @@ public class JoinBoardCtrl {
     public void cancel() {
         code.clear();
         mainCtrl.showMain();
-        mainCtrl.getMainSceneCtrl().refresh();
     }
 
     /**
@@ -48,10 +47,7 @@ public class JoinBoardCtrl {
         try {
             Board b = server.getBoardByCode(boardCode);
             if (mainCtrl.getUser().getBoards().contains(b)) {
-                var alert = new Alert(Alert.AlertType.ERROR);
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText("This board has already been joined!");
-                alert.showAndWait();
+                mainCtrl.setActiveBoard(b);
                 return;
             }
             added = addBoard(b);
@@ -62,19 +58,12 @@ public class JoinBoardCtrl {
                 server.saveUser(mainCtrl.getUser());
             }
             else {
-                var alert = new Alert(Alert.AlertType.ERROR);
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.setContentText("There is no board with this code!");
-                alert.showAndWait();
+                ErrorUtils.alertError("There is no board with this code!");
             }
             code.clear();
             mainCtrl.showMain();
-            mainCtrl.getMainSceneCtrl().refresh();
         } catch (WebApplicationException e) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("The board with this code does not exist!");
-            alert.showAndWait();
+            ErrorUtils.alertError("There is no board with this code!");
         }
 
     }

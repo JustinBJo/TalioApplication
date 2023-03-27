@@ -234,12 +234,6 @@ public class ServerUtils {
      * @return the tasklist which was deleted
      */
     public String deleteTaskList(TaskList taskList) {
-//        long id = taskList.getId();
-//        String res =  ClientBuilder.newClient(new ClientConfig())
-//                .target(SERVER).path("/tasklist/delete/" + id)
-//                .request(APPLICATION_JSON)
-//                .accept(APPLICATION_JSON)
-//                .delete(String.class);
 
         // Unlink task list from board
         Response unlinkResponse =
@@ -356,14 +350,13 @@ public class ServerUtils {
      */
     public String deleteBoard(Board board) {
         long id = board.getId();
-        String res = ClientBuilder.newClient(new ClientConfig())
+        System.out.println(id);
+        return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("board/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(String.class);
 
-        System.out.println(res);
-        return res;
     }
 
 
