@@ -74,6 +74,16 @@
                         </ImageView>
                      </children>
                   </HBox>
+                  <HBox prefHeight="25.0" prefWidth="138.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="58.0" text="Server:" />
+                        <Label fx:id="serverAddr" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="107.0" text="Label">
+                           <padding>
+                              <Insets right="13.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
             </VBox>
          </children>

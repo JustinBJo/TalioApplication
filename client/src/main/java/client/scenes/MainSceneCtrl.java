@@ -58,7 +58,7 @@ public class MainSceneCtrl {
     @FXML
     Label boardCode;
     @FXML
-    Label serverCode;
+    Label serverAddr;
 
     /**
      * constructor
@@ -190,6 +190,14 @@ public class MainSceneCtrl {
 
         System.out.println("The code for this board is copied!");
         System.out.println("Code: " + code);
+    }
+
+    /**
+     * set the server address to be displayed
+     * @param address the address to be displayed
+     */
+    public void setServerAddr(String address) {
+        this.serverAddr.setText(address);
     }
 
     /**

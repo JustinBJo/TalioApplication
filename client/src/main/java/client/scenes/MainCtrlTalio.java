@@ -30,6 +30,8 @@ public class MainCtrlTalio {
     private TaskDetailsCtrl taskDetailsCtrl;
     private Scene viewTaskScene;
 
+    private String serverAddress;
+
 
     /**
      * initialize the main controller
@@ -74,6 +76,14 @@ public class MainCtrlTalio {
     public void showConnect() {
         primaryStage.setTitle("Connect to a server");
         primaryStage.setScene(connect);
+    }
+
+    /**
+     * display the server address on main scene
+     * @param server the server address
+     */
+    public void setServerAddress(String server) {
+        mainSceneCtrl.setServerAddr(server);
     }
 
     /**
