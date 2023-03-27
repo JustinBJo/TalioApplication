@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import javafx.scene.control.MenuItem;
@@ -51,6 +50,8 @@ public class MainSceneCtrl {
 
     @FXML
     ImageView menu;
+    @FXML
+    ImageView admin;
 
     /**
      * constructor
@@ -78,9 +79,13 @@ public class MainSceneCtrl {
                 "TaskList.fxml"
         );
 
-        Image image = new Image(getClass()
+        Image menu = new Image(getClass()
                 .getResourceAsStream("/client/images/menuicon.png"));
-        menu.setImage(image);
+        this.menu.setImage(menu);
+
+        Image admin = new Image(getClass()
+                .getResourceAsStream("/client/images/adminicon.png"));
+        this.admin.setImage(admin);
 
         // Set default board as current board (needs FXML title)
         setActiveBoard(server.getDefaultBoard());

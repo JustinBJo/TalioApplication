@@ -11,19 +11,25 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="600.0" prefWidth="831.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
    <children>
-      <AnchorPane layoutX="-1.0" prefHeight="65.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane layoutX="-1.0" prefHeight="57.0" prefWidth="498.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Label fx:id="sceneTitle" alignment="CENTER" layoutX="246.0" layoutY="14.0" text="Board Title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="86.0" style="-fx-background-color: transparent;">
+            <VBox alignment="TOP_RIGHT" layoutX="725.0" prefHeight="60.0" prefWidth="107.0" spacing="5.0" AnchorPane.rightAnchor="0.0">
+               <padding>
+                  <Insets right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+            <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="94.0" style="-fx-background-color: transparent;">
               <items>
                 <MenuItem fx:id="createBoardMenu" mnemonicParsing="false" onAction="#addBoard" text="Create new Board" />
                   <MenuItem fx:id="renameBoardMenu" mnemonicParsing="false" onAction="#renameBoard" text="Rename this Board" />
@@ -32,21 +38,27 @@
                   <MenuItem fx:id="joinServerMenu" mnemonicParsing="false" onAction="#back" text="Join different Server" />
               </items>
                <graphic>
-                  <ImageView fx:id="menu" fitHeight="46.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="menu" fitHeight="49.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/menuicon.png" />
                      </image>
                   </ImageView>
                </graphic>
             </MenuButton>
-            <VBox alignment="TOP_RIGHT" layoutX="725.0" prefHeight="60.0" prefWidth="107.0" spacing="5.0" AnchorPane.rightAnchor="0.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#back" prefHeight="28.0" prefWidth="98.0" text="Admin mode" textAlignment="CENTER" wrapText="true" />
-               </children>
-               <padding>
-                  <Insets right="5.0" top="5.0" />
-               </padding>
-            </VBox>
+            <Button layoutX="62.0" layoutY="2.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="50.0" style="-fx-background-color: transparent;" textAlignment="CENTER" wrapText="true">
+               <graphic>
+                  <Pane prefHeight="32.0" prefWidth="34.0">
+                     <children>
+                        <Label alignment="BOTTOM_CENTER" layoutY="13.0" prefHeight="41.0" prefWidth="36.0" text="Admin" />
+                        <ImageView fx:id="admin" fitHeight="31.0" fitWidth="36.0" layoutX="3.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/adminicon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+               </graphic>
+            </Button>
          </children>
       </AnchorPane>
       <SplitPane dividerPositions="0.15" layoutY="65.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="65.0">
