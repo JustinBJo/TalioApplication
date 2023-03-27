@@ -49,9 +49,16 @@ public class MainSceneCtrl {
     MenuItem joinServerMenu;
 
     @FXML
-    ImageView menu;
+    ImageView menuIcon;
     @FXML
-    ImageView admin;
+    ImageView adminIcon;
+    @FXML
+    ImageView copyIcon;
+
+    @FXML
+    Label boardCode;
+    @FXML
+    Label serverCode;
 
     /**
      * constructor
@@ -81,11 +88,15 @@ public class MainSceneCtrl {
 
         Image menu = new Image(getClass()
                 .getResourceAsStream("/client/images/menuicon.png"));
-        this.menu.setImage(menu);
+        menuIcon.setImage(menu);
 
         Image admin = new Image(getClass()
                 .getResourceAsStream("/client/images/adminicon.png"));
-        this.admin.setImage(admin);
+        adminIcon.setImage(admin);
+
+        Image copy = new Image(getClass()
+                .getResourceAsStream("/client/images/copyicon.png"));
+        copyIcon.setImage(copy);
 
         // Set default board as current board (needs FXML title)
         setActiveBoard(server.getDefaultBoard());
@@ -105,6 +116,7 @@ public class MainSceneCtrl {
     public void setActiveBoard(Board activeBoard) {
         this.activeBoard = activeBoard;
         sceneTitle.setText(activeBoard.getTitle());
+        boardCode.setText(activeBoard.getCode());
 
         refresh();
     }

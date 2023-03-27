@@ -24,11 +24,6 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <VBox alignment="TOP_RIGHT" layoutX="725.0" prefHeight="60.0" prefWidth="107.0" spacing="5.0" AnchorPane.rightAnchor="0.0">
-               <padding>
-                  <Insets right="5.0" top="5.0" />
-               </padding>
-            </VBox>
             <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="94.0" style="-fx-background-color: transparent;">
               <items>
                 <MenuItem fx:id="createBoardMenu" mnemonicParsing="false" onAction="#addBoard" text="Create new Board" />
@@ -38,7 +33,7 @@
                   <MenuItem fx:id="joinServerMenu" mnemonicParsing="false" onAction="#back" text="Join different Server" />
               </items>
                <graphic>
-                  <ImageView fx:id="menu" fitHeight="49.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="menuIcon" fitHeight="49.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/menuicon.png" />
                      </image>
@@ -50,7 +45,7 @@
                   <Pane prefHeight="32.0" prefWidth="34.0">
                      <children>
                         <Label alignment="BOTTOM_CENTER" layoutY="13.0" prefHeight="41.0" prefWidth="36.0" text="Admin" />
-                        <ImageView fx:id="admin" fitHeight="31.0" fitWidth="36.0" layoutX="3.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="adminIcon" fitHeight="31.0" fitWidth="36.0" layoutX="3.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/adminicon.png" />
                            </image>
@@ -59,6 +54,28 @@
                   </Pane>
                </graphic>
             </Button>
+            <VBox layoutX="686.0" layoutY="2.0" prefHeight="57.0" prefWidth="138.0">
+               <children>
+                  <HBox prefHeight="31.0" prefWidth="150.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="73.0" text="Board code: " />
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#copyBoardCode" prefHeight="31.0" prefWidth="81.0" style="-fx-background-color: transparent;">
+                           <graphic>
+                              <Label fx:id="boardCode" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="88.0" text="Label" />
+                           </graphic>
+                           <HBox.margin>
+                              <Insets left="-5.0" right="-6.0" />
+                           </HBox.margin>
+                        </Button>
+                        <ImageView fx:id="copyIcon" fitHeight="18.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/copyicon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
       </AnchorPane>
       <SplitPane dividerPositions="0.15" layoutY="65.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="65.0">
