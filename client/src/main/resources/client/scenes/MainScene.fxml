@@ -3,11 +3,14 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -20,20 +23,24 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <TilePane hgap="10.0" prefHeight="56.0" prefWidth="224.0" vgap="5.0" AnchorPane.leftAnchor="0.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#addBoard" prefHeight="25.0" prefWidth="94.0" text="Create board" />
-                  <Button fx:id="removeBoard" mnemonicParsing="false" onAction="#removeBoard" prefHeight="22.0" prefWidth="94.0" text="Delete board" />
-                  <Button fx:id="renameBoard" mnemonicParsing="false" onAction="#renameBoard" prefHeight="25.0" prefWidth="94.0" text="Rename board" />
-                  <Button fx:id="copyCode" mnemonicParsing="false" onAction="#copyBoardCode" prefHeight="25.0" prefWidth="94.0" text="Copy code" />
-               </children>
-               <padding>
-                  <Insets left="5.0" top="5.0" />
-               </padding>
-            </TilePane>
+            <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="86.0" style="-fx-background-color: transparent;">
+              <items>
+                <MenuItem fx:id="createBoardMenu" mnemonicParsing="false" onAction="#addBoard" text="Create new Board" />
+                  <MenuItem fx:id="renameBoardMenu" mnemonicParsing="false" onAction="#renameBoard" text="Rename this Board" />
+                  <MenuItem fx:id="deleteBoardMenu" mnemonicParsing="false" onAction="#removeBoard" text="Delete this Board" />
+                <MenuItem fx:id="joinBoardMenu" mnemonicParsing="false" text="Join another Board" />
+                  <MenuItem fx:id="joinServerMenu" mnemonicParsing="false" onAction="#back" text="Join different Server" />
+              </items>
+               <graphic>
+                  <ImageView fx:id="menu" fitHeight="46.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/menuicon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </MenuButton>
             <VBox alignment="TOP_RIGHT" layoutX="725.0" prefHeight="60.0" prefWidth="107.0" spacing="5.0" AnchorPane.rightAnchor="0.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#back" prefHeight="28.0" prefWidth="98.0" text="Change server" textAlignment="CENTER" wrapText="true" />
                   <Button mnemonicParsing="false" onAction="#back" prefHeight="28.0" prefWidth="98.0" text="Admin mode" textAlignment="CENTER" wrapText="true" />
                </children>
                <padding>

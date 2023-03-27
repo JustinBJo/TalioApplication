@@ -10,6 +10,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
@@ -34,12 +37,20 @@ public class MainSceneCtrl {
     VBox boardsContainer;
     @FXML
     HBox taskListsContainer;
+
     @FXML
-    Button renameBoard;
+    MenuItem createBoardMenu;
     @FXML
-    Button removeBoard;
+    MenuItem renameBoardMenu;
     @FXML
-    Button copyCode;
+    MenuItem deleteBoardMenu;
+    @FXML
+    MenuItem joinBoardMenu;
+    @FXML
+    MenuItem joinServerMenu;
+
+    @FXML
+    ImageView menu;
 
     /**
      * constructor
@@ -66,6 +77,10 @@ public class MainSceneCtrl {
                 TaskListCtrl.class,
                 "TaskList.fxml"
         );
+
+        Image image = new Image(getClass()
+                .getResourceAsStream("/client/images/menuicon.png"));
+        menu.setImage(image);
 
         // Set default board as current board (needs FXML title)
         setActiveBoard(server.getDefaultBoard());
