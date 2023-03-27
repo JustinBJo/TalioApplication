@@ -4,7 +4,9 @@ import client.utils.ServerUtils;
 import commons.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
 
@@ -78,8 +81,24 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * Used to delete a task from a list
      */
     public void deleteTask() {
-        server.deleteTask(task);
-        mainCtrl.refreshBoard();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete task?");
+        alert.setHeaderText("Delete Task");
+        alert.setContentText("Are you sure you want to delete this task?");
+
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        // Remove the default buttons and add Confirm and Cancel buttons
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Check the user's response and perform the desired action
+        if (result.isPresent() && result.get() == confirmButton) {
+            server.deleteTask(task);
+            mainCtrl.refreshBoard();
+        }
     }
 
     /**

@@ -7,6 +7,8 @@ import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 
 import javafx.scene.control.MenuItem;
@@ -171,8 +173,25 @@ public class MainSceneCtrl {
             ErrorUtils.alertError("You cannot delete the default board!");
             return;
         }
-        server.deleteBoard(activeBoard);
-        setActiveBoard(server.getDefaultBoard());
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete board?");
+        alert.setHeaderText("Delete Board");
+        alert.setContentText("Are you sure you want to delete this board?");
+
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        // Remove the default buttons and add Confirm and Cancel buttons
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Check the user's response and perform the desired action
+        if (result.isPresent() && result.get() == confirmButton) {
+            server.deleteBoard(activeBoard);
+            setActiveBoard(server.getDefaultBoard());
+        }
     }
 
     /**
