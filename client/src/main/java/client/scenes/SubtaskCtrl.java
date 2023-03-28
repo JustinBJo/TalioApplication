@@ -105,7 +105,6 @@ public class SubtaskCtrl
         boolean newValue = completed.isSelected();
         subtask.setCompleted(newValue);
         server.updateSubtaskCompleteness(subtask, newValue);
-        mainCtrl.refreshBoard();
     }
 
 }
