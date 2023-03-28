@@ -64,9 +64,143 @@ Application makes good use of the presented Spring built-in concepts to configur
 Application uses JavaFX for the client and makes good use of available features (use of buttons/images/lists/formatting/…). The connected JavaFX controllers are used with dependency injection.
 
 - *Excellent:* The JavaFX controllers are used with dependency injection.
-- *Good:* The UI contains more than just buttons, text fields, or labels. The application contains images and a non-default layout.
-- *Sufficient:* Application uses JavaFX for the client.
-- *Insufficient:*
+  [AddTaskCtrl] client/src/main/java/client/scenes/AddTaskCtrl.java
+```java
+    @FXML
+    private TextField title;
+    @FXML
+    private TextField description;
+@Inject
+    public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+        this.mainCtrl = mainCtrl;
+        this.server = server;
+    }
+    
+```
+
+[AddTitledEntityCtrl] client/src/main/java/client/scenes/AddTitledEntity.java
+```java
+    @FXML
+    Button cancel;
+    @FXML
+    Button confirm;
+    @FXML
+    TextField textField;
+    @FXML
+    Label header;
+@Inject
+    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+    }
+```
+
+[BoardCtrl] client/src/main/java/client/scenes/BoardCtrl.java
+```java
+    @FXML
+    Label boardName;
+    @FXML
+    Button access;
+    @FXML
+    Button leave;
+@Inject
+    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
+        this.mainCtrl = mainCtrl;
+        this.server = server;
+    }
+```
+[CardCtrl] client/src/main/java/client/scenes/CardCtrl.java
+```java
+    @FXML
+    Label title;
+    @FXML
+    Button delete;
+    @FXML
+    Button edit;
+    @FXML
+    ImageView editIcon;
+@Inject
+    public CardCtrl(ServerUtils server,
+                    MainCtrlTalio mainCtrlTalio) {
+        this.server = server;
+        this.mainCtrl = mainCtrlTalio;
+    }
+```
+[ConnectScreenCtrl] client/src/main/java/client/scenes/CardCtrl.java
+```java
+    @FXML
+    private TextField address;
+
+    @FXML
+    private Label notification;
+@Inject
+    public ConnectScreenCtrl(MainCtrlTalio mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
+```
+[EditTaskCtrl] client/src/main/java/client/scenes/EditTaskCtrl.java
+```java
+    @FXML
+    private TextField newTitle;
+    @FXML
+    private TextField newDescription;
+    @FXML
+    private Label currentTitle;
+    @FXML
+    private Label currentDescription;
+@Inject
+    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+    }
+```
+[JoinBoardCtrl] client/src/main/java/client/scenes/JoinBoardCtrl.java
+```java
+    @FXML
+    TextField code;
+@Inject
+    public JoinBoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
+        this.mainCtrl = mainCtrl;
+        this.server = server;
+    }
+```
+
+[MainSceneCtrl] client/src/main/java/client/scenes/MainSceneCtrl.java
+```java
+    @FXML
+    ImageView menuIcon;
+    @FXML
+    ImageView adminIcon;
+    @FXML
+    ImageView copyIcon;
+    @FXML
+    Label boardCode;
+    @FXML
+    Label serverAddr;
+@Inject
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+
+        this.defaultBoardID = server.getDefaultId();
+    }
+```
+[BuildUtils] client/src/main/java/client/utils/BuildUtils.java
+```java
+public static <T> Pair<T, Parent> loadFXML(
+            Class<T> c,
+            String fxmlFileName
+    ) {
+        return FXML.load(c, "client", "scenes", fxmlFileName);
+    }
+```
+
+[ChildrenManager] client/src/main/java/client/utils/ChildrenManager.java
+
+```java
+ var loadedChild =
+                    BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
+```
 
 
 ### Communcation
