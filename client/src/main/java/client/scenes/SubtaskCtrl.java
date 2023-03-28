@@ -5,6 +5,8 @@ import commons.Subtask;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
@@ -23,7 +25,10 @@ public class SubtaskCtrl
     Label title;
     @FXML
     Button delete;
-
+    @FXML
+    private ImageView editIcon;
+    @FXML
+    private ImageView deleteIcon;
 
     /**
      * Main constructor for SubtaskCtrl
@@ -47,6 +52,20 @@ public class SubtaskCtrl
             subtask.setTitle("Untitled");
         }
         title.setText(subtask.getTitle());
+    }
+
+    /**
+     * This is called only once by the FXML builder,
+     * after FXML components are initialized.
+     */
+    public void initialize() {
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        this.editIcon.setImage(editIcon);
+
+        Image deleteIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/deleteicon.png"));
+        this.deleteIcon.setImage(deleteIcon);
     }
 
 
