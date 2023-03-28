@@ -47,7 +47,17 @@ Application uses communication via REST requests and Websockets. The code is lev
 Application defines meaningful data structures and uses Jackson to perform the de-/serialization of submitted data.
 
 - *Excellent:* Jackson is used implicitly by Spring or the client library. No explicit Jackson calls are required in the application.
-- *Good:* Application defines data structures and both client and server use Jackson to perform the de-/serialization of submitted data. If required, custom Jackson modules are provided that can de-/serialize external types.
-- *Insufficient:* Client or server manually create or parse String messages.
-
+- client/src/main/java/client/utils/ServerUtils.java
+- Example:
+  - ```
+    public List<TaskList> getBoardData(long boardId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + boardId + "/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TaskList>>(){
+                });
+    }
+    ```
+    
 
