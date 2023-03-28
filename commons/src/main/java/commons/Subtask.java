@@ -58,6 +58,14 @@ public class Subtask {
     }
 
     /**
+     * Setter for the complete attribute
+     * @param completed the new value for "completed"
+     */
+    public void setCompleted(boolean completed){
+        this.completed=completed;
+    }
+
+    /**
      * Decides whether the given object is equal to this subtask
      * @param o object to be compared to
      * @return whether the objects are equal or not

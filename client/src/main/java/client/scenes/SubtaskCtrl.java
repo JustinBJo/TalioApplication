@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import commons.Subtask;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,6 +26,8 @@ public class SubtaskCtrl
     Label title;
     @FXML
     Button delete;
+    @FXML
+    CheckBox completed;
     @FXML
     private ImageView editIcon;
     @FXML
@@ -52,6 +55,12 @@ public class SubtaskCtrl
             subtask.setTitle("Untitled");
         }
         title.setText(subtask.getTitle());
+        if(subtask.isCompleted()){
+            completed.setSelected(true);
+        }
+        else{
+            completed.setSelected(false);
+        }
     }
 
     /**
@@ -89,6 +98,11 @@ public class SubtaskCtrl
         mainCtrl.refreshBoard();
     }
 
-
+    public void completeness(){
+        boolean newValue = completed.isSelected();
+        subtask.setCompleted(newValue);
+        server.updateSubtaskCompleteness(subtask, newValue);
+        mainCtrl.refreshBoard();
+    }
 
 }

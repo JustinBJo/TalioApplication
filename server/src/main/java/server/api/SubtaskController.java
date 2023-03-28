@@ -143,4 +143,20 @@ public class SubtaskController {
         repo.save(param);
 
     }
+
+    /**
+     * Updates in the database the status of the subtask
+     * @param id the id of the subtask to be edited
+     * @param newValue the new title
+     */
+    @PutMapping("/updateCompleteness/{id}/{newValue}")
+    public void updateCompleteness(@PathVariable("id") long id,
+                       @PathVariable("newValue") boolean newValue) {
+        if (id < 0 || !repo.existsById(id))
+            return;
+        Subtask param = repo.findById(id).get();
+        param.setCompleted(newValue);
+        repo.save(param);
+
+    }
 }

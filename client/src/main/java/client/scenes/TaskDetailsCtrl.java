@@ -58,6 +58,7 @@ public class TaskDetailsCtrl {
                 .getResourceAsStream("/client/images/deleteicon.png"));
         this.deleteIcon.setImage(deleteIcon);
 
+        subtaskContainer.getChildren().clear();
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
                         subtaskContainer,
@@ -75,6 +76,13 @@ public class TaskDetailsCtrl {
             subtaskChildrenManager.updateChildren(new ArrayList<>());
         }
         var subtasks = server.getTaskData(task);
+        subtaskContainer.getChildren().clear();
+        this.subtaskChildrenManager =
+                new ChildrenManager<>(
+                        subtaskContainer,
+                        SubtaskCtrl.class,
+                        "Subtask.fxml"
+                );
         subtaskChildrenManager.updateChildren(subtasks);
     }
 

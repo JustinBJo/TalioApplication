@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Subtask;
 import commons.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,6 +26,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     AnchorPane root;
     @FXML
     Label title;
+    @FXML
+    Label progress;
     @FXML
     Button delete;
     @FXML
@@ -65,6 +68,16 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
         }
         title.setText(task.getTitle());
+
+        if(task.getSubtasks() == null){
+            progress.setText("");
+            return;
+        }
+        int progressNb=0;
+        for(Subtask subtask: task.getSubtasks()){
+            if(subtask.isCompleted()) progressNb++;
+        }
+        progress.setText(progressNb + "/" + task.getSubtasks().size());
     }
 
     /**
