@@ -49,7 +49,7 @@ Application defines meaningful data structures and uses Jackson to perform the d
 - *Excellent:* Jackson is used implicitly by Spring or the client library. No explicit Jackson calls are required in the application.
 - client/src/main/java/client/utils/ServerUtils.java
 - Example:
-  - ```
+  - ```java
     public List<TaskList> getBoardData(long boardId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("board/" + boardId + "/tasklist")
