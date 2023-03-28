@@ -54,9 +54,13 @@ Server
 Application makes good use of the presented Spring built-in concepts to configure the server and maintain the lifecycle of the various server components.
 
 - *Excellent:* Additional @Services are defined, which encapsulate business logic or shared state.
-- *Good:* The application contains example of @Controller, @RestController, and a JPA repository.
-- *Sufficient:* The application uses Spring for the server.
-- *Insufficient:* The application uses regular socket communication.
+
+- Example:
+  [DefaultBoardsService](server/src/main/java/server/service/DefaultBoardService.java)
+```java
+@Service
+public class DefaultBoardService {
+```
 
 
 ### JavaFX
