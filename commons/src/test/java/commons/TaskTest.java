@@ -90,6 +90,17 @@ public class TaskTest {
     }
 
     @Test
+    void removeSubtask() {
+        Subtask subtask = new Subtask("title", false);
+        List<Subtask> subtasks = new ArrayList<Subtask>();
+        subtasks.add(subtask);
+        Task task = new Task("title", "description",
+                subtasks, new ArrayList<>());
+        task.removeSubtask(subtask);
+        assertEquals(0, task.getSubtasks().size());
+    }
+
+    @Test
     void getTags() {
         var a = new Task("Task Title1", "Description",
                 new ArrayList<>(), new ArrayList<>());
