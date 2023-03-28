@@ -128,6 +128,7 @@ public class AddTitledEntityCtrl {
                     break;
                 case RenameBoard:
                     editBoard(title);
+
                     break;
 
                 // Error handling (very unlikely, as it is an enum)
@@ -191,6 +192,11 @@ public class AddTitledEntityCtrl {
                 mainCtrl.getActiveBoard(),
                 title
             );
+        int index = mainCtrl.getUser().getBoards()
+                .indexOf(mainCtrl.getActiveBoard());
+        mainCtrl.getUser().getBoards().get(index).setTitle(title);
+        server.saveUser(mainCtrl.getUser());
         mainCtrl.setActiveBoard(updatedBoard);
+        mainCtrl.refreshBoard();
     }
 }

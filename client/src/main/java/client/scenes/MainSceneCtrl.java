@@ -159,7 +159,10 @@ public class MainSceneCtrl {
                 taskListChildrenManager.getChildrenCtrls()) {
             taskListCtrl.refresh();
         }
-        List<Board> joinedBoards = mainCtrl.getUser().getBoards();
+
+        List<Board> joinedBoards = new ArrayList<>();
+        boardListChildrenManager.updateChildren(joinedBoards);
+        joinedBoards = mainCtrl.getUser().getBoards();
         boardListChildrenManager.updateChildren(joinedBoards);
     }
 
