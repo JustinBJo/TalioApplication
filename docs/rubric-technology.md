@@ -212,10 +212,40 @@ public static <T> Pair<T, Parent> loadFXML(
 Application uses communication via REST requests and Websockets. The code is leveraging the canonical Spring techniques for endpoints and websocket that have been introduced in the lectures. The client uses libraries to simplify access.
 
 - *Excellent:* The server defines all REST and webservice endpoints through Spring and uses a client library like Jersey (REST) or Stomp (Webservice) to simplify the server requests.
-- *Good:* All communication between client and server is implemented with REST or websockets.
-- *Sufficient:* The application contains functionality that uses 1) a REST request AND 2) long-polling AND 3) websocket communication (in different places).
-- *Insufficient:* The application does not contain functionality that uses a REST request OR 2) long-polling, OR 3) websocket communication.
-
+- server/src/main/java/server/api/BoardController.java
+- ```java
+  @PutMapping("update/{id}/{newName}")
+    public ResponseEntity<Board> updateName(@PathVariable("id") long id,
+                       @PathVariable("newName") String newName) {
+        if (id < 0 || !repo.existsById(id) || newName.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        Board board = repo.findById(id).get();
+        board.setTitle(newName);
+        repo.save(board);
+        return ResponseEntity.ok(board);
+    }
+  ```
+- client/src/main/java/client/utils/ServerUtils.java
+- ```java
+  import org.glassfish.jersey.client.ClientConfig;
+  // ...
+  /**
+    * Update the title of the given board using the board/update endpoint
+    *
+    * @param board   the board that is being updated
+    * @param newName the new name of the board
+    * @return the updated board
+    */
+  public Board updateBoard(Board board, String newName) {
+      long id = board.getId();
+      return ClientBuilder.newClient(new ClientConfig())
+               .target(SERVER).path("board/update/" + id + "/" + newName)
+               .request(APPLICATION_JSON)
+               .accept(APPLICATION_JSON)
+               .put(Entity.entity(board, APPLICATION_JSON), Board.class);
+  }
+  ```
 
 ### Data Transfer
 
