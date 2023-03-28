@@ -7,9 +7,46 @@ The students are not supposed to submit a specific assignment, instead, you are 
 Application uses dependency injection to connect dependent components. No use of static fields in classes.
 
 - *Excellent:* The application (client and server) uses dependency injection everywhere to connect dependent components. The projects also binds some external types so they can be injected.
-- *Good:* The application (client and server) uses dependency injection in multiple places to connect dependent components. The server makes use of Spring annotations to access path variables, parameters, and request bodies.
-- *Sufficient:* There is one example in the client code and one in the server code that uses dependency injection to connect dependent components. Static fields and methods are only sparely used to access other components.
-- *Insufficient:* Static fields or methods are used. Implementation of the singleton pattern.
+
+
+Client
+- [BuildUtils](client/src/main/java/client/utils/BuildUtils.java)
+- [MyModule](client/src/main/java/client/MyModule.java)
+- Scene controllers
+  - e.g. [MainSceneCtrl](client/src/main/java/client/scenes/MainSceneCtrl.java), etc
+```java
+  @Inject
+  public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+      this.server = server;
+      this.mainCtrl = mainCtrl;
+
+      this.defaultBoardID = server.getDefaultId();
+  }
+```
+
+Server
+- Rest controllers
+  - e.g. [BoardController](server/src/main/java/server/api/BoardController.java), etc
+```java
+  private final BoardRepository repo;
+  private final TaskListRepository taskListRepo;
+  private final DefaultBoardService service;
+
+  /**
+   * Constructor
+   * @param repo BoardRepository
+   * @param taskListRepo TaskListRepository
+   */
+  public BoardController(
+          BoardRepository repo,
+          TaskListRepository taskListRepo,
+          DefaultBoardService service
+  ) {
+      this.repo = repo;
+      this.taskListRepo = taskListRepo;
+      this.service = service;
+  }
+```
 
 
 ### Spring Boot
