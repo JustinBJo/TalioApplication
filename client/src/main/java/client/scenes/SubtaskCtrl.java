@@ -75,7 +75,7 @@ public class SubtaskCtrl
     public void deleteSubtask() {
         boolean confirmation = server.confirmDeletion("subtask");
 
-        if(confirmation){
+        if (confirmation) {
             server.deleteSubtask(subtask);
             mainCtrl.showTaskDetails(mainCtrl.getCurrentTask());
         }
