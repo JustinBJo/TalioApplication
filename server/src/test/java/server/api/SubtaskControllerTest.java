@@ -74,4 +74,14 @@ class SubtaskControllerTest {
         String newTitle = repo.getById(k1.getId()).getTitle();
         assertEquals("NewTitle", newTitle);
     }
+
+    @Test
+    void updateCompletenessTest() {
+        repo.save(k1);
+        sut.updateCompleteness(k1.getId(), true);
+
+        assertTrue(repo.findAll().contains(k1));
+        assertTrue(repo.findById(k1.getId()).get().isCompleted());
+    }
+
 }
