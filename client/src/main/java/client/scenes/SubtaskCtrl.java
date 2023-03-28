@@ -55,10 +55,10 @@ public class SubtaskCtrl
             subtask.setTitle("Untitled");
         }
         title.setText(subtask.getTitle());
-        if(subtask.isCompleted()){
+        if (subtask.isCompleted()) {
             completed.setSelected(true);
         }
-        else{
+        else {
             completed.setSelected(false);
         }
     }
@@ -98,7 +98,10 @@ public class SubtaskCtrl
         mainCtrl.refreshBoard();
     }
 
-    public void completeness(){
+    /**
+     * Updates the status of the current subtask
+     */
+    public void completeness() {
         boolean newValue = completed.isSelected();
         subtask.setCompleted(newValue);
         server.updateSubtaskCompleteness(subtask, newValue);

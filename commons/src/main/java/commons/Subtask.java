@@ -61,8 +61,8 @@ public class Subtask {
      * Setter for the complete attribute
      * @param completed the new value for "completed"
      */
-    public void setCompleted(boolean completed){
-        this.completed=completed;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     /**

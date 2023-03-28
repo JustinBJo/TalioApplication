@@ -508,13 +508,14 @@ public class ServerUtils {
      * Updates the status of the selected subtask in the database
      *
      * @param subtask the subtask to be updates
-     * @param newValue  the value it should be updated to
+     * @param value  the value it should be updated to
      * @return the updated Subtask
      */
-    public Subtask updateSubtaskCompleteness(Subtask subtask, boolean newValue) {
+    public Subtask updateSubtaskCompleteness(Subtask subtask, boolean value) {
         long id = subtask.getId();
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("subtask/updateCompleteness/" + id + "/" + newValue)
+                .target(SERVER)
+                .path("subtask/updateCompleteness/" + id + "/" + value)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);

@@ -69,13 +69,13 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         }
         title.setText(task.getTitle());
 
-        if(task.getSubtasks() == null){
+        if (task.getSubtasks().size() == 0) {
             progress.setText("");
             return;
         }
-        int progressNb=0;
-        for(Subtask subtask: task.getSubtasks()){
-            if(subtask.isCompleted()) progressNb++;
+        int progressNb = 0;
+        for (Subtask subtask : task.getSubtasks()) {
+            if (subtask.isCompleted()) progressNb++;
         }
         progress.setText(progressNb + "/" + task.getSubtasks().size());
     }
