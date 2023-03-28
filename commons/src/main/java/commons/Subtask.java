@@ -16,6 +16,9 @@ public class Subtask {
     private String title;
     private boolean completed;
 
+    /**
+     * empty constructor
+     */
     public Subtask() {
 
     }
