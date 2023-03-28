@@ -73,8 +73,12 @@ public class SubtaskCtrl
      * Used to delete a task from a list
      */
     public void deleteSubtask() {
-        server.deleteSubtask(subtask);
-        mainCtrl.showTaskDetails(mainCtrl.getCurrentTask());
+        boolean confirmation = server.confirmDeletion("subtask");
+
+        if(confirmation){
+            server.deleteSubtask(subtask);
+            mainCtrl.showTaskDetails(mainCtrl.getCurrentTask());
+        }
     }
 
     /**
