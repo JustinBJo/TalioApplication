@@ -1,18 +1,25 @@
 package client.scenes;
 
+import client.utils.ChildrenManager;
 import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Subtask;
 import commons.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+
+import java.util.ArrayList;
 
 
 public class TaskDetailsCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
+
+    private ChildrenManager<Subtask, SubtaskCtrl> subtaskChildrenManager;
 
     private Task task;
 
@@ -24,6 +31,8 @@ public class TaskDetailsCtrl {
     private ImageView editIcon;
     @FXML
     private ImageView deleteIcon;
+    @FXML
+    VBox subtaskContainer;
 
     /**
      * Constructor for the task details
@@ -48,6 +57,25 @@ public class TaskDetailsCtrl {
         Image deleteIcon = new Image(getClass()
                 .getResourceAsStream("/client/images/deleteicon.png"));
         this.deleteIcon.setImage(deleteIcon);
+
+        this.subtaskChildrenManager =
+                new ChildrenManager<>(
+                        subtaskContainer,
+                        SubtaskCtrl.class,
+                        "Subtask.fxml"
+                );
+    }
+
+    /**
+     * Updates this task's subtasks
+     */
+    public void refresh() {
+        if (task == null) {
+            // no children if there's no task list
+            subtaskChildrenManager.updateChildren(new ArrayList<>());
+        }
+        var subtasks = server.getTaskData(task);
+        subtaskChildrenManager.updateChildren(subtasks);
     }
 
     /**
@@ -97,6 +125,17 @@ public class TaskDetailsCtrl {
             server.deleteTask(task);
             exit();
         }
+    }
+
+    /**
+     * Adds a subtask to the current task
+     */
+    public void addSubtask() {
+        if (task == null) {
+            ErrorUtils.alertError("No task to add subtask to!");
+            return;
+        }
+        mainCtrl.showAddSubtask(task);
     }
 
 }

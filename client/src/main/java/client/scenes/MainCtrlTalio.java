@@ -1,6 +1,7 @@
 package client.scenes;
 
 import commons.Board;
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 import javafx.scene.Parent;
@@ -130,12 +131,29 @@ public class MainCtrlTalio {
     }
 
     /**
+     * Gets the current task that was recently edited
+     * @return the current task
+     */
+    public Task getCurrentTask() {
+        return mainSceneCtrl.getCurrentTask();
+    }
+
+    /**
      * Sets the currently active board.
      * Does nothing if the parameter is null.
      */
     public void setActiveBoard(Board board) {
         if (board == null) return;
         mainSceneCtrl.setActiveBoard(board);
+    }
+
+    /**
+     * Updates the current task
+     * @param task - the new current task
+     */
+    public void setCurrentTask(Task task) {
+        if (task == null) return;
+        mainSceneCtrl.setCurrentTask(task);
     }
 
     /**
@@ -183,7 +201,30 @@ public class MainCtrlTalio {
     public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
         taskDetailsCtrl.setTask(task);
+        mainSceneCtrl.setCurrentTask(task);
+        taskDetailsCtrl.refresh();
         primaryStage.setScene(viewTaskScene);
+    }
+
+    /**
+     * Switches scene to "Add Board" scene
+     * @param task the task that the new subtask is assigned to
+     */
+    public void showAddSubtask(Task task) {
+        primaryStage.setTitle("Add a new subtask");
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.setCurrentTask(task);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.Subtask);
+    }
+
+    /**
+     * changes to rename subtask scene
+     */
+    public void showRenameSubtask(Subtask subtask) {
+        primaryStage.setTitle("Rename the subtask");
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.setSubtaskToEdit(subtask);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameSubtask);
     }
 
 }
