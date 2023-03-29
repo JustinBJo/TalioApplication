@@ -111,7 +111,11 @@ public class TaskController {
         if (id < 0 || !repo.existsById(id) || newDescription.length() == 0)
             return;
         Task param = repo.getById(id);
-        param.setDescription(newDescription);
+        if (newDescription.equals("HARDCODED-EMPTY-" +
+                "DESCRIPTION-METHOD-FOR-EDITING-TASKS"))
+            param.setDescription("");
+        else
+            param.setDescription(newDescription);
         repo.save(param);
 
     }
