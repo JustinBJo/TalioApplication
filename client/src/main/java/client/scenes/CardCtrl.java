@@ -30,7 +30,15 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @FXML
     Button edit;
     @FXML
+    Button moveUp;
+    @FXML
+    Button moveDown;
+    @FXML
     ImageView editIcon;
+    @FXML
+    ImageView upIcon;
+    @FXML
+    ImageView downIcon;
 
 
     /**
@@ -52,7 +60,14 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     public void initialize() {
         Image editIcon = new Image(getClass()
                 .getResourceAsStream("/client/images/editicon.png"));
+        Image upIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png"));
+        Image downIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png"));
+
         this.editIcon.setImage(editIcon);
+        this.upIcon.setImage(upIcon);
+        this.downIcon.setImage(downIcon);
     }
 
     /**
@@ -103,6 +118,20 @@ public class CardCtrl implements IEntityRepresentation<Task> {
                 }
             }
         });
+    }
+
+    /**
+     * Used to move a task up in the parent list
+     */
+    public void moveUp(){
+
+    }
+
+    /**
+     * Used to move a task down in the parent list
+     */
+    public void moveDown(){
+
     }
 
 }
