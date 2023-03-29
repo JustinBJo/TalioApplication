@@ -3,9 +3,8 @@ package commons;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -67,10 +66,15 @@ public class Board {
      * @return generated code
      */
     private String generateCode() {
-        // Hashes title and id then truncates a base-16 representation
-        // of that hash to 6 characters
-        String hash = Integer.toString(Objects.hash(title, id), 16);
-        return (hash.length() < 6) ? hash : hash.substring(0, 6);
+        String uniqueCode = UUID.randomUUID().toString().substring(0, 3);
+
+        int hour = LocalDateTime.now().getHour();
+        int minute = LocalDateTime.now().getMinute();
+        String timeCode = Integer.toString(hour + minute);
+
+        String randCode = Integer.toString(new Random().nextInt(10));
+
+        return uniqueCode + timeCode + randCode;
     }
 
     /**
