@@ -1,40 +1,29 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import java.io.IOException;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 public class TaskDetailsCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
-    private static ServerUtils serverCopy;
-    private static MainCtrlTalio mainCtrlTalioCopy;
+
     private Task task;
 
     @FXML
     private Label title;
-
     @FXML
     private Label description;
-
-    /**
-     * Empty constructor
-     */
-    public TaskDetailsCtrl() {
-        if (serverCopy != null) {
-            this.server = serverCopy;
-            this.mainCtrl = mainCtrlTalioCopy;
-            this.task = mainCtrl.getCurrentTask();
-        }
-        else {
-            this.server = null;
-            this.mainCtrl = null;
-        }
-
-    }
+    @FXML
+    private ImageView editIcon;
+    @FXML
+    private ImageView deleteIcon;
 
     /**
      * Constructor for the task details
@@ -42,14 +31,35 @@ public class TaskDetailsCtrl {
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public TaskDetailsCtrl(ServerUtils server, MainCtrlTalio mainCtrl,
-                           TaskListCtrl taskListCtrl) {
+    public TaskDetailsCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+    }
 
-        this.serverCopy = server;
-        this.mainCtrlTalioCopy = mainCtrl;
-        this.task = mainCtrl.getCurrentTask();
+    /**
+     * This is called only once by the FXML builder,
+     * after FXML components are initialized.
+     */
+    public void initialize() {
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        this.editIcon.setImage(editIcon);
+
+        Image deleteIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/deleteicon.png"));
+        this.deleteIcon.setImage(deleteIcon);
+    }
+
+    /**
+     * @param task task whose details are shown in the scene
+     */
+    public void setTask(Task task) {
+        if (task == null) return;
+
+        this.task = task;
+
+        title.setText(task.getTitle());
+        description.setText(task.getDescription());
     }
 
     /**
@@ -57,26 +67,36 @@ public class TaskDetailsCtrl {
      * returns to main scene
      */
     public void exit() {
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
     /**
      * Edit a task
-     * @throws IOException -
      */
-    public void editTask() throws IOException {
-        Task currentTask = task;
-        mainCtrl.showEditTask(currentTask);
+    public void editTask() {
+        if (task == null) {
+            ErrorUtils.alertError("No task to edit!");
+            exit();
+        }
+        mainCtrl.showEditTask(task);
     }
 
     /**
      * Deletes the task from the detailed view and returns to the main scene
      */
     public void deleteTask() {
-        Task currentTask = task;
-        server.deleteTask(currentTask);
-        mainCtrl.mainSceneCtrl.refresh();
-        mainCtrl.showMain();
+        if (task == null) {
+            ErrorUtils.alertError("No task to delete!");
+            exit();
+        }
+
+        boolean confirmation = server.confirmDeletion("task");
+
+        // Check the user's response and perform the desired action
+        if (confirmation) {
+            server.deleteTask(task);
+            exit();
+        }
     }
+
 }

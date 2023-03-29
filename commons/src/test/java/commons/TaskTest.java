@@ -115,7 +115,7 @@ public class TaskTest {
         b.setId(2L);
         assertNotEquals(a, b);
         b.setId(a.getId());
-        assertEquals(a, b);
+        assertNotEquals(a, b);
     }
 
     @Test

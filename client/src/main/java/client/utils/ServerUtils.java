@@ -18,13 +18,17 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
+import java.util.Optional;
 
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import commons.User;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -35,7 +39,6 @@ public class ServerUtils {
 
     private static String SERVER = "http://localhost:8080/";
 
-    private List<TaskList> boardData;
 
     /**
      * gets the default board from the repository
@@ -64,11 +67,11 @@ public class ServerUtils {
     }
 
     /**
-     * get task list
+     * Gets all task lists in repository
      *
-     * @return the task list
+     * @return a list containing all task lists
      */
-    public List<TaskList> getTaskList() {
+    public List<TaskList> getAllTaskLists() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("tasklist") //
                 .request(APPLICATION_JSON) //
@@ -95,14 +98,8 @@ public class ServerUtils {
      * get the tasklist of the default board using only the api
      * @return the task list of the default board
      */
-    public List<TaskList> getDefaultBoardTaskList() {
-        long defaultId = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("defaultId")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Long>(){
-                });
-        return getBoardData(defaultId);
+    public List<TaskList> getDefaultBoardData() {
+        return getBoardData(getDefaultId());
     }
 
     /**
@@ -178,6 +175,18 @@ public class ServerUtils {
     }
 
     /**
+     * Gets all tasks belonging to a certain task list
+     * @param taskList parent of desired tasks
+     * @return list of tasks belonging to task list
+     */
+    public List<Task> getTaskListData(TaskList taskList) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Task>>() {});
+    }
+
+    /**
      * Link task list that is already in repository to a board that is also
      * already in repository
      * @param board board that will be linked to the task list
@@ -209,15 +218,45 @@ public class ServerUtils {
      * Method used to insert a task into the database
      *
      * @param task the task to be added to the database
+     * @param parentTaskList task list that will hold this task
      * @return the added task, in order for future operations
      * with it to be possible
      */
-    public Task addTask(Task task) {
+    public Task addTask(Task task, TaskList parentTaskList) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks") //
+                .target(SERVER).path("tasks/" + parentTaskList.getId()) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Displays an alert which asks for the confirmation of deletion
+     * @param type the string which contains
+     *             the type of the entity that the user is trying to delete
+     * @return true if confirm is clicked, false otherwise
+     */
+    public boolean confirmDeletion(String type) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete " + type + "?");
+        alert.setHeaderText("Delete " + type);
+        alert.setContentText("Are you sure you want to delete this "
+                + type + "?");
+
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        // Remove the default buttons and add Confirm and Cancel buttons
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == confirmButton) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -292,6 +331,20 @@ public class ServerUtils {
     }
 
     /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+
+    }
+
+    /**
      * Uses board endpoint to ask server to add a new board
      *
      * @param board board to be added
@@ -329,15 +382,83 @@ public class ServerUtils {
      */
     public String deleteBoard(Board board) {
         long id = board.getId();
-        String res = ClientBuilder.newClient(new ClientConfig())
+        System.out.println(id);
+        return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("board/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(String.class);
 
-        System.out.println(res);
-        return res;
     }
+
+
+    /**
+     * returns a board based on its ID
+     * @param id the id of the board
+     * @return the board
+     */
+    public Board getBoardById(long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+    /**
+     * checks whether the user has already been
+     * registered into the system
+     * @return the existent user or a new one if
+     * no existent one is found
+     */
+    public User checkUser() {
+        String ip = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/ip")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(String.class);
+
+        List<User> users = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { });
+
+        boolean exists = false;
+        User user = new User(ip);
+        for (User k : users) {
+            if (k.getIp().equals(ip)) {
+                exists = true;
+                user = k;
+            }
+        }
+        if (!exists) {
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).path("user/add")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(user, APPLICATION_JSON));
+        }
+        return user;
+    }
+
+    /**
+     * saves the current state of the user in the database
+     * @param user the user to be saved
+     */
+    public void saveUser(User user) {
+     //   System.out.println(user.getBoards());
+        //System.out.println(user.getBoards());
+        List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/save")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(user, APPLICATION_JSON),
+                        new GenericType<List<Board>>() {});
+        System.out.println(boards);
+    }
+
+
 
     /**
      * Update the title of the given task using the tasks/updateTitle endpoint
