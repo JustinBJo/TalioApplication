@@ -31,6 +31,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     Button edit;
     @FXML
     ImageView editIcon;
+    @FXML
+    ImageView descriptionIndicator;
 
 
     /**
@@ -53,6 +55,9 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         Image editIcon = new Image(getClass()
                 .getResourceAsStream("/client/images/editicon.png"));
         this.editIcon.setImage(editIcon);
+        Image descInd = new Image(getClass()
+                .getResourceAsStream("/client/images/menuicon.png"));
+        this.descriptionIndicator.setImage(descInd);
     }
 
     /**
@@ -65,6 +70,9 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
         }
         title.setText(task.getTitle());
+        if (task.getDescription().isEmpty()) {
+            descriptionIndicator.setImage(null);
+        }
     }
 
     /**
