@@ -7,6 +7,8 @@ import com.google.inject.Inject;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
+import commons.User;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -26,6 +28,7 @@ public class MainSceneCtrl {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
+    private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
     private final long defaultBoardID;
 
@@ -82,10 +85,23 @@ public class MainSceneCtrl {
      */
     public void initialize() {
         // Create children manager (needs FXML container)
+        validateUser();
+        Board defaultBoard = server.getBoardById(defaultBoardID);
+        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
+            mainCtrl.getUser().getBoards().add(defaultBoard);
+            server.saveUser(mainCtrl.getUser());
+        }
+
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
                 TaskListCtrl.class,
                 "TaskList.fxml"
+        );
+
+        this.boardListChildrenManager = new ChildrenManager<>(
+                boardsContainer,
+                BoardCtrl.class,
+                "Board.fxml"
         );
 
         Image menu = new Image(getClass()
@@ -99,6 +115,8 @@ public class MainSceneCtrl {
         Image copy = new Image(getClass()
                 .getResourceAsStream("/client/images/copyicon.png"));
         copyIcon.setImage(copy);
+
+
 
         // Set default board as current board (needs FXML title)
         setActiveBoard(server.getDefaultBoard());
@@ -159,6 +177,11 @@ public class MainSceneCtrl {
                 taskListChildrenManager.getChildrenCtrls()) {
             taskListCtrl.refresh();
         }
+
+        List<Board> joinedBoards = new ArrayList<>();
+        boardListChildrenManager.updateChildren(joinedBoards);
+        joinedBoards = mainCtrl.getUser().getBoards();
+        boardListChildrenManager.updateChildren(joinedBoards);
     }
 
     /**
@@ -194,8 +217,11 @@ public class MainSceneCtrl {
 
         // Check the user's response and perform the desired action
         if (confirmation) {
-            server.deleteBoard(activeBoard);
+            Board b = activeBoard;
+            mainCtrl.getUser().getBoards().remove(b);
+            server.saveUser(mainCtrl.getUser());
             setActiveBoard(server.getDefaultBoard());
+            System.out.println(server.deleteBoard(b));
         }
     }
 
@@ -230,5 +256,21 @@ public class MainSceneCtrl {
     public void addList() {
         mainCtrl.showAddList();
     }
+
+    /**
+     * displays the join board scene
+     */
+    public void joinBoard() {
+        mainCtrl.showJoinBoard();
+    }
+
+    /**
+     * checks whether this user has already been registered
+     */
+    public void validateUser() {
+        User u = server.checkUser();
+        mainCtrl.setUser(u);
+    }
+
 }
 

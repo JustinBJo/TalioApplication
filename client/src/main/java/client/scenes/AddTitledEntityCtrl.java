@@ -158,6 +158,7 @@ public class AddTitledEntityCtrl {
                     break;
                 case RenameBoard:
                     editBoard(title);
+
                     break;
                 case Subtask:
                     addNewSubtask(title);
@@ -214,7 +215,12 @@ public class AddTitledEntityCtrl {
      */
     private void addNewBoard(String title) {
         Board board = new Board(title);
-        mainCtrl.setActiveBoard(server.addBoard(board));
+
+        board = server.addBoard(board);
+        mainCtrl.setActiveBoard(board);
+        mainCtrl.getUser().addBoard(board);
+        System.out.println(mainCtrl.getUser().getBoards());
+        server.saveUser(mainCtrl.getUser());
     }
 
     private void editTaskList(String title) {
@@ -227,7 +233,12 @@ public class AddTitledEntityCtrl {
                 mainCtrl.getActiveBoard(),
                 title
             );
+        int index = mainCtrl.getUser().getBoards()
+                .indexOf(mainCtrl.getActiveBoard());
+        mainCtrl.getUser().getBoards().get(index).setTitle(title);
+        server.saveUser(mainCtrl.getUser());
         mainCtrl.setActiveBoard(updatedBoard);
+        mainCtrl.refreshBoard();
     }
 
     /**
