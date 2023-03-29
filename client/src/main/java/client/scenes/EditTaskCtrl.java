@@ -76,10 +76,15 @@ public class EditTaskCtrl {
                 return;
             }
 
-            if (newTitleString.length() >= 1)
+            if (newTitleString.length() >= 1) {
+                editedTask.setTitle(newTitleString);
                 server.updateTaskTitle(editedTask, newTitleString);
-            if (newDescriptionString.length() >= 1)
+            }
+
+            if (newDescriptionString.length() >= 1) {
+                editedTask.setTitle(newDescriptionString);
                 server.updateTaskDescription(editedTask, newDescriptionString);
+            }
 
         }
         catch (WebApplicationException e) {
