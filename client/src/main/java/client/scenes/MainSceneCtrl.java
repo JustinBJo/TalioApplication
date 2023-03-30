@@ -33,7 +33,6 @@ public class MainSceneCtrl {
     private final long defaultBoardID;
 
     private Board activeBoard;
-    private Task currentTask;
 
     @FXML
     Label sceneTitle;
@@ -139,22 +138,6 @@ public class MainSceneCtrl {
         boardCode.setText(activeBoard.getCode());
 
         refresh();
-    }
-
-    /**
-     * Gets the current task
-     * @return the current task
-     */
-    public Task getCurrentTask() {
-        return currentTask;
-    }
-
-    /**
-     * Sets the current task
-     * @param task - the new current task
-     */
-    public void setCurrentTask(Task task) {
-        this.currentTask = task;
     }
 
     /**

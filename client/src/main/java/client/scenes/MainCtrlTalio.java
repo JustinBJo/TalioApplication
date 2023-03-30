@@ -145,29 +145,12 @@ public class MainCtrlTalio {
     }
 
     /**
-     * Gets the current task that was recently edited
-     * @return the current task
-     */
-    public Task getCurrentTask() {
-        return mainSceneCtrl.getCurrentTask();
-    }
-
-    /**
      * Sets the currently active board.
      * Does nothing if the parameter is null.
      */
     public void setActiveBoard(Board board) {
         if (board == null) return;
         mainSceneCtrl.setActiveBoard(board);
-    }
-
-    /**
-     * Updates the current task
-     * @param task - the new current task
-     */
-    public void setCurrentTask(Task task) {
-        if (task == null) return;
-        mainSceneCtrl.setCurrentTask(task);
     }
 
     /**
@@ -227,7 +210,7 @@ public class MainCtrlTalio {
         mainSceneCtrl.setCurrentTask(task);
         taskDetailsCtrl.refresh();
         primaryStage.setScene(viewTaskScene);
-        primaryStage.setScene(viewTaskScene); }
+        }
 
 
     /**
