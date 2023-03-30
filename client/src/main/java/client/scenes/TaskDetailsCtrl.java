@@ -77,7 +77,8 @@ public class TaskDetailsCtrl {
         var subtasks = server.getTaskData(task);
         subtaskChildrenManager.updateChildren(subtasks);
 
-        for (SubtaskCtrl subtaskCtrl : subtaskChildrenManager.getChildrenCtrls()) {
+        for (SubtaskCtrl subtaskCtrl :
+                subtaskChildrenManager.getChildrenCtrls()) {
             subtaskCtrl.setParentTask(task);
         }
     }
