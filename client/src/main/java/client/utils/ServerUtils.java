@@ -25,7 +25,6 @@ import commons.TaskList;
 
 import commons.User;
 import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -106,46 +105,16 @@ public class ServerUtils {
 
     /**
      * add a task list to the server
-     * @param taskList  the task list
-     * @param board     the board that the task list belongs to
-     * @return          the added task list, null if failed to add
+     *
+     * @param taskList the task list
+     * @param board    the board that the task list belongs to
      */
-    public TaskList addTaskList(TaskList taskList, Board board) {
-
-        // Add task list to repository
-        Response addListResponse =
-                ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("tasklist") //
+    public void addTaskList(TaskList taskList, Board board) {
+        ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasklist/" + board.getId()) //
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .post(Entity.entity(taskList, APPLICATION_JSON));
-
-        // If failed to add list, exit now
-        if (addListResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-            addListResponse.close();
-            return null;
-        }
-
-        // Get added list
-        TaskList addedList = addListResponse.readEntity(TaskList.class);
-
-        addListResponse.close();
-
-        // Link task list to board
-        Response linkBoardResponse =
-                linkTaskListToBoard(board, addedList.getId());
-
-        int linkStatus = linkBoardResponse.getStatus();
-        linkBoardResponse.close();
-
-        // If succeeded to link list, wrap up and exit
-        if (linkStatus == Response.Status.OK.getStatusCode()) {
-            return addedList;
-        }
-
-        // If failed to link list,
-        // remove it from repository to avoid lists with no parents
-        removeTaskList(addedList.getId()).close();
-        return null;
+                .post(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
     }
 
     /**
@@ -160,19 +129,6 @@ public class ServerUtils {
                 .get(new GenericType<List<Task>>() {});
     }
 
-    /**
-     * Link task list that is already in repository to a board that is also
-     * already in repository
-     * @param board board that will be linked to the task list
-     * @param taskListId if of the task list that wll be linked to the board
-     * @return the endpoint's Response
-     */
-    private Response linkTaskListToBoard(Board board, long taskListId) {
-            return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("board/addTaskList/" + board.getId() + "/" + taskListId)
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
-                .put(Entity.json(board));
-    }
 
     /**
      * Method used to insert a task into the database
@@ -195,55 +151,12 @@ public class ServerUtils {
      * Deletes a tasklist from the server
      *
      * @param taskList the tasklist to be deleted
-     * @return the tasklist which was deleted
      */
-    public String deleteTaskList(TaskList taskList) {
-
-        // Unlink task list from board
-        Response unlinkResponse =
-                ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("board/removeTaskList/" + taskList.getId()) //
+    public void deleteTaskList(TaskList taskList) {
+        ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("tasklist/delete/" + taskList.getId()) //
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .put(Entity.entity(taskList, APPLICATION_JSON));
-
-        // If failed to unlink list, exit now
-        if (unlinkResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-            unlinkResponse.close();
-            return "Failed to unlink task list from board";
-        }
-
-        Board unlinkedBoard = unlinkResponse.readEntity(Board.class);
-        unlinkResponse.close();
-
-        // Remove task list from repository
-        Response removeListResponse = removeTaskList(taskList.getId());
-
-        int removeStatus = removeListResponse.getStatus();
-        String removeValue = removeListResponse.readEntity(String.class);
-        removeListResponse.close();
-
-        // If succeeded to link list, wrap up and exit
-        if (removeStatus == Response.Status.OK.getStatusCode()) {
-            return removeValue;
-        }
-
-        // If failed to remove list, link it back to board
-        // to avoid lists with no parents
-        linkTaskListToBoard(unlinkedBoard, taskList.getId()).close();
-        return null;
-
-    }
-
-
-    /**
-     * Remove task list from repository without unlinking it from board
-     * @param taskListId id of task list to be removed
-     */
-    private Response removeTaskList(long taskListId) {
-        return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("tasklist/delete/" + taskListId) //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .delete();
+                .delete(String.class);
     }
 
     /**

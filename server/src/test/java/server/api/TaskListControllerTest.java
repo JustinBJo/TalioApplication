@@ -1,9 +1,11 @@
 package server.api;
+import commons.Board;
 import commons.Task;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import server.database.BoardRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
@@ -17,20 +19,22 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class TaskListControllerTest {
 
     private TaskListRepository repo;
-    private TaskRepository taskRepo;
+    private BoardRepository boardRepo;
     private TaskListController taskListController;
 
     @BeforeEach
     public void setup() {
         repo = new TestTaskListRepository();
-        taskRepo = new TestTaskRepository();
-        taskListController = new TaskListController(repo, taskRepo);
+        boardRepo = new TestBoardRepository();
+        taskListController = new TaskListController(repo, boardRepo);
     }
 
     @Test
     public void addTest() {
         TaskList tl = new TaskList("test1");
-        taskListController.add(tl);
+        Board b = new Board("test");
+        boardRepo.save(b);
+        taskListController.add(tl, b.getId());
         assertTrue(repo.findAll().contains(tl));
     }
 
@@ -53,35 +57,8 @@ public class TaskListControllerTest {
     @Test
     public void addWithNullTitle() {
         TaskList tl = new TaskList(null);
-        var result = taskListController.add(tl);
-        assertEquals(BAD_REQUEST, result.getStatusCode());
-    }
-
-    @Test
-    public void addTaskTest() {
-        TaskList tasklist = new TaskList("test list");
-        long listId = repo.save(tasklist).getId();
-
-        Task task = new Task("test task", "description",
-                new ArrayList<>(), new ArrayList<>());
-        long taskId = taskRepo.save(task).getId();
-
-        var result = taskListController.addChildTask(listId, taskId);
-
-        String targetString = "Added Task " + taskId
-                + " to List " + listId;
-
-        assertEquals(OK, result.getStatusCode());
-        assertEquals(targetString, result.getBody());
-    }
-
-    @Test
-    public void addNonExistentTaskTest() {
-        TaskList tasklist = new TaskList("test list");
-        long listId = repo.save(tasklist).getId();
-
-        var result = taskListController.addChildTask(listId, 1);
-
+        Board b = new Board("test");
+        var result = taskListController.add(tl, b.getId());
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 

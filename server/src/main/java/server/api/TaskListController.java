@@ -2,10 +2,12 @@ package server.api;
 
 import java.util.List;
 
+import commons.Board;
 import commons.Task;
 import commons.TaskList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.database.BoardRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
@@ -14,16 +16,16 @@ import server.database.TaskRepository;
 public class TaskListController {
 
     private final TaskListRepository repo;
-    private final TaskRepository taskRepo;
+    private final BoardRepository boardRepo;
 
     /**
      * constructor
      * @param repo the task list repository
      */
     public TaskListController(TaskListRepository repo,
-                              TaskRepository taskRepo) {
+                              BoardRepository boardRepo) {
         this.repo = repo;
-        this.taskRepo = taskRepo;
+        this.boardRepo = boardRepo;
     }
 
     /**
@@ -42,16 +44,32 @@ public class TaskListController {
     /**
      * add a task list
      * @param taskList the task list to add
+     * @param boardId id of the board that holds the new list
      * @return the added task list
      */
-    @PostMapping(path = { "", "/" })
-    public ResponseEntity<TaskList> add(@RequestBody TaskList taskList) {
+    @PostMapping(path = { "/{boardId}" })
+    public ResponseEntity<TaskList> add(
+            @RequestBody TaskList taskList,
+            @PathVariable("boardId") long boardId) {
 
-        if (taskList.getTitle() == null || taskList.getTasks() == null) {
+        if (isNullOrEmpty(taskList.getTitle())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (boardId < 0 || !boardRepo.existsById(boardId)) {
             return ResponseEntity.badRequest().build();
         }
 
         TaskList saved = repo.save(taskList);
+        Board parent = boardRepo.getById(boardId);
+        boolean linkSuccess = parent.addTaskList(saved);
+
+        if (!linkSuccess) {
+            repo.delete(saved);
+            return ResponseEntity.badRequest().build();
+        }
+
+        boardRepo.save(parent);
         return ResponseEntity.ok(saved);
     }
 
@@ -74,35 +92,6 @@ public class TaskListController {
     }
 
     /**
-     * Add a task to a specific list
-     * @param taskListId the id of the list that the task is being added to
-     * @param taskId the id of the task that is being added
-     * @return OK if the task has been added to the tasklist,
-     *         BAD_REQUEST otherwise
-     */
-    @PutMapping("addTask/{taskListId}/{taskId}")
-    public ResponseEntity<String> addChildTask(
-            @PathVariable("taskListId") long taskListId,
-            @PathVariable("taskId") long taskId
-    ) {
-        if (taskListId < 0 || !repo.existsById(taskListId)
-                || taskId < 0 || !taskRepo.existsById(taskId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        TaskList taskList = repo.getById(taskListId);
-        Task task = taskRepo.getById(taskId);
-
-        boolean success = taskList.addTask(task);
-        if (!success) return ResponseEntity.badRequest().build();
-
-        repo.save(taskList);
-        return ResponseEntity.ok(
-                "Added Task " + taskId + " to List " + taskListId
-        );
-    }
-
-    /**
      * Deletes from the repository a tasklist with the provided id
      * @param id the id of the tasklist to be removed
      */
@@ -114,9 +103,35 @@ public class TaskListController {
         if  (!repo.existsById(id)) {
             return ResponseEntity.badRequest().body("TaskList does not exist.");
         }
+
         TaskList taskList = repo.findById(id).get();
+
+        Board parent = null;
+        for (Board board : boardRepo.findAll()) {
+            if (board.getTaskLists().contains(taskList)) {
+                parent = board;
+                break;
+            }
+        }
+
+        if (parent != null) {
+            boolean unlinkSuccess = parent.removeTaskList(taskList);
+
+            if (!unlinkSuccess) {
+                return ResponseEntity.badRequest().body(
+                        "Failed to unlink task from task list."
+                );
+            }
+
+            boardRepo.save(parent);
+        }
+
         repo.delete(taskList);
-        return ResponseEntity.ok("TaskList " + id + " is removed.");
+        if (repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("The task " +
+                    "was not correctly removed.");
+        }
+        return ResponseEntity.ok("Task " + id + " was removed.");
     }
 
     /**
@@ -135,4 +150,7 @@ public class TaskListController {
 
     }
 
+    private static boolean isNullOrEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
 }

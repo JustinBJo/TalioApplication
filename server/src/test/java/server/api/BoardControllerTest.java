@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoardControllerTest {
 
     private BoardRepository repo;
-    private TaskListRepository listRepo;
     private DefaultBoardService service;
     private BoardController sut;
 
@@ -26,9 +25,8 @@ public class BoardControllerTest {
     @BeforeEach
     void setUp() {
         repo = new TestBoardRepository();
-        listRepo = new TestTaskListRepository();
         service = new DefaultBoardService();
-        sut = new BoardController(repo, listRepo, service);
+        sut = new BoardController(repo, service);
     }
 
     @Test
@@ -172,74 +170,6 @@ public class BoardControllerTest {
                 "Board does not exist.",
                 response.getBody()
         );
-    }
-
-    @Test
-    void linkBoardToTaskList() {
-        Board board = new Board("Test Board");
-        long boardId = repo.save(board).getId();
-
-        TaskList taskList = new TaskList("Test List");
-        long taskListId = listRepo.save(taskList).getId();
-
-        var res = sut.linkBoardToTaskList(boardId, taskListId);
-
-        // Check response
-        assertEquals(HttpStatus.OK, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertTrue(updatedBoard.getTaskLists().contains(taskList));
-    }
-
-    @Test
-    void failAddChildTaskList() {
-        Board board = new Board("Test Board");
-        long boardId = repo.save(board).getId();
-
-        var res = sut.linkBoardToTaskList(boardId, 100);
-
-        // Check response
-        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertTrue(updatedBoard.getTaskLists().isEmpty());
-    }
-
-    @Test
-    void unlinkBoardToTaskList() {
-        Board board = new Board("Test Board");
-        TaskList taskList = new TaskList("Test List");
-        board.addTaskList(taskList);
-        long taskListId = listRepo.save(taskList).getId();
-        long boardId = repo.save(board).getId();
-
-        var res = sut.unlinkBoardFromTaskList(taskListId);
-
-        // Check response
-        assertEquals(HttpStatus.OK, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertFalse(updatedBoard.getTaskLists().contains(taskList));
-    }
-
-    @Test
-    void failUnlinkBoardToTaskList() {
-        Board board = new Board("Test Board");
-        TaskList taskList = new TaskList("Test List");
-        long taskListId = listRepo.save(taskList).getId();
-        long boardId = repo.save(board).getId();
-
-        var res = sut.unlinkBoardFromTaskList(taskListId);
-
-        // Check response
-        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertFalse(updatedBoard.getTaskLists().contains(taskList));
     }
 
     @Test
