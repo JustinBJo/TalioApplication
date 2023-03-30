@@ -27,18 +27,6 @@ class SubtaskControllerTest {
     }
 
     @Test
-    void getAll() {
-        repo.save(k1);
-        repo.save(k2);
-        List<Subtask> res = sut.getAll();
-
-        assertTrue(res.contains(k1));
-        assertTrue(res.contains((k2)));
-
-
-    }
-
-    @Test
     void getById() {
         Subtask k = new Subtask("test", true);
         k.setId(100);

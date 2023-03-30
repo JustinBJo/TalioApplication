@@ -31,15 +31,6 @@ public class TaskController {
     }
 
     /**
-     * get all the tasks
-     * @return all the tasks
-     */
-    @GetMapping(path = { "", "/" })
-    public List<Task> getAll() {
-        return repo.findAll();
-    }
-
-    /**
      * get a task by id
      * @param id the id of the task
      * @return the task

@@ -58,18 +58,6 @@ public class TaskControllerTest {
     }
 
     @Test
-    void getAll() {
-        var a = getTask("t1");
-        var b = getTask("t2");
-        repo.save(a);
-        repo.save(b);
-        List<Task> tasks = sut.getAll();
-        assertTrue(tasks.contains(a));
-        assertTrue(tasks.contains(b));
-        assertEquals(2, tasks.size());
-    }
-
-    @Test
     void updateTitleTest() {
         Task task = new Task("OldTitle",
                 "Old Description",

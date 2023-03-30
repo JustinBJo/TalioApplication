@@ -33,18 +33,6 @@ public class TaskListControllerTest {
         taskListController.add(tl);
         assertTrue(repo.findAll().contains(tl));
     }
-    
-    @Test
-    public void getAllTest() {
-        TaskList tl1 = new TaskList("test1");
-        TaskList tl2 = new TaskList("test2");
-        repo.save(tl1);
-        repo.save(tl2);
-        List<TaskList> all = taskListController.getAll();
-        assertTrue(all.contains(tl1));
-        assertTrue(all.contains(tl2));
-        assertEquals(all.size(), 2);
-    }
 
     @Test
     public void getByIdTest() {

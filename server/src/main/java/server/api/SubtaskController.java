@@ -25,15 +25,6 @@ public class SubtaskController {
     }
 
     /**
-     * get all the subtasks
-     * @return all the subtasks
-     */
-    @GetMapping(path = {"", "/"} )
-    public List<Subtask> getAll() {
-        return repo.findAll();
-    }
-
-    /**
      * get a subtask by id
      * @param id the id of the subtask
      * @return the subtask
