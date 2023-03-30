@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
@@ -97,6 +98,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         boolean confirmation = server.confirmDeletion("list");
 
         if (confirmation) {
+            List<Task> tasks = taskList.getTasks();
+            for (Task task : tasks)
+                server.deleteTask(task);
             server.deleteTaskList(taskList);
             taskList = null;
             mainCtrl.refreshBoard();
