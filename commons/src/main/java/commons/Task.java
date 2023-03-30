@@ -9,7 +9,7 @@ import java.util.List;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
-public class Task {
+public class Task implements IEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
