@@ -197,7 +197,7 @@ public class MainSceneCtrl {
             return;
         }
 
-        boolean confirmation = server.confirmDeletion("board");
+        boolean confirmation = alertUtils.confirmDeletion("board");
 
         // Check the user's response and perform the desired action
         if (confirmation) {

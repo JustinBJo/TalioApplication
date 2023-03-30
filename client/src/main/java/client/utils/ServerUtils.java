@@ -18,7 +18,6 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
-import java.util.Optional;
 
 import commons.Board;
 import commons.Task;
@@ -27,8 +26,6 @@ import commons.TaskList;
 import commons.User;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -37,8 +34,34 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static String SERVER = "http://localhost:8080/";
+    private String SERVER = "http://localhost:8080/";
 
+    /**
+     * get the server url to empty string
+     */
+    public void resetServer() {
+        SERVER = "";
+    }
+
+    /**
+     * set the server url by the client's input
+     * @param url the input url
+     */
+    public void setServer(String url)
+            throws IllegalArgumentException {
+        try {
+            ClientBuilder.newClient(new ClientConfig()) //
+                    .target(url) //
+                    .request(APPLICATION_JSON) //
+                    .accept(APPLICATION_JSON) //
+                    .get();
+        } catch (IllegalArgumentException e2) {
+            throw new IllegalArgumentException("Invalid URL");
+        } catch (ProcessingException e) {
+            throw new ProcessingException("Server not found");
+        }
+        SERVER = url;
+    }
 
     /**
      * gets the default board from the repository
@@ -67,20 +90,6 @@ public class ServerUtils {
     }
 
     /**
-     * Gets all task lists in repository
-     *
-     * @return a list containing all task lists
-     */
-    public List<TaskList> getAllTaskLists() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasklist") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<TaskList>>() {
-                });
-    }
-
-    /**
      * get task list of the give board
      * @param boardId the board to fetch the tasklists
      * @return the tasklists of the board
@@ -92,41 +101,6 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<TaskList>>(){
                 });
-    }
-
-    /**
-     * get the tasklist of the default board using only the api
-     * @return the task list of the default board
-     */
-    public List<TaskList> getDefaultBoardData() {
-        return getBoardData(getDefaultId());
-    }
-
-    /**
-     * get the server url to empty string
-     */
-    public static void resetServer() {
-        SERVER = "";
-    }
-
-    /**
-     * set the server url by the client's input
-     * @param url the input url
-     */
-    public static void setServer(String url)
-            throws IllegalArgumentException {
-        try {
-            ClientBuilder.newClient(new ClientConfig()) //
-                    .target(url) //
-                    .request(APPLICATION_JSON) //
-                    .accept(APPLICATION_JSON) //
-                    .get();
-        } catch (IllegalArgumentException e2) {
-            throw new IllegalArgumentException("Invalid URL");
-        } catch (ProcessingException e) {
-            throw new ProcessingException("Server not found");
-        }
-        SERVER = url;
     }
 
 
@@ -201,20 +175,6 @@ public class ServerUtils {
     }
 
     /**
-     * Method used to fetch the tasks from the database
-     *
-     * @return a List of all the tasks in the database
-     */
-    public List<Task> getTasks() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Task>>() {
-                });
-    }
-
-    /**
      * Method used to insert a task into the database
      *
      * @param task the task to be added to the database
@@ -230,34 +190,6 @@ public class ServerUtils {
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
 
-    /**
-     * Displays an alert which asks for the confirmation of deletion
-     * @param type the string which contains
-     *             the type of the entity that the user is trying to delete
-     * @return true if confirm is clicked, false otherwise
-     */
-    public boolean confirmDeletion(String type) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete " + type + "?");
-        alert.setHeaderText("Delete " + type);
-        alert.setContentText("Are you sure you want to delete this "
-                + type + "?");
-
-        ButtonType confirmButton = new ButtonType("Confirm");
-        ButtonType cancelButton = new ButtonType("Cancel");
-
-        // Remove the default buttons and add Confirm and Cancel buttons
-        alert.getButtonTypes().setAll(confirmButton, cancelButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent() && result.get() == confirmButton) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
     /**
      * Deletes a tasklist from the server

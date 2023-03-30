@@ -96,7 +96,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Deletes this task list
      */
     public void delete() {
-        boolean confirmation = server.confirmDeletion("list");
+        boolean confirmation = alertUtils.confirmDeletion("list");
 
         if (confirmation) {
             List<Task> tasks = taskList.getTasks();

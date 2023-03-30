@@ -92,7 +92,7 @@ public class TaskDetailsCtrl {
             exit();
         }
 
-        boolean confirmation = server.confirmDeletion("task");
+        boolean confirmation = alertUtils.confirmDeletion("task");
 
         // Check the user's response and perform the desired action
         if (confirmation) {

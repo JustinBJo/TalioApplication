@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import commons.Task;
 import javafx.event.EventHandler;
@@ -18,6 +19,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alert;
 
     private Task task;
 
@@ -40,9 +42,11 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      */
     @Inject
     public CardCtrl(ServerUtils server,
-                    MainCtrlTalio mainCtrlTalio) {
+                    MainCtrlTalio mainCtrlTalio,
+                    AlertUtils alert) {
         this.server = server;
         this.mainCtrl = mainCtrlTalio;
+        this.alert = alert;
     }
 
     /**
@@ -78,7 +82,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * Used to delete a task from a list
      */
     public void deleteTask() {
-        boolean confirmation = server.confirmDeletion("task");
+        boolean confirmation = alert.confirmDeletion("task");
 
         // Check the user's response and perform the desired action
         if (confirmation) {
