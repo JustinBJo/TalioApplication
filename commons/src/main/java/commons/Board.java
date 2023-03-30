@@ -10,7 +10,7 @@ import java.util.Objects;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
-public class Board {
+public class Board implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -77,7 +77,7 @@ public class Board {
      * get board id
      * @return board id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
