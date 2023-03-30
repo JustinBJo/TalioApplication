@@ -207,7 +207,7 @@ public class MainCtrlTalio {
     public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
         taskDetailsCtrl.setTask(task);
-        mainSceneCtrl.setCurrentTask(task);
+        //mainSceneCtrl.setCurrentTask(task);
         taskDetailsCtrl.refresh();
         primaryStage.setScene(viewTaskScene);
         }
