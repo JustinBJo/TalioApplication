@@ -162,7 +162,8 @@ public class Board implements IEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return id == board.id && Objects.equals(code, board.code);
+        return getId().equals(board.getId())
+                && Objects.equals(code, board.code);
     }
 
     @Override
