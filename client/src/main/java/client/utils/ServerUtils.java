@@ -24,6 +24,7 @@ import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import commons.User;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
 import javafx.scene.control.Alert;
@@ -330,6 +331,20 @@ public class ServerUtils {
     }
 
     /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+
+    }
+
+    /**
      * Uses board endpoint to ask server to add a new board
      *
      * @param board board to be added
@@ -367,15 +382,83 @@ public class ServerUtils {
      */
     public String deleteBoard(Board board) {
         long id = board.getId();
-        String res = ClientBuilder.newClient(new ClientConfig())
+        System.out.println(id);
+        return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("board/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(String.class);
 
-        System.out.println(res);
-        return res;
     }
+
+
+    /**
+     * returns a board based on its ID
+     * @param id the id of the board
+     * @return the board
+     */
+    public Board getBoardById(long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+    /**
+     * checks whether the user has already been
+     * registered into the system
+     * @return the existent user or a new one if
+     * no existent one is found
+     */
+    public User checkUser() {
+        String ip = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/ip")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(String.class);
+
+        List<User> users = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { });
+
+        boolean exists = false;
+        User user = new User(ip);
+        for (User k : users) {
+            if (k.getIp().equals(ip)) {
+                exists = true;
+                user = k;
+            }
+        }
+        if (!exists) {
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).path("user/add")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(user, APPLICATION_JSON));
+        }
+        return user;
+    }
+
+    /**
+     * saves the current state of the user in the database
+     * @param user the user to be saved
+     */
+    public void saveUser(User user) {
+     //   System.out.println(user.getBoards());
+        //System.out.println(user.getBoards());
+        List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/save")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(user, APPLICATION_JSON),
+                        new GenericType<List<Board>>() {});
+        System.out.println(boards);
+    }
+
+
 
     /**
      * Update the title of the given task using the tasks/updateTitle endpoint

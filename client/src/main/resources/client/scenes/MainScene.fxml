@@ -29,7 +29,7 @@
                 <MenuItem fx:id="createBoardMenu" mnemonicParsing="false" onAction="#addBoard" text="Create new Board" />
                   <MenuItem fx:id="renameBoardMenu" mnemonicParsing="false" onAction="#renameBoard" text="Rename this Board" />
                   <MenuItem fx:id="deleteBoardMenu" mnemonicParsing="false" onAction="#removeBoard" text="Delete this Board" />
-                <MenuItem fx:id="joinBoardMenu" mnemonicParsing="false" text="Join another Board" />
+                <MenuItem fx:id="joinBoardMenu" mnemonicParsing="false" onAction="#joinBoard" text="Join another Board" />
                   <MenuItem fx:id="joinServerMenu" mnemonicParsing="false" onAction="#back" text="Join different Server" />
               </items>
                <graphic>
