@@ -6,20 +6,16 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -39,7 +35,14 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
     ImageView editIcon;
 
-    private Border highlightBorder = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THICK));
+    private final Border highlightBorder = new Border(
+            new BorderStroke(
+                    Color.BLACK,
+                    BorderStrokeStyle.SOLID,
+                    CornerRadii.EMPTY,
+                    BorderStroke.THICK
+            )
+    );
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;

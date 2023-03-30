@@ -85,16 +85,25 @@ public class TaskController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Sets a new task list to hold a given task
+     * @param id id of the changed task
+     * @param newParentId id of the list that now holds the task
+     * @return updated task
+     */
     @PutMapping("/updateParent/{id}/{newParentId}")
-    public ResponseEntity<Task> updateParent(@PathVariable("id") long id,
-                                               @PathVariable("newParentId") long newParentId) {
-        if (id < 0 || !repo.existsById(id)
-                || newParentId < 0 || !taskListRepository.existsById(newParentId)) {
+    public ResponseEntity<Task> updateParent(
+            @PathVariable("id") long id,
+            @PathVariable("newParentId") long newParentId
+    ) {
+        if (id < 0 || !repo.existsById(id) || newParentId < 0
+                || !taskListRepository.existsById(newParentId)) {
             return ResponseEntity.badRequest().build();
         }
 
         var deleteResponse = delete(id);
-        if (deleteResponse.getStatusCode() != HttpStatus.OK || deleteResponse.getBody() == null) {
+        if (deleteResponse.getStatusCode() != HttpStatus.OK
+                || deleteResponse.getBody() == null) {
             return ResponseEntity.badRequest().build();
         }
 

@@ -411,9 +411,15 @@ public class ServerUtils {
                 .put(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
 
+    /**
+     * Sets a new task list to hold a given task
+     * @param taskId id of the changed task
+     * @param newParent list that now holds the task
+     * @return updated task
+     */
     public Task updateTaskParent(long taskId, TaskList newParent) {
         return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("tasks/updateParent/" + taskId + "/" + newParent.getId()) //
+                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
     }
