@@ -1,4 +1,4 @@
-package server.api;
+package server.api.testRepository;
 
 import commons.Board;
 import org.springframework.data.domain.Example;

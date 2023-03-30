@@ -4,6 +4,7 @@ import commons.Theme;
 import model.ThemeRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.api.testRepository.TestThemeRepository;
 
 import java.awt.*;
 
