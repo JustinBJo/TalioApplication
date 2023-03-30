@@ -5,11 +5,15 @@ import java.util.List;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
-import server.database.TaskRepository;
 
 @RestController
 @RequestMapping("/tasklist")
@@ -39,6 +43,19 @@ public class TaskListController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.getById(id));
+    }
+
+    @MessageMapping("/tasklist/add/{boardId}")
+    @SendTo("/topic/taskList/{boardId}")
+    public List<TaskList> messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
+        long lBoardId = Long.parseLong(boardId);
+        var res = add(taskList, lBoardId);
+
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+
+        return boardRepo.findById(lBoardId).get().getTaskLists();
     }
 
     /**

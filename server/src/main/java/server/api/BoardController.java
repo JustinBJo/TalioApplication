@@ -20,7 +20,6 @@ public class BoardController {
     /**
      * Constructor
      * @param repo BoardRepository
-     * @param taskListRepo TaskListRepository
      */
     public BoardController(
             BoardRepository repo,
