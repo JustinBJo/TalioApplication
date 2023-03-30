@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import commons.Task;
 import commons.TaskList;
@@ -140,7 +141,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         int taskIndex = currentTasks.indexOf(task);
         taskIndex--;
         if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
-            System.out.println("No can do! Out of bounds!");
+            ErrorUtils.alertError("You cannot move the task higher.");
             return;
         }
         currentTasks.remove(task);
@@ -167,7 +168,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         int taskIndex = currentTasks.indexOf(task);
         taskIndex++;
         if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
-            System.out.println("No can do! Out of bounds!");
+            ErrorUtils.alertError("You cannot move the task lower.");
             return;
         }
         currentTasks.remove(task);
