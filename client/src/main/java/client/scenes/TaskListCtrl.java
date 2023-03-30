@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.List;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
