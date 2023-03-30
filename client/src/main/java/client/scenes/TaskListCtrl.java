@@ -1,7 +1,7 @@
 package client.scenes;
 
 import client.utils.ChildrenManager;
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -35,6 +35,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
     private ChildrenManager<Task, CardCtrl> taskChildrenManager;
     private TaskList taskList;
 
@@ -42,8 +43,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Constructor with dependency injection
      */
     @Inject
-    public TaskListCtrl(ServerUtils server,
-                        MainCtrlTalio mainCtrl) {
+    public TaskListCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
@@ -121,7 +122,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void addTask() {
         if (taskList == null) {
-            ErrorUtils.alertError("No list to add task to!");
+            alertUtils.alertError("No list to add task to!");
             return;
         }
         mainCtrl.showAddTask(taskList);

@@ -1,7 +1,7 @@
 package client.scenes;
 
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
@@ -15,6 +15,7 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
 
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
+    private final AlertUtils alertUtils;
     private Board board;
 
 
@@ -24,7 +25,8 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * @param server inject the server used
      */
     @Inject
-    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
+    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
@@ -66,7 +68,7 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
         board = null;
         mainCtrl.refreshBoard(); }
         else
-            ErrorUtils.alertError("You cannot leave the default board!");
+            alertUtils.alertError("You cannot leave the default board!");
     }
 
     /**

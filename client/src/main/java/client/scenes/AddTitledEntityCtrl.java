@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
@@ -22,6 +22,7 @@ public class AddTitledEntityCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
 
     private Type type;
     private TaskList taskListToEdit;
@@ -41,7 +42,8 @@ public class AddTitledEntityCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
@@ -121,7 +123,7 @@ public class AddTitledEntityCtrl {
                     break;
                 case RenameTaskList:
                     if (taskListToEdit == null) {
-                        ErrorUtils.alertError("No task list to edit!");
+                        alertUtils.alertError("No task list to edit!");
                         break;
                     }
                     editTaskList(title);
@@ -133,7 +135,7 @@ public class AddTitledEntityCtrl {
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
-                    ErrorUtils.alertError(
+                    alertUtils.alertError(
                         "Something went wrong, please try again!"
                     );
                     pressCancel();
@@ -141,7 +143,7 @@ public class AddTitledEntityCtrl {
             }
 
         } catch (WebApplicationException e) {
-            ErrorUtils.alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 
@@ -159,7 +161,7 @@ public class AddTitledEntityCtrl {
 
         if (parentBoard == null) {
             // Error handling
-            ErrorUtils.alertError("Lists must be created within boards!");
+            alertUtils.alertError("Lists must be created within boards!");
             pressCancel();
             return;
         }

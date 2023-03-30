@@ -1,7 +1,7 @@
 package client.scenes;
 
 import client.utils.ChildrenManager;
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
@@ -26,6 +26,7 @@ public class MainSceneCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
     private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
@@ -69,7 +70,8 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
 
@@ -145,7 +147,7 @@ public class MainSceneCtrl {
      * since the user want to connect to a different server
      */
     public void back() {
-        ServerUtils.resetServer();
+        server.resetServer();
         mainCtrl.showConnect();
     }
 
@@ -178,7 +180,7 @@ public class MainSceneCtrl {
      */
     public void renameBoard() {
         if (activeBoard.getId() == defaultBoardID) {
-            ErrorUtils.alertError("You cannot rename the default board!");
+            alertUtils.alertError("You cannot rename the default board!");
             return;
         }
         mainCtrl.showRenameBoard();
@@ -191,7 +193,7 @@ public class MainSceneCtrl {
      */
     public void removeBoard() {
         if (activeBoard.getId() == defaultBoardID) {
-            ErrorUtils.alertError("You cannot delete the default board!");
+            alertUtils.alertError("You cannot delete the default board!");
             return;
         }
 

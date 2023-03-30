@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 public class TaskDetailsCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
+    private final AlertUtils alertUtils;
 
     private Task task;
 
@@ -31,7 +32,8 @@ public class TaskDetailsCtrl {
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public TaskDetailsCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public TaskDetailsCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
@@ -75,7 +77,7 @@ public class TaskDetailsCtrl {
      */
     public void editTask() {
         if (task == null) {
-            ErrorUtils.alertError("No task to edit!");
+            alertUtils.alertError("No task to edit!");
             exit();
         }
         mainCtrl.showEditTask(task);
@@ -86,7 +88,7 @@ public class TaskDetailsCtrl {
      */
     public void deleteTask() {
         if (task == null) {
-            ErrorUtils.alertError("No task to delete!");
+            alertUtils.alertError("No task to delete!");
             exit();
         }
 

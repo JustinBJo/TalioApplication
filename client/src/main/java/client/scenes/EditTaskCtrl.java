@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 public class EditTaskCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
+    private final AlertUtils alertUtils;
 
     private Task editedTask;
 
@@ -31,7 +32,8 @@ public class EditTaskCtrl {
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
@@ -62,7 +64,7 @@ public class EditTaskCtrl {
      */
     public void saveChanges() {
         if (editedTask == null) {
-            ErrorUtils.alertError("No task to edit!");
+            alertUtils.alertError("No task to edit!");
             cancel();
         }
 
@@ -83,7 +85,7 @@ public class EditTaskCtrl {
 
         }
         catch (WebApplicationException e) {
-            ErrorUtils.alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 

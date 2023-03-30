@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -13,6 +13,7 @@ public class AddTaskCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
 
     private TaskList parentTaskList;
 
@@ -28,7 +29,8 @@ public class AddTaskCtrl {
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
@@ -60,7 +62,7 @@ public class AddTaskCtrl {
         try {
             server.addTask(getTask(), parentTaskList);
         } catch (WebApplicationException e) {
-            ErrorUtils.alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 
