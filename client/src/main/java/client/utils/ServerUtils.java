@@ -495,20 +495,32 @@ public class ServerUtils {
     }
 
     /**
+     * Sets a new task list to hold a given task
+     * @param taskId id of the changed task
+     * @param newParent list that now holds the task
+     * @return updated task
+     */
+    public Task updateTaskParent(long taskId, TaskList newParent) {
+        return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+    }
+
+    /**
      * Deletes a task from the server
      * @param task the task to be deleted
      * @return the removed task
      */
-    public String deleteTask(Task task) {
+    public Task deleteTask(Task task) {
         long id = task.getId();
-        String result = ClientBuilder.newClient(new ClientConfig())
+        Task result = ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER)
                 .path("tasks/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete(String.class);
+                .delete(Task.class);
 
-        System.out.println(result);
         return result;
     }
 }
