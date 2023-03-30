@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Task;
+import commons.TaskList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
 
@@ -20,6 +22,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     private final MainCtrlTalio mainCtrl;
 
     private Task task;
+    private TaskList parentList;
 
     @FXML
     AnchorPane root;
@@ -83,6 +86,13 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     }
 
     /**
+     * @param taskList list that holds this task
+     */
+    public void setParentList(TaskList taskList) {
+        this.parentList = taskList;
+    }
+
+    /**
      * Show edit task scene for this task
      */
     public void editTask() {
@@ -123,15 +133,50 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     /**
      * Used to move a task up in the parent list
      */
-    public void moveUp(){
+    public void moveUp() {
+        TaskList currentTaskList = parentList;
 
+        List<Task> currentTasks = currentTaskList.getTasks();
+        int taskIndex = currentTasks.indexOf(task);
+        taskIndex--;
+        if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
+            System.out.println("No can do! Out of bounds!");
+            return;
+        }
+        currentTasks.remove(task);
+        currentTasks.add(taskIndex, task);
+        currentTaskList.setTasks(currentTasks);
+
+        server.updateTasksInTasklist(currentTaskList, currentTasks);
+
+        mainCtrl.refreshBoard();
     }
 
     /**
      * Used to move a task down in the parent list
      */
-    public void moveDown(){
+    public void moveDown() {
+        TaskList currentTaskList = parentList;
 
+        if (currentTaskList == null) {
+            System.out.println("The task is not part of a list");
+            mainCtrl.refreshBoard();
+            return;
+        }
+        List<Task> currentTasks = currentTaskList.getTasks();
+        int taskIndex = currentTasks.indexOf(task);
+        taskIndex++;
+        if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
+            System.out.println("No can do! Out of bounds!");
+            return;
+        }
+        currentTasks.remove(task);
+        currentTasks.add(taskIndex, task);
+        currentTaskList.setTasks(currentTasks);
+
+        server.updateTasksInTasklist(currentTaskList, currentTasks);
+
+        mainCtrl.refreshBoard();
     }
 
 }

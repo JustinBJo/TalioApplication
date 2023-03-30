@@ -135,6 +135,12 @@ public class MainSceneCtrl {
      * Refresh the view, showing all task lists
      */
     public void refresh() {
+        taskListsContainer.getChildren().clear();
+        this.taskListChildrenManager = new ChildrenManager<>(
+                taskListsContainer,
+                TaskListCtrl.class,
+                "TaskList.fxml"
+        );
         List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
         taskListChildrenManager.updateChildren(taskLists);
         for (TaskListCtrl taskListCtrl :

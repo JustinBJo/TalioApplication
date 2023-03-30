@@ -153,6 +153,10 @@ public class TaskController {
         }
 
         repo.delete(task);
+        for (Task t : parent.getTasks()) {
+            Task repoTask = repo.findById(t.getId()).get();
+            repo.save(repoTask);
+        }
         if (repo.existsById(id)) {
             return ResponseEntity.badRequest().body("The task " +
                     "was not correctly removed.");

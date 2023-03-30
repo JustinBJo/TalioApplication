@@ -88,6 +88,11 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         }
         var tasks = server.getTaskListData(taskList);
         taskChildrenManager.updateChildren(tasks);
+
+        for (CardCtrl cardCtrl :
+                taskChildrenManager.getChildrenCtrls()) {
+            cardCtrl.setParentList(taskList);
+        }
     }
 
     /**

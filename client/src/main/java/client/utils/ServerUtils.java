@@ -17,6 +17,7 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -327,6 +328,29 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
+
+    /**
+     * Updates the lists of tasks in a tasklist
+     * @param taskList - the tasklist to be updated
+     * @param newTasks - the new list of tasks
+     * @return the updated tasklist
+     */
+    public TaskList updateTasksInTasklist(TaskList taskList,
+                                          List<Task> newTasks) {
+        List<Long> taskIds = new ArrayList<>();
+        for (Task task : newTasks) {
+            taskIds.add(task.getId());
+        }
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasklist/updateTasks/" +
+                        taskList.getId() + "/" + taskIds)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+
+
     }
 
     /**
