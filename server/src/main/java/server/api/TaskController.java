@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Task;
 import commons.TaskList;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.TaskListRepository;
@@ -76,6 +77,31 @@ public class TaskController {
     }
 
     /**
+     * Sets a new task list to hold a given task
+     * @param id id of the changed task
+     * @param newParentId id of the list that now holds the task
+     * @return updated task
+     */
+    @PutMapping("/updateParent/{id}/{newParentId}")
+    public ResponseEntity<Task> updateParent(
+            @PathVariable("id") long id,
+            @PathVariable("newParentId") long newParentId
+    ) {
+        if (id < 0 || !repo.existsById(id) || newParentId < 0
+                || !taskListRepository.existsById(newParentId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        var deleteResponse = delete(id);
+        if (deleteResponse.getStatusCode() != HttpStatus.OK
+                || deleteResponse.getBody() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return add(deleteResponse.getBody(), newParentId);
+    }
+
+    /**
      * Updates in the database the title of the given Task
      * @param id the id of the Task to be edited
      * @param newTitle the new title
@@ -102,7 +128,11 @@ public class TaskController {
         if (id < 0 || !repo.existsById(id) || newDescription.length() == 0)
             return;
         Task param = repo.getById(id);
-        param.setDescription(newDescription);
+        if (newDescription.equals("HARDCODED-EMPTY-" +
+                "DESCRIPTION-METHOD-FOR-EDITING-TASKS"))
+            param.setDescription("");
+        else
+            param.setDescription(newDescription);
         repo.save(param);
 
     }
@@ -113,12 +143,9 @@ public class TaskController {
      * @return the deleted task
      */
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
-        if (id < 0)
-            return ResponseEntity.badRequest().body("Invalid id.");
-        if (!repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("The task " +
-                    "you are trying to delete does not exist.");
+    public ResponseEntity<Task> delete(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
         }
 
         Task task = repo.getById(id);
@@ -135,9 +162,7 @@ public class TaskController {
             boolean unlinkSuccess = parent.removeTask(task);
 
             if (!unlinkSuccess) {
-                return ResponseEntity.badRequest().body(
-                        "Failed to unlink task from task list."
-                );
+                return ResponseEntity.badRequest().build();
             }
 
             taskListRepository.save(parent);
@@ -145,10 +170,9 @@ public class TaskController {
 
         repo.delete(task);
         if (repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("The task " +
-                    "was not correctly removed.");
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok("Task " + id + " was removed.");
+        return ResponseEntity.ok(task);
     }
 
     private static boolean isNullOrEmpty(String s) {

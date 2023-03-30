@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import commons.Task;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class EditTaskCtrl {
@@ -20,10 +19,8 @@ public class EditTaskCtrl {
     private TextField newTitle;
     @FXML
     private TextField newDescription;
-    @FXML
-    private Label currentTitle;
-    @FXML
-    private Label currentDescription;
+    private String currentTitle;
+    private String currentDescription;
 
 
     /**
@@ -46,8 +43,10 @@ public class EditTaskCtrl {
 
         this.editedTask = editedTask;
 
-        currentTitle.setText(editedTask.getTitle());
-        currentDescription.setText(editedTask.getDescription());
+        currentTitle = editedTask.getTitle();
+        currentDescription = editedTask.getDescription();
+        newTitle.setText(editedTask.getTitle());
+        newDescription.setText(editedTask.getDescription());
     }
 
     /**
@@ -68,20 +67,30 @@ public class EditTaskCtrl {
             cancel();
         }
 
+        if (newTitle.getText().isEmpty()) {
+            ErrorUtils.alertError("Tasks can't have empty titles!");
+            cancel();
+        }
+
         try {
             String newTitleString = newTitle.getText();
             String newDescriptionString = newDescription.getText();
 
-            if (newTitleString.length() == 0
-                    && newDescriptionString.length() == 0) {
+            if (currentTitle.equals(newTitleString)
+                    && currentDescription.equals(newDescriptionString)) {
                 cancel();
                 return;
             }
 
-            if (newTitleString.length() >= 1)
+            if (!currentTitle.equals(newTitleString)) {
+                editedTask.setTitle(newTitleString);
                 server.updateTaskTitle(editedTask, newTitleString);
-            if (newDescriptionString.length() >= 1)
+            }
+
+            if (!currentDescription.equals(newDescriptionString)) {
+                editedTask.setTitle(newDescriptionString);
                 server.updateTaskDescription(editedTask, newDescriptionString);
+            }
 
         }
         catch (WebApplicationException e) {

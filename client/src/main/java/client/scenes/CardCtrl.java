@@ -9,11 +9,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
 
@@ -33,6 +33,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     Button edit;
     @FXML
     ImageView editIcon;
+    @FXML
+    ImageView descriptionIndicator;
 
 
     /**
@@ -54,9 +56,40 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * after FXML components are initialized.
      */
     public void initialize() {
-        Image editIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/editicon.png"));
+        // Set up button icon
+        Image editIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/editicon.png")));
         this.editIcon.setImage(editIcon);
+
+        // Set up drag and drop
+        setupDragSource();
+    }
+
+    private void setupDragSource() {
+        Image copyIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/copyicon.png")));
+
+        // What happens when starting to drag
+        root.setOnDragDetected((MouseEvent event) -> {
+
+            // Set content transferred on drag n drop
+            Dragboard dragboard = root.startDragAndDrop(TransferMode.MOVE);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(String.valueOf(task.getId()));
+            dragboard.setContent(content);
+            // Wrap up event
+            event.consume();
+        });
+
+        // What happens after this is dropped
+        root.setOnDragDone(event -> {
+            mainCtrl.refreshBoard();
+            event.consume();
+        });
+
+        Image descInd = new Image(getClass()
+                .getResourceAsStream("/client/images/menuicon.png"));
+        this.descriptionIndicator.setImage(descInd);
     }
 
     /**
@@ -69,6 +102,9 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
         }
         title.setText(task.getTitle());
+        if (task.getDescription().isEmpty()) {
+            descriptionIndicator.setImage(null);
+        }
     }
 
     /**

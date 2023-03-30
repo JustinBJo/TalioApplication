@@ -11,10 +11,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.List;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
@@ -32,6 +35,15 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     VBox taskContainer;
     @FXML
     ImageView editIcon;
+
+    private final Border highlightBorder = new Border(
+            new BorderStroke(
+                    Color.BLACK,
+                    BorderStrokeStyle.SOLID,
+                    CornerRadii.EMPTY,
+                    BorderStroke.THICK
+            )
+    );
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
@@ -54,6 +66,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Create children manager after FXML components are initialized
      */
     public void initialize() {
+        // Set up tasks manager
         this.taskChildrenManager =
                 new ChildrenManager<>(
                     taskContainer,
@@ -61,9 +74,56 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
                     "Card.fxml"
                 );
 
-        Image editIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/editicon.png"));
+        // Set up button icon
+        Image editIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/editicon.png")));
         this.editIcon.setImage(editIcon);
+
+        // Set up drag and drop
+        setupDropTarget();
+    }
+
+    private void setupDropTarget() {
+
+        // Define behaviour when holding a dragged object here
+        root.setOnDragOver(event -> {
+            // Sets this as a drop target accepting copying or moving strings
+            Dragboard db = event.getDragboard();
+            if (db.hasString()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+
+                // Displays a border on the task list
+                root.setBorder(highlightBorder);
+            }
+            event.consume();
+        });
+
+        // Remove highlight when mouse exists list
+        root.setOnDragExited(event -> root.setBorder(Border.EMPTY));
+
+        // Define behaviour when dropping here
+        root.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            long taskId = -1;
+            try {
+                // Try to get task id from dropped object
+                if (!db.hasString()) throw new Exception();
+                taskId = Long.parseLong(db.getString());
+                if (taskId < 0) throw new Exception();
+            } catch (Exception ignored) {
+                // Tell source drop failed in case something goes wrong
+                event.setDropCompleted(false);
+                event.consume();
+                return;
+            }
+
+            // Send update to server
+            server.updateTaskParent(taskId, taskList);
+
+            // Tell source drop was successful
+            event.setDropCompleted(true);
+            event.consume();
+        });
     }
 
     /**

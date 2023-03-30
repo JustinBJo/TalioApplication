@@ -10,14 +10,9 @@
     <children>
         <Button layoutX="215.0" layoutY="262.0" mnemonicParsing="false" onAction="#saveChanges" text="Save Changes" />
         <Button layoutX="311.0" layoutY="262.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
-        <TextField fx:id="newTitle" layoutX="337.0" layoutY="74.0" prefHeight="26.0" prefWidth="195.0" />
-        <TextField fx:id="newDescription" layoutX="277.0" layoutY="134.0" prefHeight="123.0" prefWidth="254.0" />
-        <Label layoutX="56.0" layoutY="108.0" prefHeight="25.0" prefWidth="82.0" text="Description">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
-        <Label alignment="CENTER" layoutX="374.0" layoutY="49.0" prefHeight="25.0" prefWidth="112.0" text="New Title">
+        <TextField fx:id="newTitle" layoutX="187.0" layoutY="74.0" prefHeight="26.0" prefWidth="195.0" />
+        <TextField fx:id="newDescription" layoutX="158.0" layoutY="134.0" prefHeight="123.0" prefWidth="254.0" />
+        <Label alignment="CENTER" layoutX="229.0" layoutY="49.0" prefHeight="25.0" prefWidth="112.0" text="Title">
             <font>
                 <Font size="16.0" />
             </font>
@@ -27,22 +22,7 @@
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
-      <Label layoutX="56.0" layoutY="49.0" prefHeight="25.0" prefWidth="112.0" text="Current Title">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Label fx:id="currentTitle" alignment="CENTER" layoutX="83.0" layoutY="74.0" prefHeight="26.0" textAlignment="CENTER">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Label layoutX="354.0" layoutY="108.0" prefHeight="26.0" prefWidth="121.0" text="New Description">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Label fx:id="currentDescription" alignment="CENTER" layoutX="81.0" layoutY="134.0" prefHeight="25.0" textAlignment="CENTER">
+      <Label layoutX="244.0" layoutY="108.0" prefHeight="26.0" prefWidth="82.0" text="Description">
          <font>
             <Font size="16.0" />
          </font>
