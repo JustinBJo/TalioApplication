@@ -486,7 +486,16 @@ public class ServerUtils {
      */
     public Task updateTaskDescription(Task task, String newDescription) {
         long id = task.getId();
-        return ClientBuilder.newClient(new ClientConfig())
+        if (newDescription.length() == 0)
+            return ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).
+                    path("tasks/updateDescription/" + id + "/HARDCODED-EMPTY" +
+                            "-DESCRIPTION-METHOD-FOR-EDITING-TASKS")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+        else
+            return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).
                 path("tasks/updateDescription/" + id + "/" + newDescription)
                 .request(APPLICATION_JSON)
