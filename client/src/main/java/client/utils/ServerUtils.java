@@ -33,7 +33,12 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
+    private WebsocketUtils websockets;
     private String SERVER = "http://localhost:8080/";
+
+    public void setWebsockets(WebsocketUtils websockets) {
+        this.websockets = websockets;
+    }
 
     /**
      * get the server url to empty string
@@ -59,7 +64,8 @@ public class ServerUtils {
         } catch (ProcessingException e) {
             throw new ProcessingException("Server not found");
         }
-        SERVER = url;
+        SERVER = url.endsWith("/") ? url : url + "/";
+        websockets.updateServer(SERVER.substring(7));
     }
 
     /**

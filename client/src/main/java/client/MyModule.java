@@ -18,6 +18,7 @@ package client;
 import client.scenes.*;
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.*;
 import com.google.inject.Module;
 
@@ -28,5 +29,6 @@ public class MyModule implements Module {
         binder.bind(MainCtrlTalio.class).in(Scopes.SINGLETON);
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(AlertUtils.class).in(Scopes.SINGLETON);
+        binder.bind(WebsocketUtils.class).in(Scopes.SINGLETON);
     }
 }

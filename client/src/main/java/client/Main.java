@@ -21,6 +21,8 @@ import java.net.URISyntaxException;
 import client.scenes.*;
 import client.utils.BuildUtils;
 
+import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -39,6 +41,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+
+        BuildUtils.getInstance(ServerUtils.class).setWebsockets(
+                BuildUtils.getInstance(WebsocketUtils.class)
+        );
 
         var connect = BuildUtils.loadFXML(
                 ConnectScreenCtrl.class,
