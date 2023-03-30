@@ -148,15 +148,16 @@ public class TaskController {
                         "Failed to unlink task from task list."
                 );
             }
+            for (Task t : parent.getTasks()) {
+                Task repoTask = repo.findById(t.getId()).get();
+                repo.save(repoTask);
+            }
 
             taskListRepository.save(parent);
         }
 
         repo.delete(task);
-        for (Task t : parent.getTasks()) {
-            Task repoTask = repo.findById(t.getId()).get();
-            repo.save(repoTask);
-        }
+
         if (repo.existsById(id)) {
             return ResponseEntity.badRequest().body("The task " +
                     "was not correctly removed.");
