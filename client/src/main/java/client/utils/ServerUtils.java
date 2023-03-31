@@ -260,6 +260,31 @@ public class ServerUtils {
     }
 
     /**
+     * confirmation message for leaving admin mode
+     * @return whether it has been confirmed or not
+     */
+    public boolean confirmRevertAdmin() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Leave admin mode?");
+        alert.setHeaderText("Leave admin mode");
+        alert.setContentText("Are you sure you want to leave the admin " +
+                "mode? \n You will need to input the password again " +
+                "to re-join!");
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == confirmButton) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * Deletes a tasklist from the server
      *
      * @param taskList the tasklist to be deleted
@@ -458,6 +483,18 @@ public class ServerUtils {
         System.out.println(boards);
     }
 
+    /**
+     * gets all users in the database
+     * @return the list of users in the database
+     */
+    public List<User> getAllUsers() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { } );
+    }
+
 
 
     /**
@@ -510,5 +547,18 @@ public class ServerUtils {
 
         System.out.println(result);
         return result;
+    }
+
+    /**
+     * gets all boards in the database
+     * @return the list of boards in the database
+     */
+    public List<Board> getAllBoards() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() { } );
     }
 }

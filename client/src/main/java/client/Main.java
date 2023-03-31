@@ -76,6 +76,11 @@ public class Main extends Application {
                 "JoinBoard.fxml"
         );
 
+        var admin = BuildUtils.loadFXML(
+                AdminCtrl.class,
+                "Admin.fxml"
+        );
+
 
 
         var mainCtrl = BuildUtils.getInstance(MainCtrlTalio.class);
@@ -87,6 +92,7 @@ public class Main extends Application {
                 addTask,
                 editTask,
                 viewTask,
-                joinBoard);
+                joinBoard,
+                admin);
     }
 }

@@ -38,8 +38,12 @@ public class MainCtrlTalio {
     private JoinBoardCtrl joinBoardCtrl;
     private Scene joinBoardScene;
 
+    private AdminCtrl adminCtrl;
+    private Scene adminScene;
+
 
     private User user;
+    private boolean admin;
 
 
     /**
@@ -56,7 +60,8 @@ public class MainCtrlTalio {
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<EditTaskCtrl, Parent> editTask,
                            Pair<TaskDetailsCtrl, Parent> viewTask,
-                           Pair<JoinBoardCtrl, Parent> joinBoard) {
+                           Pair<JoinBoardCtrl, Parent> joinBoard,
+                           Pair<AdminCtrl, Parent> admin) {
         this.primaryStage = primaryStage;
 
         this.connect = new Scene(connect.getValue());
@@ -79,7 +84,10 @@ public class MainCtrlTalio {
         this.joinBoardCtrl = joinBoard.getKey();
         this.joinBoardScene = new Scene(joinBoard.getValue());
 
+        this.adminCtrl = admin.getKey();
+        this.adminScene = new Scene(admin.getValue());
 
+        this.admin = false;
         showConnect();
         primaryStage.show();
     }
@@ -226,6 +234,35 @@ public class MainCtrlTalio {
         this.user = user;
     }
 
+    /**
+     * switches to admin login scene
+     */
+    public void showAdmin() {
+        primaryStage.setTitle("Enter admin password");
+        primaryStage.setScene(adminScene);
+    }
 
+    /**
+     * checks whether the current user is an admin
+     * @return true if it is admin, false otherwise
+     */
+    public boolean isAdmin() {
+        return admin;
+    }
 
+    /**
+     * sets the current admin status
+     * @param admin true if user is admin, false otherwise
+     */
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    /**
+     * connects the delete board functionality in main scene controller
+     * @param b the board to be deleted
+     */
+    public void deleteBoard(Board b) {
+        mainSceneCtrl.deleteBoard(b);
+    }
 }
