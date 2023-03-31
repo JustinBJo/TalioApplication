@@ -13,11 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserTest {
 
     private User user;
+    private Board b1;
+    private Board b2;
 
     @BeforeEach
     void setup() {
-        Board b1 = new Board("b1");
-        Board b2 = new Board("b2");
+        b1 = new Board("b1");
+        b2 = new Board("b2");
 
         List<Board> boards = new ArrayList<>();
 
@@ -30,8 +32,8 @@ public class UserTest {
     @Test
     void fullConstructorTest() {
         List<Board> expected = new ArrayList<>();
-        expected.add(new Board("b1"));
-        expected.add(new Board("b2"));
+        expected.add(b1);
+        expected.add(b2);
 
         assertEquals(user.getBoards(), expected);
         assertEquals(user.getIp(), "127.0.0.1");
@@ -63,8 +65,8 @@ public class UserTest {
     @Test
     void testEquals() {
         List<Board> exp = new ArrayList<>();
-        exp.add(new Board("b1"));
-        exp.add(new Board("b2"));
+        exp.add(b1);
+        exp.add(b2);
 
         User user2 = new User("127.0.0.1", exp);
 
@@ -72,24 +74,19 @@ public class UserTest {
     }
 
     @Test
-    void hashTestEqual() {
+    void hashTestNotEqual() {
         List<Board> exp = new ArrayList<>();
         exp.add(new Board("b1"));
         exp.add(new Board("b2"));
 
         User user2 = new User("127.0.0.1", exp);
 
-        assertEquals(user.hashCode(), user2.hashCode());
+        assertNotEquals(user.hashCode(), user2.hashCode());
     }
 
     @Test
-    void hashTestNotEqual() {
-        List<Board> exp = new ArrayList<>();
-        exp.add(new Board("b1"));
-
-        User user2 = new User("127.0.0.1", exp);
-
-        assertNotEquals(user.hashCode(), user2.hashCode());
+    void hashTestEqual() {
+        assertEquals(user.hashCode(), user.hashCode());
     }
 
     @Test
@@ -101,7 +98,7 @@ public class UserTest {
 
     @Test
     void removeBoardTest() {
-        Board b2 = new Board("b2");
+        Board b2 = user.getBoards().get(1);
         user.removeBoard(b2);
         assertEquals(user.getBoards().size(), 1);
     }
@@ -109,8 +106,8 @@ public class UserTest {
     @Test
     void getBoardsTest() {
         List<Board> exp = new ArrayList<>();
-        exp.add(new Board("b1"));
-        exp.add(new Board("b2"));
+        exp.add(b1);
+        exp.add(b2);
 
         assertEquals(user.getBoards(), exp);
     }

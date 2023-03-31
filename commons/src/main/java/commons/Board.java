@@ -9,7 +9,7 @@ import java.util.*;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
-public class Board {
+public class Board implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -81,7 +81,7 @@ public class Board {
      * get board id
      * @return board id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -166,7 +166,8 @@ public class Board {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return id == board.id && Objects.equals(code, board.code);
+        return getId().equals(board.getId())
+                && Objects.equals(code, board.code);
     }
 
     @Override
