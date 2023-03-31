@@ -199,6 +199,7 @@ public class MainSceneCtrl {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
+        if(!mainCtrl.isAdmin()) {
         if (activeBoard.getId() == defaultBoardID) {
             ErrorUtils.alertError("You cannot delete the default board!");
             return;
@@ -212,9 +213,14 @@ public class MainSceneCtrl {
             mainCtrl.getUser().getBoards().remove(b);
             server.saveUser(mainCtrl.getUser());
             setActiveBoard(server.getDefaultBoard());
-            System.out.println(server.deleteBoard(b));
+            System.out.println(server.deleteBoard(b)); } }
+        else {
+            Board b = activeBoard;
+            deleteBoard(b);
+            refresh();
         }
-    }
+        }
+
 
     /**
      * Copies the code of current board
