@@ -199,7 +199,7 @@ public class MainSceneCtrl {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        if(!mainCtrl.isAdmin()) {
+        if (!mainCtrl.isAdmin()) {
         if (activeBoard.getId() == defaultBoardID) {
             ErrorUtils.alertError("You cannot delete the default board!");
             return;
