@@ -71,6 +71,12 @@ public class Main extends Application {
                 "EditTask.fxml"
         );
 
+        var joinBoard = BuildUtils.loadFXML(
+                JoinBoardCtrl.class,
+                "JoinBoard.fxml"
+        );
+
+
 
         var mainCtrl = BuildUtils.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(
@@ -80,6 +86,7 @@ public class Main extends Application {
                 addTitledEntity,
                 addTask,
                 editTask,
-                viewTask);
+                viewTask,
+                joinBoard);
     }
 }

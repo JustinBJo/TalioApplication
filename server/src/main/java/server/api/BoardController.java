@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
 import server.service.DefaultBoardService;
-
 import java.util.List;
 
 @RestController
@@ -64,6 +63,21 @@ public class BoardController {
     @GetMapping("defaultId")
     public long getDefaultId() {
         return this.service.getDefaultId();
+    }
+
+    /**
+     * searches for a board based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    @GetMapping("/code/{code}")
+    public ResponseEntity<Board> getByCode(@PathVariable("code") String code) {
+        List<Board> boards = repo.findAll();
+        for (Board k :  boards) {
+            if (k.getCode().equals(code))
+                return ResponseEntity.ok(k);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -163,7 +177,7 @@ public class BoardController {
      * @return the deleted board
      */
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteBoard(@PathVariable("id") long id) {
         if (id < 0) {
             return ResponseEntity.badRequest().body("Invalid id!");
         }
@@ -171,10 +185,17 @@ public class BoardController {
             return ResponseEntity.badRequest().body("Board does not exist.");
         }
         Board board = repo.findById(id).get();
+        System.out.println(board.getCode());
         repo.delete(board);
         return ResponseEntity.ok("Board " + id + " is removed.");
     }
 
+    /**
+     * checks whether string s is null or empty
+     * @param s the string to be checked
+     * @return true if condition is met,
+     * false otherwise
+     */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

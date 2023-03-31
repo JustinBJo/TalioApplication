@@ -3,10 +3,13 @@ package client.scenes;
 import commons.Board;
 import commons.Task;
 import commons.TaskList;
+import commons.User;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+
 
 
 public class MainCtrlTalio {
@@ -32,6 +35,12 @@ public class MainCtrlTalio {
 
     private String serverAddress;
 
+    private JoinBoardCtrl joinBoardCtrl;
+    private Scene joinBoardScene;
+
+
+    private User user;
+
 
     /**
      * initialize the main controller
@@ -46,7 +55,8 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<EditTaskCtrl, Parent> editTask,
-                           Pair<TaskDetailsCtrl, Parent> viewTask) {
+                           Pair<TaskDetailsCtrl, Parent> viewTask,
+                           Pair<JoinBoardCtrl, Parent> joinBoard) {
         this.primaryStage = primaryStage;
 
         this.connect = new Scene(connect.getValue());
@@ -65,6 +75,10 @@ public class MainCtrlTalio {
 
         this.taskDetailsCtrl = viewTask.getKey();
         this.viewTaskScene = new Scene(viewTask.getValue());
+
+        this.joinBoardCtrl = joinBoard.getKey();
+        this.joinBoardScene = new Scene(joinBoard.getValue());
+
 
         showConnect();
         primaryStage.show();
@@ -177,6 +191,15 @@ public class MainCtrlTalio {
     }
 
     /**
+     * displays the join board scene
+     */
+    public void showJoinBoard() {
+        primaryStage.setTitle("Join new board");
+        primaryStage.setScene(joinBoardScene);
+    }
+
+
+    /**
      * Shows the detailed view of a task
      * @param task current task
      */
@@ -184,6 +207,25 @@ public class MainCtrlTalio {
         primaryStage.setTitle("Task Details");
         taskDetailsCtrl.setTask(task);
         primaryStage.setScene(viewTaskScene);
+        primaryStage.setScene(viewTaskScene); }
+
+
+    /**
+     * returns current user
+     * @return current user
+     */
+    public User getUser() {
+        return user;
     }
+
+    /**
+     * sets current user
+     * @param user the user to be set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+
 
 }

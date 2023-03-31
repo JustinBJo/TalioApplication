@@ -25,6 +25,7 @@ import commons.Board;
 import commons.Task;
 import commons.TaskList;
 
+import commons.User;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.Response;
 import javafx.scene.control.Alert;
@@ -349,8 +350,19 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
 
-
+    /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
     }
 
     /**
@@ -391,15 +403,83 @@ public class ServerUtils {
      */
     public String deleteBoard(Board board) {
         long id = board.getId();
-        String res = ClientBuilder.newClient(new ClientConfig())
+        System.out.println(id);
+        return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("board/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(String.class);
 
-        System.out.println(res);
-        return res;
     }
+
+
+    /**
+     * returns a board based on its ID
+     * @param id the id of the board
+     * @return the board
+     */
+    public Board getBoardById(long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("board/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+    /**
+     * checks whether the user has already been
+     * registered into the system
+     * @return the existent user or a new one if
+     * no existent one is found
+     */
+    public User checkUser() {
+        String ip = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/ip")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(String.class);
+
+        List<User> users = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { });
+
+        boolean exists = false;
+        User user = new User(ip);
+        for (User k : users) {
+            if (k.getIp().equals(ip)) {
+                exists = true;
+                user = k;
+            }
+        }
+        if (!exists) {
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).path("user/add")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(user, APPLICATION_JSON));
+        }
+        return user;
+    }
+
+    /**
+     * saves the current state of the user in the database
+     * @param user the user to be saved
+     */
+    public void saveUser(User user) {
+     //   System.out.println(user.getBoards());
+        //System.out.println(user.getBoards());
+        List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user/save")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(user, APPLICATION_JSON),
+                        new GenericType<List<Board>>() {});
+        System.out.println(boards);
+    }
+
+
 
     /**
      * Update the title of the given task using the tasks/updateTitle endpoint
@@ -427,7 +507,16 @@ public class ServerUtils {
      */
     public Task updateTaskDescription(Task task, String newDescription) {
         long id = task.getId();
-        return ClientBuilder.newClient(new ClientConfig())
+        if (newDescription.length() == 0)
+            return ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).
+                    path("tasks/updateDescription/" + id + "/HARDCODED-EMPTY" +
+                            "-DESCRIPTION-METHOD-FOR-EDITING-TASKS")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+        else
+            return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).
                 path("tasks/updateDescription/" + id + "/" + newDescription)
                 .request(APPLICATION_JSON)
@@ -436,20 +525,32 @@ public class ServerUtils {
     }
 
     /**
+     * Sets a new task list to hold a given task
+     * @param taskId id of the changed task
+     * @param newParent list that now holds the task
+     * @return updated task
+     */
+    public Task updateTaskParent(long taskId, TaskList newParent) {
+        return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+    }
+
+    /**
      * Deletes a task from the server
      * @param task the task to be deleted
      * @return the removed task
      */
-    public String deleteTask(Task task) {
+    public Task deleteTask(Task task) {
         long id = task.getId();
-        String result = ClientBuilder.newClient(new ClientConfig())
+        Task result = ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER)
                 .path("tasks/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete(String.class);
+                .delete(Task.class);
 
-        System.out.println(result);
         return result;
     }
 }

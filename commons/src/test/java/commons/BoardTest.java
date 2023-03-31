@@ -158,4 +158,30 @@ public class BoardTest {
         board.setTaskLists(differentListOfTaskList);
         assertEquals(differentListOfTaskList, board.getTaskLists());
     }
+
+    @Test
+    void testGenerateCode() {
+        // Test whether two instances of Boards have the same code
+        Board a = new Board("a");
+        Board b = new Board("b");
+
+        assertNotEquals(a.getCode(), b.getCode());
+    }
+
+    @Test
+    void testGenerateCodeExtended() {
+        // Test whether the generateCode method creates a duplicate code
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0; i < 500; i++) {
+            Board b = new Board(Integer.toString(i));
+            list.add(b.getCode());
+        }
+
+        String checker1 = new Board("checker").getCode();
+        String checker2 = new Board("0").getCode();
+
+        assertFalse(list.contains(checker1));
+        assertFalse(list.contains(checker2));
+    }
 }
