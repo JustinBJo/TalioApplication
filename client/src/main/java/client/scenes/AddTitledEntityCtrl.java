@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
@@ -23,6 +24,7 @@ public class AddTitledEntityCtrl {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
 
     private Type type;
     private TaskList taskListToEdit;
@@ -42,10 +44,11 @@ public class AddTitledEntityCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
     /**
@@ -166,7 +169,7 @@ public class AddTitledEntityCtrl {
             return;
         }
 
-        server.addTaskList(taskList, parentBoard);
+        websocket.addTaskList(taskList, parentBoard);
         mainCtrl.refreshBoard();
     }
 

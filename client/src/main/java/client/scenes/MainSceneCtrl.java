@@ -3,11 +3,13 @@ package client.scenes;
 import client.utils.ChildrenManager;
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import commons.User;
 
+import jakarta.ws.rs.core.GenericType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -27,10 +29,12 @@ public class MainSceneCtrl {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
+
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
     private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
-    private final long defaultBoardID;
+    private long defaultBoardID;
 
     private Board activeBoard;
 
@@ -70,12 +74,11 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
-
-        this.defaultBoardID = server.getDefaultId();
+        this.websocket = websocket;
     }
 
 
@@ -85,13 +88,6 @@ public class MainSceneCtrl {
      */
     public void initialize() {
         // Create children manager (needs FXML container)
-        validateUser();
-        Board defaultBoard = server.getBoardById(defaultBoardID);
-        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
-            mainCtrl.getUser().getBoards().add(defaultBoard);
-            server.saveUser(mainCtrl.getUser());
-        }
-
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
                 TaskListCtrl.class,
@@ -115,10 +111,19 @@ public class MainSceneCtrl {
         Image copy = new Image(getClass()
                 .getResourceAsStream("/client/images/copyicon.png"));
         copyIcon.setImage(copy);
+    }
 
+    public void changeServer() {
+        this.defaultBoardID = server.getDefaultId();
 
+        validateUser();
+        Board defaultBoard = server.getBoardById(defaultBoardID);
+        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
+            mainCtrl.getUser().getBoards().add(defaultBoard);
+            server.saveUser(mainCtrl.getUser());
+        }
 
-        // Set default board as current board (needs FXML title)
+        // Set default board as current board
         setActiveBoard(server.getDefaultBoard());
     }
 
@@ -138,7 +143,24 @@ public class MainSceneCtrl {
         sceneTitle.setText(activeBoard.getTitle());
         boardCode.setText(activeBoard.getCode());
 
-        refresh();
+        registerWebsocket();
+        // refresh();
+    }
+
+    private void registerWebsocket() {
+        websocket.registerForMessages(
+                activeBoard,
+                "/topic/taskList/" + activeBoard.getId(),
+                (Class<List<TaskList>>) ((Class)List.class),
+                tls -> {
+                    System.out.println("Received message");
+                    System.out.println(tls);
+                    taskListChildrenManager.updateChildren(tls);
+                    for (TaskListCtrl taskListCtrl :
+                            taskListChildrenManager.getChildrenCtrls()) {
+                        taskListCtrl.refresh();
+                    }
+                } );
     }
 
     /**
@@ -155,13 +177,6 @@ public class MainSceneCtrl {
      * Refresh the view, showing all task lists
      */
     public void refresh() {
-        List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
-        taskListChildrenManager.updateChildren(taskLists);
-        for (TaskListCtrl taskListCtrl :
-                taskListChildrenManager.getChildrenCtrls()) {
-            taskListCtrl.refresh();
-        }
-
         List<Board> joinedBoards = new ArrayList<>();
         boardListChildrenManager.updateChildren(joinedBoards);
         joinedBoards = mainCtrl.getUser().getBoards();

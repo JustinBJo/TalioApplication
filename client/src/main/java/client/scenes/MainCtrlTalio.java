@@ -33,7 +33,6 @@ public class MainCtrlTalio {
     private TaskDetailsCtrl taskDetailsCtrl;
     private Scene viewTaskScene;
 
-    private String serverAddress;
 
     private JoinBoardCtrl joinBoardCtrl;
     private Scene joinBoardScene;
@@ -84,6 +83,11 @@ public class MainCtrlTalio {
         primaryStage.show();
     }
 
+    public void changeServer(String newAddress) {
+        setServerAddress(newAddress);
+        mainSceneCtrl.changeServer();
+    }
+
     /**
      * show the connect screen
      */
@@ -105,7 +109,7 @@ public class MainCtrlTalio {
      */
     public void showMain() {
         primaryStage.setTitle("Talio");
-        mainSceneCtrl.refresh();
+        //mainSceneCtrl.refresh();
         primaryStage.setScene(mainScene);
     }
 
@@ -113,7 +117,7 @@ public class MainCtrlTalio {
      * Refreshes the active board
      */
     public void refreshBoard() {
-        mainSceneCtrl.refresh();
+        //mainSceneCtrl.refresh();
     }
 
     /**

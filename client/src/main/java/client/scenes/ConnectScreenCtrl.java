@@ -39,9 +39,10 @@ public class ConnectScreenCtrl {
         }
         notification.setText("");
 
-        // get the address after "http://"
-        mainCtrl.setServerAddress(address.getText(
-                7, address.getText().length()));
+        mainCtrl.changeServer(
+                // get the address after "http://"
+                address.getText(7, address.getText().length())
+        );
 
         mainCtrl.showMain();
         address.setText("");

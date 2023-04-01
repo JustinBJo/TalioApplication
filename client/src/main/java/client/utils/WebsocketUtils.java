@@ -1,5 +1,7 @@
 package client.utils;
 
+import commons.Board;
+import commons.TaskList;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -9,11 +11,14 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 public class WebsocketUtils {
     private StompSession session;
+    private final Map<Object, StompSession.Subscription> subscriptionMap = new HashMap<>();
 
     public void updateServer(String address) {
         if (session != null) {
@@ -36,8 +41,20 @@ public class WebsocketUtils {
         throw new IllegalStateException();
     }
 
-    public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
-        session.subscribe(dest, new StompFrameHandler() {
+    /**
+     * Registers to receive websocket messages from destination
+     * @param subscriber object linked to registration, forced to have only a single subscription
+     * @param dest websocket endpoint that this subscribes to
+     * @param type payload type returned to the consumer
+     * @param consumer what happens with the received message
+     * @param <T> payload type returned to the consumer
+     */
+    public <T> void registerForMessages(Object subscriber, String dest, Class<T> type, Consumer<T> consumer) {
+        if (subscriptionMap.containsKey(subscriber)) {
+            subscriptionMap.remove(subscriber).unsubscribe();
+        }
+
+        var sub = session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return type;
@@ -52,9 +69,15 @@ public class WebsocketUtils {
                 consumer.accept((T) payload);
             }
         });
+
+        subscriptionMap.put(subscriber, sub);
     }
 
     public void send(String dest, Object o) {
         session.send(dest, o);
+    }
+
+    public void addTaskList(TaskList taskList, Board board) {
+        send("/app/taskList/add/" + board.getId(), taskList);
     }
 }
