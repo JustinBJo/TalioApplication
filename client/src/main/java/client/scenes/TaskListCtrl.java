@@ -7,6 +7,7 @@ import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -140,7 +141,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         if (taskList.getTitle() == null) {
             taskList.setTitle("Untitled");
         }
-        title.setText(taskList.getTitle());
+        Platform.runLater(() -> {
+            title.setText(taskList.getTitle());
+        });
 
         if (updateSub != null) {
             updateSub.unsubscribe();

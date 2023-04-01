@@ -108,21 +108,6 @@ public class ServerUtils {
                 });
     }
 
-
-    /**
-     * add a task list to the server
-     *
-     * @param taskList the task list
-     * @param board    the board that the task list belongs to
-     */
-    public void addTaskList(TaskList taskList, Board board) {
-        ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
-                .path("tasklist/" + board.getId()) //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .post(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
-    }
-
     /**
      * Gets all tasks belonging to a certain task list
      * @param taskList parent of desired tasks
@@ -150,35 +135,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(task, APPLICATION_JSON), Task.class);
-    }
-
-
-    /**
-     * Deletes a tasklist from the server
-     *
-     * @param taskList the tasklist to be deleted
-     */
-    public void deleteTaskList(TaskList taskList) {
-        ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("tasklist/delete/" + taskList.getId()) //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .delete(String.class);
-    }
-
-    /**
-     * Updates the name of the selected TaskList in the database
-     *
-     * @param taskList the TaskList to be renamed
-     * @param newName  the name it should be renamed to
-     * @return a TaskList entity
-     */
-    public TaskList updateTaskList(TaskList taskList, String newName) {
-        long id = taskList.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasklist/update/" + id + "/" + newName)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
     }
 
     /**

@@ -173,7 +173,7 @@ public class TaskListController {
         return ResponseEntity.ok(taskList);
     }
 
-    @MessageMapping("/taskList/update/{newName}")
+    @MessageMapping("/taskList/update/{id}/{newName}")
     @SendTo("/topic/taskList/update/{id}")
     public TaskList messageUpdate(@DestinationVariable String id, @DestinationVariable String newName) {
         long lID;

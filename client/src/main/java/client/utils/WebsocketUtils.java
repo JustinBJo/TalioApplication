@@ -86,4 +86,8 @@ public class WebsocketUtils {
     public void deleteTaskList(TaskList taskList) {
         send("/app/taskList/delete/" + taskList.getId(), taskList);
     }
+
+    public void updateTaskList(TaskList taskList, String title) {
+        send("/app/taskList/update/" + taskList.getId() + "/" + title, taskList);
+    }
 }

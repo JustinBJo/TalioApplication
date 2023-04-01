@@ -188,7 +188,7 @@ public class AddTitledEntityCtrl {
     }
 
     private void editTaskList(String title) {
-       server.updateTaskList(taskListToEdit, title);
+       websocket.updateTaskList(taskListToEdit, title);
     }
 
     private void editBoard(String title) {
