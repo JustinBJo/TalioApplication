@@ -110,15 +110,7 @@ public class MainCtrlTalio {
      */
     public void showMain() {
         primaryStage.setTitle("Talio");
-        //mainSceneCtrl.refresh();
         primaryStage.setScene(mainScene);
-    }
-
-    /**
-     * Refreshes the active board
-     */
-    public void refreshBoard() {
-        //mainSceneCtrl.refresh();
     }
 
     /**

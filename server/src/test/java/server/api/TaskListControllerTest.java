@@ -32,24 +32,6 @@ public class TaskListControllerTest {
     }
 
     @Test
-    public void messageAddTest() {
-        // TODO
-        assertTrue(false);
-    }
-
-    @Test
-    public void messageDeleteTest() {
-        // TODO
-        assertTrue(false);
-    }
-
-    @Test
-    public void messageUpdateTest() {
-        // TODO
-        assertTrue(false);
-    }
-
-    @Test
     public void addTest() {
         TaskList tl = new TaskList("test1");
         Board b = new Board("test");
@@ -87,7 +69,7 @@ public class TaskListControllerTest {
         TaskList tl = new TaskList(null);
         tl.setId( (long) 100);
         repo.save(tl);
-        taskListController.delete(100);
+        taskListController.delete(100l);
         assertFalse(repo.findById( (long) 100).isPresent());
     }
 

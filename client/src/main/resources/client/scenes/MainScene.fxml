@@ -122,6 +122,5 @@
             </ScrollPane>
          </items>
       </SplitPane>
-      <Button layoutX="721.0" layoutY="533.0" mnemonicParsing="false" onAction="#refresh" prefHeight="25.0" prefWidth="94.0" text="[TMP]Refresh" textAlignment="CENTER" textOverrun="CLIP" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="14.0" />
    </children>
 </AnchorPane>

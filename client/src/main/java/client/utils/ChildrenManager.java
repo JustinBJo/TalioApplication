@@ -36,7 +36,15 @@ public class ChildrenManager
 
     public void removeChild(T child) {
         List<T> children = new ArrayList<>(childUIMap.keySet());
-        if (children.remove(child)) {
+        T forRemoval = null;
+        for (T current : children) {
+            if (current.getId().equals(child.getId())) {
+                forRemoval = current;
+                break;
+            }
+        }
+
+        if (children.remove(forRemoval)) {
             updateChildren(children);
         }
     }

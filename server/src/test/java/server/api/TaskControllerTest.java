@@ -17,7 +17,6 @@ public class TaskControllerTest {
 
     private TestTaskRepository repo;
     private TestTaskListRepository taskListRepository;
-    private SubtaskRepository subtaskRepo;
 
     private TaskController sut;
 
@@ -25,8 +24,7 @@ public class TaskControllerTest {
     public void setup() {
         repo = new TestTaskRepository();
         taskListRepository = new TestTaskListRepository();
-        subtaskRepo = new TestSubtaskRepository();
-        sut = new TaskController(repo, taskListRepository, subtaskRepo);
+        sut = new TaskController(repo, taskListRepository);
     }
 
     @Test

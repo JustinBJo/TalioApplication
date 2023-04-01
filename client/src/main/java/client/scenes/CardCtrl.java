@@ -7,6 +7,7 @@ import client.utils.WebsocketUtils;
 import commons.Subtask;
 import commons.Task;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -92,10 +93,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         });
 
         // What happens after this is dropped
-        root.setOnDragDone(event -> {
-            mainCtrl.refreshBoard();
-            event.consume();
-        });
+        root.setOnDragDone(Event::consume);
 
         Image descInd = new Image(Objects.requireNonNull(getClass()
                 .getResourceAsStream("/client/images/menuicon.png")));
@@ -139,7 +137,6 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         // Check the user's response and perform the desired action
         if (confirmation) {
             websocket.deleteTask(task);
-            mainCtrl.refreshBoard();
         }
     }
 

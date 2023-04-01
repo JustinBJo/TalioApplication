@@ -113,6 +113,19 @@ public class TaskDetailsCtrl {
         parentWebsocket.register(task.getId());
         entityWebsocket.register(task.getId(), "updateTitle");
         entityWebsocket.register(task.getId(), "updateDescription");
+        setupCloseOnDelete();
+    }
+
+    private void setupCloseOnDelete() {
+        websocket.registerForMessages(
+                "/topic/task/delete",
+                Task.class,
+                t -> {
+                    if (t.getId().equals(task.getId())) {
+                        exit();
+                    }
+                }
+        );
     }
 
     /**

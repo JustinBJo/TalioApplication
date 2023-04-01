@@ -180,7 +180,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void rename() {
         mainCtrl.showRenameList(taskList);
-        mainCtrl.refreshBoard();
     }
 
 

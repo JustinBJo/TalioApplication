@@ -211,7 +211,6 @@ public class AddTitledEntityCtrl {
         }
 
         websocket.addTaskList(taskList, parentBoard);
-        mainCtrl.refreshBoard();
     }
 
     /**

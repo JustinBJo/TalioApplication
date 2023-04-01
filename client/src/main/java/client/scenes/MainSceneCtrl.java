@@ -166,7 +166,8 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
 
         entityWebsocket.register(activeBoard.getId(), "update");
         parentWebsocket.register(activeBoard.getId());
-        // refresh();
+
+        refreshJoinedBoards();
     }
 
 
@@ -184,7 +185,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
     /**
      * Refresh the view, showing all task lists
      */
-    public void refresh() {
+    public void refreshJoinedBoards() {
         List<Board> joinedBoards = new ArrayList<>();
         boardListChildrenManager.updateChildren(joinedBoards);
         joinedBoards = mainCtrl.getUser().getBoards();
@@ -207,6 +208,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
             return;
         }
         mainCtrl.showRenameBoard();
+        refreshJoinedBoards();
     }
 
     /**
@@ -228,7 +230,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
             mainCtrl.getUser().getBoards().remove(b);
             server.saveUser(mainCtrl.getUser());
             setEntity(server.getDefaultBoard());
-            System.out.println(server.deleteBoard(b));
+            refreshJoinedBoards();
         }
     }
 
@@ -269,6 +271,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      */
     public void joinBoard() {
         mainCtrl.showJoinBoard();
+        refreshJoinedBoards();
     }
 
     /**

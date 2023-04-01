@@ -50,15 +50,13 @@ public class WebsocketUtils {
 
     /**
      * Registers to receive websocket messages from destination
-     * @param subscriber object linked to registration, forced to
-     *                   have only a single subscription in each destination
      * @param dest websocket endpoint that this subscribes to
      * @param type payload type returned to the consumer
      * @param consumer what happens with the received message
      * @param <T> payload type returned to the consumer
      */
     public <T> StompSession.Subscription registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
-        var sub = session.subscribe(dest, new StompFrameHandler() {
+        return session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return type;
@@ -73,8 +71,6 @@ public class WebsocketUtils {
                 consumer.accept((T) payload);
             }
         });
-
-        return sub;
     }
 
     public void addTaskList(TaskList taskList, Board board) {
