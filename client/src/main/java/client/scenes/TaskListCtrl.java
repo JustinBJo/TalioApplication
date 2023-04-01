@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.ChildrenManager;
-import client.utils.AlertUtils;
-import client.utils.ServerUtils;
-import client.utils.WebsocketUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
@@ -52,7 +49,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     private final AlertUtils alertUtils;
     private final WebsocketUtils websocket;
 
-    private StompSession.Subscription updateSub;
+    private EntityWebsocketManager<TaskList> entityWebsocket;
     private ChildrenManager<Task, CardCtrl> taskChildrenManager;
     private TaskList taskList;
 
@@ -65,6 +62,13 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.websocket = websocket;
+
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "taskList",
+                TaskList.class,
+                this::setEntity
+        );
     }
 
 
@@ -145,20 +149,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
             title.setText(taskList.getTitle());
         });
 
-        if (updateSub != null) {
-            updateSub.unsubscribe();
-        }
-        registerWebsocket();
+        entityWebsocket.register(taskList.getId());
         refresh();
-    }
-
-    private void registerWebsocket() {
-        updateSub = websocket.registerForMessages(
-                taskList,
-                "/topic/taskList/update/" + taskList.getId(),
-                TaskList.class,
-                this::setEntity
-        );
     }
 
     /**

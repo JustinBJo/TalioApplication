@@ -1,14 +1,12 @@
 package client.scenes;
 
-import client.utils.ChildrenManager;
-import client.utils.AlertUtils;
-import client.utils.ServerUtils;
-import client.utils.WebsocketUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import commons.User;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -34,10 +32,12 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
     private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
+    private ParentWebsocketManager<TaskList, TaskListCtrl> parentWebsocket;
+    private EntityWebsocketManager<Board> entityWebsocket;
+
     private long defaultBoardID;
 
     private Board activeBoard;
-    private StompSession.Subscription updateSub;
 
     @FXML
     Label sceneTitle;
@@ -101,16 +101,31 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
                 "Board.fxml"
         );
 
-        Image menu = new Image(getClass()
-                .getResourceAsStream("/client/images/menuicon.png"));
+        // Create websocket managers
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "board",
+                Board.class,
+                this::setEntity
+        );
+        this.parentWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "taskList",
+                TaskList.class,
+                taskListChildrenManager
+        );
+
+        // Set button icons
+        Image menu = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/menuicon.png")));
         menuIcon.setImage(menu);
 
-        Image admin = new Image(getClass()
-                .getResourceAsStream("/client/images/adminicon.png"));
+        Image admin = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/adminicon.png")));
         adminIcon.setImage(admin);
 
-        Image copy = new Image(getClass()
-                .getResourceAsStream("/client/images/copyicon.png"));
+        Image copy = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/copyicon.png")));
         copyIcon.setImage(copy);
     }
 
@@ -141,44 +156,20 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      */
     public void setEntity(Board activeBoard) {
         this.activeBoard = activeBoard;
-        sceneTitle.setText(activeBoard.getTitle());
-        boardCode.setText(activeBoard.getCode());
+
+        Platform.runLater(() -> {
+            sceneTitle.setText(activeBoard.getTitle());
+            boardCode.setText(activeBoard.getCode());
+        });
 
         taskListChildrenManager.updateChildren(server.getBoardData(activeBoard.getId()));
 
-        if (updateSub != null) {
-            updateSub.unsubscribe();
-        }
-        registerWebsocket();
+        entityWebsocket.register(activeBoard.getId());
+        parentWebsocket.register();
         // refresh();
     }
 
-    private void registerWebsocket() {
-        websocket.registerForMessages(
-                activeBoard,
-                "/topic/taskList/add",
-                TaskList.class,
-                tl -> {
-                    TaskListCtrl ctrl = taskListChildrenManager.addOrUpdateChild(tl);
-                    ctrl.refresh();
-                } );
 
-        websocket.registerForMessages(
-                activeBoard,
-                "/topic/taskList/delete",
-                TaskList.class,
-                tl -> {
-                    System.out.println("removing " + tl);
-                    taskListChildrenManager.removeChild(tl);
-                } );
-
-        updateSub = websocket.registerForMessages(
-                activeBoard,
-                "/topic/board/update/" + activeBoard.getId(),
-                Board.class,
-                this::setEntity
-        );
-    }
 
     /**
      * go back to the connect screen

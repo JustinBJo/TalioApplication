@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 
 public class WebsocketUtils {
     private StompSession session;
-    private final Map<Pair<Object, String>, StompSession.Subscription> subscriptionMap = new HashMap<>();
 
     public void updateServer(String address) {
         if (session != null) {
@@ -51,11 +50,7 @@ public class WebsocketUtils {
      * @param consumer what happens with the received message
      * @param <T> payload type returned to the consumer
      */
-    public <T> StompSession.Subscription registerForMessages(Object subscriber, String dest, Class<T> type, Consumer<T> consumer) {
-        if (subscriptionMap.containsKey(new Pair<>(subscriber, dest))) {
-            subscriptionMap.remove(new Pair<>(subscriber, dest)).unsubscribe();
-        }
-
+    public <T> StompSession.Subscription registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
         var sub = session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -72,7 +67,6 @@ public class WebsocketUtils {
             }
         });
 
-        subscriptionMap.put(new Pair<>(subscriber, dest), sub);
         return sub;
     }
 
