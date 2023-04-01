@@ -4,6 +4,8 @@ import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Board;
+import commons.Subtask;
+import commons.Task;
 import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
@@ -17,7 +19,9 @@ public class AddTitledEntityCtrl {
         TaskList,
         Board,
         RenameTaskList,
-        RenameBoard
+        RenameBoard,
+        Subtask,
+        RenameSubtask
     }
 
     private final ServerUtils server;
@@ -25,6 +29,10 @@ public class AddTitledEntityCtrl {
 
     private Type type;
     private TaskList taskListToEdit;
+
+    private Subtask subtaskToEdit;
+
+    private Task currentTask;
 
     @FXML
     Button cancel;
@@ -66,6 +74,12 @@ public class AddTitledEntityCtrl {
             case RenameBoard:
                 setHeader("Edit current board");
                 break;
+            case Subtask:
+                setHeader("Add a new subtask");
+                break;
+            case RenameSubtask:
+                setHeader("Edit subtask");
+                break;
 
             // Error handling (very unlikely, as it is an enum)
             default:
@@ -80,6 +94,22 @@ public class AddTitledEntityCtrl {
      */
     public void setTaskListToEdit(TaskList taskListToEdit) {
         this.taskListToEdit = taskListToEdit;
+    }
+
+    /**
+     * @param subtask subtask which will be edited
+     *                if type is RenameSubtask
+     */
+    public void setSubtaskToEdit(Subtask subtask) {
+        this.subtaskToEdit = subtask;
+    }
+
+    /**
+     * Setter for the current task
+     * @param currentTask - the task we are adding the subtask to
+     */
+    public void setCurrentTask(Task currentTask) {
+        this.currentTask = currentTask;
     }
 
     /**
@@ -130,6 +160,17 @@ public class AddTitledEntityCtrl {
                     editBoard(title);
 
                     break;
+                case Subtask:
+                    addNewSubtask(title);
+                    textField.clear();
+                    mainCtrl.showTaskDetails(currentTask);
+                    return;
+                //break;
+                case RenameSubtask:
+                    editSubtask(title);
+                    textField.clear();
+                    mainCtrl.showTaskDetails(currentTask);
+                    return;
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
@@ -198,5 +239,18 @@ public class AddTitledEntityCtrl {
         server.saveUser(mainCtrl.getUser());
         mainCtrl.setActiveBoard(updatedBoard);
         mainCtrl.refreshBoard();
+    }
+
+    /**
+     * Add a new subtask
+     * @param title subtask title
+     */
+    private void addNewSubtask(String title) {
+        Subtask subtask = new Subtask(title, false);
+        server.addSubtask(subtask, currentTask);
+    }
+
+    private void editSubtask(String title) {
+        server.updateSubtask(subtaskToEdit, title);
     }
 }

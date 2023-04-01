@@ -1,6 +1,7 @@
 package client.scenes;
 
 import commons.Board;
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 import commons.User;
@@ -206,8 +207,10 @@ public class MainCtrlTalio {
     public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
         taskDetailsCtrl.setTask(task);
+        //mainSceneCtrl.setCurrentTask(task);
+        taskDetailsCtrl.refresh();
         primaryStage.setScene(viewTaskScene);
-        primaryStage.setScene(viewTaskScene); }
+        }
 
 
     /**
@@ -226,6 +229,26 @@ public class MainCtrlTalio {
         this.user = user;
     }
 
+    /**
+     * Switches scene to "Add Board" scene
+     * @param task the task that the new subtask is assigned to
+     */
+    public void showAddSubtask(Task task) {
+        primaryStage.setTitle("Add a new subtask");
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.setCurrentTask(task);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.Subtask);
+    }
 
-
+    /**
+     * changes to rename subtask scene
+     */
+    public void showRenameSubtask(Subtask subtask) {
+        primaryStage.setTitle("Rename the subtask");
+        primaryStage.setScene(addTitledEntityScene);
+        addTitledEntityCtrl.setSubtaskToEdit(subtask);
+        addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameSubtask);
+    }
 }
+    
+

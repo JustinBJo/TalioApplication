@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Subtask;
 import commons.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
@@ -118,6 +120,10 @@ public class CardCtrl implements IEntityRepresentation<Task> {
 
         // Check the user's response and perform the desired action
         if (confirmation) {
+            List<Subtask> subtasks = task.getSubtasks();
+            for (Subtask subtask : subtasks)
+                server.deleteSubtask(subtask);
+
             server.deleteTask(task);
             mainCtrl.refreshBoard();
         }
@@ -133,7 +139,6 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     if (mouseEvent.getClickCount() == 2) {
-                        System.out.println("Double clicked");
                         mainCtrl.showTaskDetails(currentTask);
                     }
                 }

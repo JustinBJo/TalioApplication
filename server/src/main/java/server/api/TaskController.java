@@ -1,10 +1,12 @@
 package server.api;
 
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.database.SubtaskRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
@@ -17,18 +19,22 @@ public class TaskController {
     private final TaskRepository repo;
     private final TaskListRepository taskListRepository;
 
+    private final SubtaskRepository subtaskRepo;
     /**
      * constructor of the task controller
      *
      * @param repo               the task repository
      * @param taskListRepository task list repository
+     * @param subtaskRepo        the subtask repository
      */
     public TaskController(
             TaskRepository repo,
-            TaskListRepository taskListRepository
+            TaskListRepository taskListRepository,
+            SubtaskRepository subtaskRepo
     ) {
         this.repo = repo;
         this.taskListRepository = taskListRepository;
+        this.subtaskRepo = subtaskRepo;
     }
 
     /**
@@ -51,6 +57,24 @@ public class TaskController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.getById(id));
+    }
+
+    /**
+     * Gets all subtasks belonging to a given task
+     * @param taskId ID of the task whose subtasks wil be retrieved
+     * @return BAD_REQUEST if the task doesn't exist,
+     *         OK with the list of subtasks in body if it does
+     */
+    @GetMapping("getSubtasks/{taskId}")
+    public ResponseEntity<List<Subtask>> getChildSubtasks(
+            @PathVariable("taskId") long taskId
+    ) {
+        if (taskId < 0 || !repo.existsById(taskId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Task task = repo.getById(taskId);
+        return ResponseEntity.ok(task.getSubtasks());
     }
 
     /**
