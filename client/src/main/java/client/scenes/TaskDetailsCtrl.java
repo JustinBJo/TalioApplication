@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import javafx.fxml.FXML;
@@ -9,10 +10,12 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.Objects;
+
 
 public class TaskDetailsCtrl {
     private final MainCtrlTalio mainCtrl;
-    private final ServerUtils server;
+    private final WebsocketUtils websocket;
     private final AlertUtils alertUtils;
 
     private Task task;
@@ -28,13 +31,12 @@ public class TaskDetailsCtrl {
 
     /**
      * Constructor for the task details
-     * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public TaskDetailsCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public TaskDetailsCtrl(WebsocketUtils websocket, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
         this.alertUtils = alertUtils;
-        this.server = server;
+        this.websocket = websocket;
         this.mainCtrl = mainCtrl;
     }
 
@@ -43,12 +45,12 @@ public class TaskDetailsCtrl {
      * after FXML components are initialized.
      */
     public void initialize() {
-        Image editIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/editicon.png"));
+        Image editIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/editicon.png")));
         this.editIcon.setImage(editIcon);
 
-        Image deleteIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/deleteicon.png"));
+        Image deleteIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/deleteicon.png")));
         this.deleteIcon.setImage(deleteIcon);
     }
 
@@ -96,7 +98,7 @@ public class TaskDetailsCtrl {
 
         // Check the user's response and perform the desired action
         if (confirmation) {
-            server.deleteTask(task);
+            websocket.deleteTask(task);
             exit();
         }
     }

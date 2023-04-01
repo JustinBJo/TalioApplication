@@ -27,6 +27,11 @@ public class TaskControllerTest {
     }
 
     @Test
+    public void addMessageTest() {
+        assertTrue(false);
+    }
+
+    @Test
     public void addTest() {
         var a = new Task("Task Title", "Description");
         var tl = new TaskList("Test List");

@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import jakarta.ws.rs.WebApplicationException;
@@ -12,6 +13,7 @@ public class EditTaskCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
     private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
 
     private Task editedTask;
 
@@ -25,14 +27,16 @@ public class EditTaskCtrl {
 
     /**
      * Constructor for the EditTask
-     * @param server injects a server object
-     * @param mainCtrl injects a mainCtrl object
+     *
+     * @param server    injects a server object
+     * @param mainCtrl  injects a mainCtrl object
      */
     @Inject
-    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
     /**
@@ -84,12 +88,12 @@ public class EditTaskCtrl {
 
             if (!currentTitle.equals(newTitleString)) {
                 editedTask.setTitle(newTitleString);
-                server.updateTaskTitle(editedTask, newTitleString);
+                websocket.updateTaskTitle(editedTask, newTitleString);
             }
 
             if (!currentDescription.equals(newDescriptionString)) {
                 editedTask.setTitle(newDescriptionString);
-                server.updateTaskDescription(editedTask, newDescriptionString);
+                websocket.updateTaskDescription(editedTask, newDescriptionString);
             }
 
         }

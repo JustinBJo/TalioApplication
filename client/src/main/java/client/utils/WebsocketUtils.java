@@ -1,6 +1,7 @@
 package client.utils;
 
 import commons.Board;
+import commons.Task;
 import commons.TaskList;
 import javafx.util.Pair;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -70,18 +71,65 @@ public class WebsocketUtils {
         return sub;
     }
 
-    private void send(String dest, Object o) {
-        session.send(dest, o);
+    public void addTaskList(TaskList taskList, Board board) {
+        session.send("/app/taskList/add/" + board.getId(), taskList);
     }
 
-    public void addTaskList(TaskList taskList, Board board) {
-        send("/app/taskList/add/" + board.getId(), taskList);
-    }
     public void deleteTaskList(TaskList taskList) {
-        send("/app/taskList/delete/" + taskList.getId(), taskList);
+        session.send("/app/taskList/delete/" + taskList.getId(), taskList);
     }
 
     public void updateTaskList(TaskList taskList, String title) {
-        send("/app/taskList/update/" + taskList.getId() + "/" + title, taskList);
+        session.send("/app/taskList/update/" + taskList.getId() + "/" + title, taskList);
+    }
+
+    /**
+     * Update the title of the given board using the board/update endpoint
+     *
+     * @param board   the board that is being updated
+     * @param newName the new name of the board
+     */
+    public void updateBoard(Board board, String newName) {
+        session.send("/app/board/update/" + board.getId() + "/" + newName, board);
+    }
+
+    /**
+     * Update the title of the given task using the tasks/updateTitle endpoint
+     *
+     * @param task   the task that is being updated
+     * @param newTitle the new title of the task
+     */
+    public void updateTaskTitle(Task task, String newTitle) {
+        session.send("/app/task/updateTitle/" + task.getId() + "/" + newTitle, task);
+    }
+
+    /**
+     * Update the description of the given task,
+     * using the tasks/updateDescription endpoint
+     *
+     * @param task   the task that is being updated
+     * @param newDescription the new description of the task
+     */
+    public void updateTaskDescription(Task task, String newDescription) {
+        session.send("/app/task/updateDescription/" + task.getId() + "/" + newDescription, task);
+    }
+
+    /**
+     * Deletes a task from the server
+     * @param task the task to be deleted
+     * @return the removed task
+     */
+    public void deleteTask(Task task) {
+        session.send("/app/task/delete/" + task.getId(), task);
+    }
+
+    /**
+     * Method used to insert a task into the database
+     *
+     * @param task the task to be added to the database
+     * @param parentTaskList task list that will hold this task
+     */
+    public void addTask(Task task, TaskList parentTaskList) {
+        session.send("/app/task/add/" + parentTaskList.getId(), task);
     }
 }

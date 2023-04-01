@@ -120,23 +120,6 @@ public class ServerUtils {
                 .get(new GenericType<List<Task>>() {});
     }
 
-
-    /**
-     * Method used to insert a task into the database
-     *
-     * @param task the task to be added to the database
-     * @param parentTaskList task list that will hold this task
-     * @return the added task, in order for future operations
-     * with it to be possible
-     */
-    public Task addTask(Task task, TaskList parentTaskList) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks/" + parentTaskList.getId()) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(task, APPLICATION_JSON), Task.class);
-    }
-
     /**
      * return board from database based on its code
      * @param code the code of the board
@@ -163,22 +146,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
-    }
-
-    /**
-     * Update the title of the given board using the board/update endpoint
-     *
-     * @param board   the board that is being updated
-     * @param newName the new name of the board
-     * @return the updated board
-     */
-    public Board updateBoard(Board board, String newName) {
-        long id = board.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/update/" + id + "/" + newName)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(board, APPLICATION_JSON), Board.class);
     }
 
     /**
@@ -254,8 +221,6 @@ public class ServerUtils {
      * @param user the user to be saved
      */
     public void saveUser(User user) {
-     //   System.out.println(user.getBoards());
-        //System.out.println(user.getBoards());
         List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("user/save")
                 .request(APPLICATION_JSON)
@@ -263,51 +228,6 @@ public class ServerUtils {
                 .put(Entity.entity(user, APPLICATION_JSON),
                         new GenericType<List<Board>>() {});
         System.out.println(boards);
-    }
-
-
-
-    /**
-     * Update the title of the given task using the tasks/updateTitle endpoint
-     *
-     * @param task   the task that is being updated
-     * @param newTitle the new title of the task
-     * @return the updated task
-     */
-    public Task updateTaskTitle(Task task, String newTitle) {
-        long id = task.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasks/updateTitle/" + id + "/" + newTitle)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
-    }
-
-    /**
-     * Update the description of the given task,
-     * using the tasks/updateDescription endpoint
-     *
-     * @param task   the task that is being updated
-     * @param newDescription the new description of the task
-     * @return the updated task
-     */
-    public Task updateTaskDescription(Task task, String newDescription) {
-        long id = task.getId();
-        if (newDescription.length() == 0)
-            return ClientBuilder.newClient(new ClientConfig())
-                    .target(SERVER).
-                    path("tasks/updateDescription/" + id + "/HARDCODED-EMPTY" +
-                            "-DESCRIPTION-METHOD-FOR-EDITING-TASKS")
-                    .request(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON)
-                    .put(Entity.entity(task, APPLICATION_JSON), Task.class);
-        else
-            return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).
-                path("tasks/updateDescription/" + id + "/" + newDescription)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
     }
 
     /**
@@ -321,22 +241,5 @@ public class ServerUtils {
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
-    }
-
-    /**
-     * Deletes a task from the server
-     * @param task the task to be deleted
-     * @return the removed task
-     */
-    public Task deleteTask(Task task) {
-        long id = task.getId();
-        Task result = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
-                .path("tasks/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(Task.class);
-
-        return result;
     }
 }

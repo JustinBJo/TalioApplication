@@ -50,7 +50,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     private final WebsocketUtils websocket;
 
     private EntityWebsocketManager<TaskList> entityWebsocket;
+    private ParentWebsocketManager<Task, CardCtrl> parentWebsocket;
     private ChildrenManager<Task, CardCtrl> taskChildrenManager;
+
     private TaskList taskList;
 
     /**
@@ -62,13 +64,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.websocket = websocket;
-
-        this.entityWebsocket = new EntityWebsocketManager<>(
-                websocket,
-                "taskList",
-                TaskList.class,
-                this::setEntity
-        );
     }
 
 
@@ -77,12 +72,11 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void initialize() {
         // Set up tasks manager
-        this.taskChildrenManager =
-                new ChildrenManager<>(
-                    taskContainer,
-                    CardCtrl.class,
-                    "Card.fxml"
-                );
+        taskChildrenManager = new ChildrenManager<>(
+                taskContainer,
+                CardCtrl.class,
+                "Card.fxml"
+        );
 
         // Set up button icon
         Image editIcon = new Image(Objects.requireNonNull(getClass()
@@ -91,6 +85,20 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
         // Set up drag and drop
         setupDropTarget();
+
+        // Set up websockets
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "taskList",
+                TaskList.class,
+                this::setEntity
+        );
+        this.parentWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "task",
+                Task.class,
+                taskChildrenManager
+        );
     }
 
     private void setupDropTarget() {
@@ -149,20 +157,10 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
             title.setText(taskList.getTitle());
         });
 
-        entityWebsocket.register(taskList.getId());
-        refresh();
-    }
+        taskChildrenManager.updateChildren(server.getTaskListData(taskList));
 
-    /**
-     * Updates this list's tasks
-     */
-    public void refresh() {
-        if (taskList == null) {
-            // no children if there's no task list
-            taskChildrenManager.updateChildren(new ArrayList<>());
-        }
-        var tasks = server.getTaskListData(taskList);
-        taskChildrenManager.updateChildren(tasks);
+        entityWebsocket.register(taskList.getId(), "update");
+        parentWebsocket.register();
     }
 
     /**

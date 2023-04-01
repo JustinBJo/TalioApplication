@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
@@ -11,7 +12,7 @@ import javafx.scene.control.TextField;
 
 public class AddTaskCtrl {
 
-    private final ServerUtils server;
+    private final WebsocketUtils websocket;
     private final MainCtrlTalio mainCtrl;
     private final AlertUtils alertUtils;
 
@@ -25,14 +26,13 @@ public class AddTaskCtrl {
 
     /**
      * Constructor for the Addtask
-     * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public AddTaskCtrl(WebsocketUtils websocket, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
         this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
-        this.server = server;
+        this.websocket = websocket;
     }
 
     /**
@@ -60,7 +60,7 @@ public class AddTaskCtrl {
      */
     public void confirm() {
         try {
-            server.addTask(getTask(), parentTaskList);
+            websocket.addTask(getTask(), parentTaskList);
         } catch (WebApplicationException e) {
             alertUtils.alertError(e.getMessage());
             return;

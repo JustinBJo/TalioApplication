@@ -54,7 +54,12 @@ public class TaskListController {
     @MessageMapping("/taskList/add/{boardId}")
     @SendTo("/topic/taskList/add")
     public TaskList messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
-        long lBoardId = Long.parseLong(boardId);
+        long lBoardId;
+        try {
+            lBoardId = Long.parseLong(boardId);
+        } catch (Exception e) {
+            return null;
+        }
         var res = add(taskList, lBoardId);
         if (res.getStatusCode() != HttpStatus.OK) {
             return null;

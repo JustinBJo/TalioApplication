@@ -192,16 +192,14 @@ public class AddTitledEntityCtrl {
     }
 
     private void editBoard(String title) {
-        Board updatedBoard =
-           server.updateBoard(
-                mainCtrl.getActiveBoard(),
-                title
-            );
+       websocket.updateBoard(
+            mainCtrl.getActiveBoard(),
+            title
+        );
+
         int index = mainCtrl.getUser().getBoards()
                 .indexOf(mainCtrl.getActiveBoard());
         mainCtrl.getUser().getBoards().get(index).setTitle(title);
         server.saveUser(mainCtrl.getUser());
-        mainCtrl.setActiveBoard(updatedBoard);
-        mainCtrl.refreshBoard();
     }
 }
