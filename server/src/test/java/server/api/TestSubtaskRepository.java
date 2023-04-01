@@ -56,7 +56,8 @@ public class TestSubtaskRepository implements SubtaskRepository {
 
     @Override
     public void delete(Subtask entity) {
-
+        call("delete");
+        subtasks.remove(entity);
     }
 
     @Override

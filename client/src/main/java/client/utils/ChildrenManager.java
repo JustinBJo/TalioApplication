@@ -1,6 +1,7 @@
 package client.utils;
 
 import client.scenes.IEntityRepresentation;
+import commons.IEntity;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
@@ -10,7 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChildrenManager<T, C extends IEntityRepresentation<T>> {
+public class ChildrenManager
+        <T extends IEntity, C extends IEntityRepresentation<T>> {
     private final Pane childrenContainer;
     private final Map<T, Pair<C, Parent>> childUIMap;
     private final Class<C> childSceneCtrl;
@@ -36,50 +38,52 @@ public class ChildrenManager<T, C extends IEntityRepresentation<T>> {
      * @param children list of updated children
      */
     public void updateChildren(List<T> children) {
-        // Remove UI elements for removed task lists
-        List<T> toBeRemoved = new ArrayList<>();
+        // Tag child to be removed later
+        List<T> changedChildren = new ArrayList<>();
         for (T child : childUIMap.keySet()) {
             boolean existsInUpdatedList = children.contains(child);
-            // Tag child to be removed later. Not done here because removing
-            // from a list you're iterating over causes errors.
-            if (!existsInUpdatedList) toBeRemoved.add(child);
-        }
-        List<Integer> removedIndexes = new ArrayList<>();
-        for (T child : toBeRemoved) {
-            // Remove UI element from its container
-            // and child from map at the same time
-            var uiElement = childUIMap.remove(child).getValue();
-            removedIndexes.add(
-                childrenContainer.getChildren().indexOf(uiElement)
-            );
-            childrenContainer.getChildren().remove(uiElement);
+            if (!existsInUpdatedList) changedChildren.add(child);
         }
 
-        // Handles indexes for replaced (removed then added) children
-        var indexIterator = removedIndexes.iterator();
-
-        // Create UI elements for new children
+        // Create UI elements for new/updated children
         for (T child : children) {
             boolean hasUIElement = childUIMap.containsKey(child);
 
-            if (hasUIElement) continue;
+            if (hasUIElement) continue; // Not updated/new
+
+            // If updated (not new), find old index
+            int insertAtIndex = -1;
+            for (T changed : changedChildren) {
+                if (changed.getId().equals(child.getId())) {
+                    var changedUi = childUIMap.get(changed).getValue();
+                    insertAtIndex =
+                            childrenContainer.getChildren().indexOf(changedUi);
+                }
+            }
 
             // Instantiate child UI element
             var loadedChild =
                     BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
             // Add it to its container
-            if (indexIterator.hasNext()) {
-                // At previous position if it was just removed
+            if (insertAtIndex < 0) {
                 childrenContainer.getChildren()
-                        .add(indexIterator.next(), loadedChild.getValue());
+                    .add(loadedChild.getValue());
             } else {
                 childrenContainer.getChildren()
-                        .add(loadedChild.getValue());
+                    .set(insertAtIndex, loadedChild.getValue());
             }
             // Initialize its controller with this task list
             loadedChild.getKey().setEntity(child);
             // Add its reference to the map
             childUIMap.put(child, loadedChild);
+        }
+
+        // Remove UI elements for removed children
+        for (T child : changedChildren) {
+            // Remove UI element from its container
+            // and child from map at the same time
+            var uiElement = childUIMap.remove(child).getValue();
+            childrenContainer.getChildren().remove(uiElement);
         }
     }
 

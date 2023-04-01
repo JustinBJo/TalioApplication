@@ -101,6 +101,15 @@ public class TaskTest {
     }
 
     @Test
+    void addSubtask() {
+        Task task = new Task("title");
+        Subtask subtask = new Subtask("subtask", false);
+        assertEquals(0, task.getSubtasks().size());
+        task.addSubtask(subtask);
+        assertEquals(1, task.getSubtasks().size());
+    }
+
+    @Test
     void getTags() {
         var a = new Task("Task Title1", "Description",
                 new ArrayList<>(), new ArrayList<>());

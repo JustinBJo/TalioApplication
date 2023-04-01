@@ -84,6 +84,11 @@ public class TaskDetailsCtrl {
                         "Subtask.fxml"
                 );
         subtaskChildrenManager.updateChildren(subtasks);
+
+        for (SubtaskCtrl subtaskCtrl :
+                subtaskChildrenManager.getChildrenCtrls()) {
+            subtaskCtrl.setParentTask(task);
+        }
     }
 
     /**

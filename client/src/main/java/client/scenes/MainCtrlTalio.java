@@ -4,10 +4,13 @@ import commons.Board;
 import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
+import commons.User;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+
 
 
 public class MainCtrlTalio {
@@ -33,6 +36,12 @@ public class MainCtrlTalio {
 
     private String serverAddress;
 
+    private JoinBoardCtrl joinBoardCtrl;
+    private Scene joinBoardScene;
+
+
+    private User user;
+
 
     /**
      * initialize the main controller
@@ -47,7 +56,8 @@ public class MainCtrlTalio {
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
                            Pair<AddTaskCtrl, Parent> addTask,
                            Pair<EditTaskCtrl, Parent> editTask,
-                           Pair<TaskDetailsCtrl, Parent> viewTask) {
+                           Pair<TaskDetailsCtrl, Parent> viewTask,
+                           Pair<JoinBoardCtrl, Parent> joinBoard) {
         this.primaryStage = primaryStage;
 
         this.connect = new Scene(connect.getValue());
@@ -66,6 +76,10 @@ public class MainCtrlTalio {
 
         this.taskDetailsCtrl = viewTask.getKey();
         this.viewTaskScene = new Scene(viewTask.getValue());
+
+        this.joinBoardCtrl = joinBoard.getKey();
+        this.joinBoardScene = new Scene(joinBoard.getValue());
+
 
         showConnect();
         primaryStage.show();
@@ -131,29 +145,12 @@ public class MainCtrlTalio {
     }
 
     /**
-     * Gets the current task that was recently edited
-     * @return the current task
-     */
-    public Task getCurrentTask() {
-        return mainSceneCtrl.getCurrentTask();
-    }
-
-    /**
      * Sets the currently active board.
      * Does nothing if the parameter is null.
      */
     public void setActiveBoard(Board board) {
         if (board == null) return;
         mainSceneCtrl.setActiveBoard(board);
-    }
-
-    /**
-     * Updates the current task
-     * @param task - the new current task
-     */
-    public void setCurrentTask(Task task) {
-        if (task == null) return;
-        mainSceneCtrl.setCurrentTask(task);
     }
 
     /**
@@ -195,15 +192,41 @@ public class MainCtrlTalio {
     }
 
     /**
+     * displays the join board scene
+     */
+    public void showJoinBoard() {
+        primaryStage.setTitle("Join new board");
+        primaryStage.setScene(joinBoardScene);
+    }
+
+
+    /**
      * Shows the detailed view of a task
      * @param task current task
      */
     public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
         taskDetailsCtrl.setTask(task);
-        mainSceneCtrl.setCurrentTask(task);
+        //mainSceneCtrl.setCurrentTask(task);
         taskDetailsCtrl.refresh();
         primaryStage.setScene(viewTaskScene);
+        }
+
+
+    /**
+     * returns current user
+     * @return current user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * sets current user
+     * @param user the user to be set
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
     /**
@@ -226,5 +249,6 @@ public class MainCtrlTalio {
         addTitledEntityCtrl.setSubtaskToEdit(subtask);
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameSubtask);
     }
-
 }
+    
+

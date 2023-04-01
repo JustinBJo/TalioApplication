@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Subtask {
+public class Subtask implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -100,7 +100,7 @@ public class Subtask {
      * returns the id of the subtask
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 }

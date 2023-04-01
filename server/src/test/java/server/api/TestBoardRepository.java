@@ -10,6 +10,7 @@ import server.database.BoardRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -99,7 +100,7 @@ public class TestBoardRepository implements BoardRepository {
     public Optional<Board> findById(Long aLong) {
         calls.add("findById");
         for (Board b : boards) {
-            if (b.getId() == aLong) {
+            if (Objects.equals(b.getId(), aLong)) {
                 return Optional.of(b);
             }
         }
@@ -110,7 +111,7 @@ public class TestBoardRepository implements BoardRepository {
     public boolean existsById(Long aLong) {
         calls.add("existsById");
         for (Board b : boards) {
-            if (b.getId() == aLong) {
+            if (Objects.equals(b.getId(), aLong)) {
                 return true;
             }
         }

@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Task;
 import commons.Subtask;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -19,6 +20,7 @@ public class SubtaskCtrl
     private final MainCtrlTalio mainCtrl;
 
     private Subtask subtask;
+    private Task parentTask;
 
     @FXML
     AnchorPane root;
@@ -64,6 +66,13 @@ public class SubtaskCtrl
     }
 
     /**
+     * @param task task that holds this subtask
+     */
+    public void setParentTask(Task task) {
+        this.parentTask = task;
+    }
+
+    /**
      * This is called only once by the FXML builder,
      * after FXML components are initialized.
      */
@@ -86,7 +95,7 @@ public class SubtaskCtrl
 
         if (confirmation) {
             server.deleteSubtask(subtask);
-            mainCtrl.showTaskDetails(mainCtrl.getCurrentTask());
+            mainCtrl.showTaskDetails(parentTask);
         }
     }
 
