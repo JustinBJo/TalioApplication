@@ -143,6 +143,7 @@ public class MainSceneCtrl {
         sceneTitle.setText(activeBoard.getTitle());
         boardCode.setText(activeBoard.getCode());
 
+        taskListChildrenManager.updateChildren(server.getBoardData(activeBoard.getId()));
         registerWebsocket();
         // refresh();
     }
@@ -150,16 +151,13 @@ public class MainSceneCtrl {
     private void registerWebsocket() {
         websocket.registerForMessages(
                 activeBoard,
-                "/topic/taskList/" + activeBoard.getId(),
-                (Class<List<TaskList>>) ((Class)List.class),
-                tls -> {
+                "/topic/taskList/add",
+                TaskList.class,
+                tl -> {
                     System.out.println("Received message");
-                    System.out.println(tls);
-                    taskListChildrenManager.updateChildren(tls);
-                    for (TaskListCtrl taskListCtrl :
-                            taskListChildrenManager.getChildrenCtrls()) {
-                        taskListCtrl.refresh();
-                    }
+                    System.out.println(tl);
+                    TaskListCtrl ctrl = taskListChildrenManager.addOrUpdateChild(tl);
+                    ctrl.refresh();
                 } );
     }
 

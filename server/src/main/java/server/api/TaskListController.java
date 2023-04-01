@@ -51,8 +51,8 @@ public class TaskListController {
     }
 
     @MessageMapping("/taskList/add/{boardId}")
-    @SendTo("/topic/taskList/{boardId}")
-    public List<TaskList> messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
+    @SendTo("/topic/taskList/add")
+    public TaskList messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
         long lBoardId = Long.parseLong(boardId);
         var res = add(taskList, lBoardId);
 
@@ -60,7 +60,7 @@ public class TaskListController {
             return null;
         }
 
-        return boardRepo.findById(lBoardId).get().getTaskLists();
+        return res.getBody();
     }
 
     /**
