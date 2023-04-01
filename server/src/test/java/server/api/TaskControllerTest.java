@@ -4,6 +4,7 @@ import commons.Task;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.database.SubtaskRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class TaskControllerTest {
 
     private TestTaskRepository repo;
     private TestTaskListRepository taskListRepository;
+    private SubtaskRepository subtaskRepo;
 
     private TaskController sut;
 
@@ -23,7 +25,8 @@ public class TaskControllerTest {
     public void setup() {
         repo = new TestTaskRepository();
         taskListRepository = new TestTaskListRepository();
-        sut = new TaskController(repo, taskListRepository);
+        subtaskRepo = new TestSubtaskRepository();
+        sut = new TaskController(repo, taskListRepository, subtaskRepo);
     }
 
     @Test
@@ -78,6 +81,21 @@ public class TaskControllerTest {
     }
 
     @Test
+    void updateTitleFailedTest() {
+        Task task = new Task("title",
+                "Old Description",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.updateTitle(task.getId(), "");
+
+        assertTrue(repo.findAll().contains(task));
+        String newTitle = repo.getById(task.getId()).getTitle();
+        assertEquals("title", newTitle);
+    }
+
+    @Test
     void updateDescriptionTest() {
         Task task = new Task("Old Title",
                 "Old Description",
@@ -93,6 +111,21 @@ public class TaskControllerTest {
     }
 
     @Test
+    void updateDescriptionFailedTest() {
+        Task task = new Task("title",
+                "description",
+                new ArrayList<>(),
+                new ArrayList<>());
+        repo.save(task);
+
+        sut.updateDescription(task.getId(), "");
+
+        assertTrue(repo.findAll().contains(task));
+        String newDescription = repo.getById(task.getId()).getDescription();
+        assertEquals("description", newDescription);
+    }
+
+    @Test
     void deleteTaskTest() {
         Task task = new Task("t",
                 "d",
@@ -104,5 +137,18 @@ public class TaskControllerTest {
 
         assertFalse(repo.findById(task.getId()).isPresent());
     }
+
+    @Test
+    void deleteInvalidIdTest() {
+        var a = sut.delete(-1);
+        assertEquals(BAD_REQUEST, a.getStatusCode());
+    }
+
+    @Test
+    void deleteNonexistentTaskTest() {
+        var a = sut.delete(7070);
+        assertEquals(BAD_REQUEST, a.getStatusCode());
+    }
+
 
 }

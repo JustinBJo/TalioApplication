@@ -126,6 +126,26 @@ public class Task implements IEntity {
     }
 
     /**
+     * Remove a subtask from this task
+     * @param subtask the subtask that is being removed
+     * @return true if the subtask has been removed successfully,
+     * false otherwise
+     */
+    public boolean removeSubtask(Subtask subtask) {
+        return this.subtasks.remove(subtask);
+    }
+
+    /**
+     * Adds a subtask to the task
+     * @param subtask the new subtask to be added
+     * @return true if subtask was added successfully, false otherwise
+     */
+    public boolean addSubtask(Subtask subtask) {
+        if (this.subtasks == null) this.subtasks = new ArrayList<>();
+        return this.subtasks.add(subtask);
+    }
+
+    /**
      * get the tags of the task
      * @return the tags of the task
      */

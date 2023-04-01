@@ -15,6 +15,12 @@ class SubtaskTest {
     }
 
     @Test
+    void checkEmptyConstructor() {
+        Subtask empty = new Subtask();
+        assertNull(empty.getTitle());
+    }
+
+    @Test
     void testConstructor() {
         assertEquals(sut.getTitle(), "test");
         assertEquals(sut.isCompleted(), true);
@@ -23,6 +29,12 @@ class SubtaskTest {
     @Test
     void getTitle() {
         assertEquals(sut.getTitle(), "test");
+    }
+
+    @Test
+    void setTitle() {
+        sut.setTitle("newTitle");
+        assertEquals("newTitle", sut.getTitle());
     }
 
     @Test
@@ -39,8 +51,8 @@ class SubtaskTest {
     @Test
     void testHashCode() {
         Subtask k = new Subtask("test", true);
-
         assertEquals(k, sut);
+        assertEquals(sut.hashCode(), k.hashCode());
     }
 
     @Test

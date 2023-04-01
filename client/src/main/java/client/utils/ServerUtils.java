@@ -20,6 +20,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.util.List;
 
 import commons.Board;
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 
@@ -118,6 +119,18 @@ public class ServerUtils {
                 .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Task>>() {});
+    }
+
+    /**
+     * Gets all subtasks belonging to a certain task
+     * @param task parent of desired subtasks
+     * @return list of subtasks belonging to task
+     */
+    public List<Subtask> getTaskData(Task task) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasks/getSubtasks/" + task.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Subtask>>() {});
     }
 
     /**
@@ -241,5 +254,54 @@ public class ServerUtils {
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+    }
+
+    /**
+     * Method used to insert a subtask into the database
+     *
+     * @param subtask the subtask to be added to the database
+     * @param parentTask task that will hold this subtask
+     * @return the added subtask, in order for future operations
+     * with it to be possible
+     */
+    public Subtask addSubtask(Subtask subtask, Task parentTask) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER)
+                .path("subtask/" + parentTask.getId()) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
+    }
+
+    /**
+     * Deletes a subtask from the server
+     * @param subtask the subtask to be deleted
+     * @return the removed subtask
+     */
+    public String deleteSubtask(Subtask subtask) {
+        long id = subtask.getId();
+        String result = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("subtask/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(String.class);
+
+        return result;
+    }
+
+    /**
+     * Updates the title of the subtask in the database
+     * @param subtask the subtask to be edited
+     * @param newTitle the new title of the subtask
+     * @return the edited subtask
+     */
+    public Subtask updateSubtask(Subtask subtask, String newTitle) {
+        long id = subtask.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("subtask/update/" + id + "/" + newTitle)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
     }
 }

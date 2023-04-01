@@ -16,7 +16,10 @@ public class Subtask implements IEntity {
     private String title;
     private boolean completed;
 
-    private Subtask() {
+    /**
+     * empty constructor
+     */
+    public Subtask() {
 
     }
 
@@ -31,11 +34,19 @@ public class Subtask implements IEntity {
     }
 
     /**
-     * get the the title of the subtask
+     * get the title of the subtask
      * @return the title of the subtask
      */
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * set the title of the subtask
+     * @param title the new title
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
