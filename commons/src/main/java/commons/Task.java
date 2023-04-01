@@ -17,9 +17,9 @@ public class Task implements IEntity {
 
     private String title;
     private String description;
-    @OneToMany(cascade =  CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Subtask> subtasks;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Tag> tags;
 
     /**
