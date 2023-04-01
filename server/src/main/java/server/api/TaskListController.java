@@ -15,6 +15,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.database.TaskListRepository;
+import server.database.TaskRepository;
 
 @RestController
 @RequestMapping("/tasklist")
@@ -22,15 +23,18 @@ public class TaskListController {
 
     private final TaskListRepository repo;
     private final BoardRepository boardRepo;
+    private final TaskRepository taskRepo;
 
     /**
      * constructor
      * @param repo the task list repository
      */
     public TaskListController(TaskListRepository repo,
-                              BoardRepository boardRepo) {
+                              BoardRepository boardRepo,
+                              TaskRepository taskRepo) {
         this.repo = repo;
         this.boardRepo = boardRepo;
+        this.taskRepo = taskRepo;
     }
 
     /**
@@ -144,6 +148,10 @@ public class TaskListController {
             }
 
             boardRepo.save(parent);
+        }
+
+        for (Task task: taskList.getTasks()) {
+            taskRepo.delete(task);
         }
 
         repo.delete(taskList);
