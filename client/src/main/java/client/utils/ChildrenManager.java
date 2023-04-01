@@ -2,6 +2,7 @@ package client.utils;
 
 import client.scenes.IEntityRepresentation;
 import commons.IEntity;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
@@ -31,6 +32,34 @@ public class ChildrenManager
         this.childSceneCtrl = childSceneCtrl;
         this.childFxmlFileName = childFxmlFileName;
         this.childUIMap = new HashMap<>();
+    }
+
+    public void removeChild(T child) {
+        List<T> children = new ArrayList<>(childUIMap.keySet());
+        children.remove(child);
+        updateChildren(children);
+    }
+
+    public C addOrUpdateChild(T child) {
+        List<T> children = new ArrayList<>(childUIMap.keySet());
+
+        boolean updated = false;
+
+        for (T currentChild : childUIMap.keySet()) {
+            if (child.getId().equals(currentChild.getId())) {
+                children.remove(currentChild);
+                children.add(child);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            children.add(child);
+        }
+
+        updateChildren(children);
+        return childUIMap.get(child).getKey();
     }
 
     /**
@@ -64,13 +93,19 @@ public class ChildrenManager
             // Instantiate child UI element
             var loadedChild =
                     BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
+
             // Add it to its container
             if (insertAtIndex < 0) {
-                childrenContainer.getChildren()
-                    .add(loadedChild.getValue());
+                Platform.runLater(() -> {
+                    childrenContainer.getChildren()
+                            .add(loadedChild.getValue());
+                });
             } else {
-                childrenContainer.getChildren()
-                    .set(insertAtIndex, loadedChild.getValue());
+                int finalInsertAtIndex = insertAtIndex;
+                Platform.runLater(() -> {
+                    childrenContainer.getChildren()
+                        .set(finalInsertAtIndex, loadedChild.getValue());
+                });
             }
             // Initialize its controller with this task list
             loadedChild.getKey().setEntity(child);
@@ -83,7 +118,9 @@ public class ChildrenManager
             // Remove UI element from its container
             // and child from map at the same time
             var uiElement = childUIMap.remove(child).getValue();
-            childrenContainer.getChildren().remove(uiElement);
+            Platform.runLater(() -> {
+                childrenContainer.getChildren().remove(uiElement);
+            });
         }
     }
 
