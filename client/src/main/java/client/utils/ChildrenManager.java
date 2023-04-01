@@ -36,8 +36,9 @@ public class ChildrenManager
 
     public void removeChild(T child) {
         List<T> children = new ArrayList<>(childUIMap.keySet());
-        children.remove(child);
-        updateChildren(children);
+        if (children.remove(child)) {
+            updateChildren(children);
+        }
     }
 
     public C addOrUpdateChild(T child) {

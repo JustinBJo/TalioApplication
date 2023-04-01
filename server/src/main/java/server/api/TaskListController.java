@@ -1,5 +1,6 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,11 +56,9 @@ public class TaskListController {
     public TaskList messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
         long lBoardId = Long.parseLong(boardId);
         var res = add(taskList, lBoardId);
-
         if (res.getStatusCode() != HttpStatus.OK) {
             return null;
         }
-
         return res.getBody();
     }
 
@@ -115,51 +114,80 @@ public class TaskListController {
         return ResponseEntity.ok(taskList.getTasks());
     }
 
+    @MessageMapping("/taskList/delete/{id}")
+    @SendTo("/topic/taskList/delete")
+    public TaskList messageDelete(@DestinationVariable String id) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = delete(lID);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
     /**
      * Deletes from the repository a tasklist with the provided id
      * @param id the id of the tasklist to be removed
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
-        if (id < 0) {
-            return ResponseEntity.badRequest().body("Invalid id!");
-        }
-        if  (!repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("TaskList does not exist.");
+    public ResponseEntity<TaskList> delete(@PathVariable("id") Long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
         }
 
-        TaskList taskList = repo.findById(id).get();
-
+        TaskList taskList = null;
         Board parent = null;
+
         for (Board board : boardRepo.findAll()) {
-            if (board.getTaskLists().contains(taskList)) {
-                parent = board;
+            for (TaskList tl : board.getTaskLists()) {
+                if (tl.getId().equals(id)) {
+                    taskList = tl;
+                    parent = board;
+                    break;
+                }
+            }
+            if (parent != null) {
                 break;
             }
         }
 
         if (parent != null) {
             boolean unlinkSuccess = parent.removeTaskList(taskList);
-
             if (!unlinkSuccess) {
-                return ResponseEntity.badRequest().body(
-                        "Failed to unlink task from task list."
-                );
+                return ResponseEntity.badRequest().build();
             }
-
             boardRepo.save(parent);
         }
 
-        for (Task task: taskList.getTasks()) {
-            taskRepo.delete(task);
+        repo.deleteById(id);
+
+        if (repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(taskList);
+    }
+
+    @MessageMapping("/taskList/update/{newName}")
+    @SendTo("/topic/taskList/update/{id}")
+    public TaskList messageUpdate(@DestinationVariable String id, @DestinationVariable String newName) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
         }
 
-        repo.delete(taskList);
-        if (repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("The task " +
-                    "was not correctly removed.");
+        var res = update(lID, newName);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
         }
-        return ResponseEntity.ok("Task " + id + " was removed.");
+        return res.getBody();
     }
 
     /**
@@ -168,14 +196,14 @@ public class TaskListController {
      * @param newName the new name
      */
     @PutMapping("update/{id}/{newName}")
-    public void update(@PathVariable("id") long id,
+    public ResponseEntity<TaskList> update(@PathVariable("id") long id,
                        @PathVariable("newName") String newName) {
         if (id < 0 || !repo.existsById(id) || newName.length() == 0)
-            return;
+            return ResponseEntity.badRequest().build();
         TaskList param = repo.getById(id);
         param.setTitle(newName);
-        repo.save(param);
-
+        TaskList saved = repo.save(param);
+        return ResponseEntity.ok(saved);
     }
 
     private static boolean isNullOrEmpty(String s) {

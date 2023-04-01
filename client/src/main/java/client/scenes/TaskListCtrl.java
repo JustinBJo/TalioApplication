@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.ChildrenManager;
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
@@ -15,10 +16,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.List;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
@@ -48,6 +49,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
+
+    private StompSession.Subscription updateSub;
     private ChildrenManager<Task, CardCtrl> taskChildrenManager;
     private TaskList taskList;
 
@@ -55,10 +59,11 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Constructor with dependency injection
      */
     @Inject
-    public TaskListCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public TaskListCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
 
@@ -137,7 +142,20 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         }
         title.setText(taskList.getTitle());
 
+        if (updateSub != null) {
+            updateSub.unsubscribe();
+        }
+        registerWebsocket();
         refresh();
+    }
+
+    private void registerWebsocket() {
+        updateSub = websocket.registerForMessages(
+                taskList,
+                "/topic/taskList/update/" + taskList.getId(),
+                TaskList.class,
+                this::setEntity
+        );
     }
 
     /**
@@ -159,9 +177,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         boolean confirmation = alertUtils.confirmDeletion("list");
 
         if (confirmation) {
-            server.deleteTaskList(taskList);
+            websocket.deleteTaskList(taskList);
             taskList = null;
-            mainCtrl.refreshBoard();
         }
     }
 

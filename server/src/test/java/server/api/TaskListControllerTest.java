@@ -20,13 +20,33 @@ public class TaskListControllerTest {
 
     private TaskListRepository repo;
     private BoardRepository boardRepo;
+    private TaskRepository taskRepo;
     private TaskListController taskListController;
 
     @BeforeEach
     public void setup() {
         repo = new TestTaskListRepository();
         boardRepo = new TestBoardRepository();
-        taskListController = new TaskListController(repo, boardRepo);
+        taskRepo = new TestTaskRepository();
+        taskListController = new TaskListController(repo, boardRepo, taskRepo);
+    }
+
+    @Test
+    public void messageAddTest() {
+        // TODO
+        assertTrue(false);
+    }
+
+    @Test
+    public void messageDeleteTest() {
+        // TODO
+        assertTrue(false);
+    }
+
+    @Test
+    public void messageUpdateTest() {
+        // TODO
+        assertTrue(false);
     }
 
     @Test

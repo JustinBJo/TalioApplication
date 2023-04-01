@@ -154,10 +154,17 @@ public class MainSceneCtrl {
                 "/topic/taskList/add",
                 TaskList.class,
                 tl -> {
-                    System.out.println("Received message");
-                    System.out.println(tl);
                     TaskListCtrl ctrl = taskListChildrenManager.addOrUpdateChild(tl);
                     ctrl.refresh();
+                } );
+
+        websocket.registerForMessages(
+                activeBoard,
+                "/topic/taskList/delete",
+                TaskList.class,
+                tl -> {
+                    System.out.println("removing " + tl);
+                    taskListChildrenManager.removeChild(tl);
                 } );
     }
 

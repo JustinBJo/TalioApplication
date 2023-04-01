@@ -2,6 +2,7 @@ package client.utils;
 
 import commons.Board;
 import commons.TaskList;
+import javafx.util.Pair;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
 
 public class WebsocketUtils {
     private StompSession session;
-    private final Map<Object, StompSession.Subscription> subscriptionMap = new HashMap<>();
+    private final Map<Pair<Object, String>, StompSession.Subscription> subscriptionMap = new HashMap<>();
 
     public void updateServer(String address) {
         if (session != null) {
@@ -43,15 +44,16 @@ public class WebsocketUtils {
 
     /**
      * Registers to receive websocket messages from destination
-     * @param subscriber object linked to registration, forced to have only a single subscription
+     * @param subscriber object linked to registration, forced to
+     *                   have only a single subscription in each destination
      * @param dest websocket endpoint that this subscribes to
      * @param type payload type returned to the consumer
      * @param consumer what happens with the received message
      * @param <T> payload type returned to the consumer
      */
-    public <T> void registerForMessages(Object subscriber, String dest, Class<T> type, Consumer<T> consumer) {
-        if (subscriptionMap.containsKey(subscriber)) {
-            subscriptionMap.remove(subscriber).unsubscribe();
+    public <T> StompSession.Subscription registerForMessages(Object subscriber, String dest, Class<T> type, Consumer<T> consumer) {
+        if (subscriptionMap.containsKey(new Pair<>(subscriber, dest))) {
+            subscriptionMap.remove(new Pair<>(subscriber, dest)).unsubscribe();
         }
 
         var sub = session.subscribe(dest, new StompFrameHandler() {
@@ -70,14 +72,18 @@ public class WebsocketUtils {
             }
         });
 
-        subscriptionMap.put(subscriber, sub);
+        subscriptionMap.put(new Pair<>(subscriber, dest), sub);
+        return sub;
     }
 
-    public void send(String dest, Object o) {
+    private void send(String dest, Object o) {
         session.send(dest, o);
     }
 
     public void addTaskList(TaskList taskList, Board board) {
         send("/app/taskList/add/" + board.getId(), taskList);
+    }
+    public void deleteTaskList(TaskList taskList) {
+        send("/app/taskList/delete/" + taskList.getId(), taskList);
     }
 }
