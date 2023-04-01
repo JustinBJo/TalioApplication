@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;
 import commons.Subtask;
 import commons.Task;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -110,10 +111,13 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         if (task.getTitle() == null) {
             task.setTitle("Untitled");
         }
-        title.setText(task.getTitle());
-        if (task.getDescription().isEmpty()) {
-            descriptionIndicator.setImage(null);
-        }
+
+        Platform.runLater(() -> {
+            title.setText(task.getTitle());
+            if (task.getDescription().isEmpty()) {
+                descriptionIndicator.setImage(null);
+            }
+        });
 
         entityWebsocket.register(task.getId(), "updateTitle");
         entityWebsocket.register(task.getId(), "updateDescription");

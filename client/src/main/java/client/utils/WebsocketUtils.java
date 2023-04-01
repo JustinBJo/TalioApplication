@@ -1,9 +1,13 @@
 package client.utils;
 
 import commons.Board;
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import javafx.util.Pair;
+import org.glassfish.jersey.client.ClientConfig;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -17,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class WebsocketUtils {
     private StompSession session;
@@ -117,7 +123,6 @@ public class WebsocketUtils {
     /**
      * Deletes a task from the server
      * @param task the task to be deleted
-     * @return the removed task
      */
     public void deleteTask(Task task) {
         session.send("/app/task/delete/" + task.getId(), task);
@@ -131,5 +136,32 @@ public class WebsocketUtils {
      */
     public void addTask(Task task, TaskList parentTaskList) {
         session.send("/app/task/add/" + parentTaskList.getId(), task);
+    }
+
+    /**
+     * Method used to insert a subtask into the database
+     *
+     * @param subtask the subtask to be added to the database
+     * @param parentTask task that will hold this subtask
+     */
+    public void addSubtask(Subtask subtask, Task parentTask) {
+        session.send("/app/subtask/add/" + parentTask.getId(), subtask);
+    }
+
+    /**
+     * Deletes a subtask from the server
+     * @param subtask the subtask to be deleted
+     */
+    public void deleteSubtask(Subtask subtask) {
+        session.send("/app/subtask/delete/" + subtask.getId(), subtask);
+    }
+
+    /**
+     * Updates the title of the subtask in the database
+     * @param subtask the subtask to be edited
+     * @param newTitle the new title of the subtask
+     */
+    public void updateSubtask(Subtask subtask, String newTitle) {
+        session.send("/app/subtask/update/" + subtask.getId() + "/" + newTitle, subtask);
     }
 }

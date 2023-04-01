@@ -256,52 +256,5 @@ public class ServerUtils {
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
     }
 
-    /**
-     * Method used to insert a subtask into the database
-     *
-     * @param subtask the subtask to be added to the database
-     * @param parentTask task that will hold this subtask
-     * @return the added subtask, in order for future operations
-     * with it to be possible
-     */
-    public Subtask addSubtask(Subtask subtask, Task parentTask) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("subtask/" + parentTask.getId()) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
-    }
 
-    /**
-     * Deletes a subtask from the server
-     * @param subtask the subtask to be deleted
-     * @return the removed subtask
-     */
-    public String deleteSubtask(Subtask subtask) {
-        long id = subtask.getId();
-        String result = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
-                .path("subtask/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(String.class);
-
-        return result;
-    }
-
-    /**
-     * Updates the title of the subtask in the database
-     * @param subtask the subtask to be edited
-     * @param newTitle the new title of the subtask
-     * @return the edited subtask
-     */
-    public Subtask updateSubtask(Subtask subtask, String newTitle) {
-        long id = subtask.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("subtask/update/" + id + "/" + newTitle)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
-    }
 }

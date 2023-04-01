@@ -3,7 +3,12 @@ package server.api;
 
 import commons.Subtask;
 import commons.Task;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.SubtaskRepository;
 import server.database.TaskRepository;
@@ -41,6 +46,22 @@ public class SubtaskController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    @MessageMapping("/subtask/add/{parentID}")
+    @SendTo("/topic/subtask/add/{parentID}")
+    public Subtask messageAdd(@Payload Subtask entity, @DestinationVariable String parentID) {
+        long lParentID;
+        try {
+            lParentID = Long.parseLong(parentID);
+        } catch (Exception e) {
+            return null;
+        }
+        var res = add(entity, lParentID);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
     /**
      * add a subtask
      * @param subtask the subtask to add
@@ -73,50 +94,80 @@ public class SubtaskController {
         return ResponseEntity.ok(saved);
     }
 
+    @MessageMapping("/subtask/delete/{id}")
+    @SendTo("/topic/subtask/delete")
+    public Subtask messageDelete(@DestinationVariable String id) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = delete(lID);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
     /**
      * Deletes a subtask with a given id from the repository
      * @param id the id of the subtask to be deleted
      * @return the deleted subtask
      */
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
-        if (id < 0)
-            return ResponseEntity.badRequest().body("Invalid id.");
-        if (!repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("The subtask " +
-                    "you are trying to delete does not exist.");
+    public ResponseEntity<Subtask> delete(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
         }
 
-        //Subtask subtask = repo.getById(id);
-        Subtask subtask = repo.findById(id).get();
-
-
+        Subtask subtask = null;
         Task parent = null;
+
         for (Task task : taskRepo.findAll()) {
-            if (task.getSubtasks().contains(subtask)) {
-                parent = task;
+            for (Subtask s : task.getSubtasks()) {
+                if (s.getId().equals(id)) {
+                    subtask = s;
+                    parent = task;
+                    break;
+                }
+            }
+            if (parent != null) {
                 break;
             }
         }
 
         if (parent != null) {
             boolean unlinkSuccess = parent.removeSubtask(subtask);
-
             if (!unlinkSuccess) {
-                return ResponseEntity.badRequest().body(
-                        "Failed to unlink subtask from parent task."
-                );
+                return ResponseEntity.badRequest().build();
             }
-
             taskRepo.save(parent);
         }
 
-        repo.delete(subtask);
+        repo.deleteById(id);
         if (repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("The subtask " +
-                    "was not correctly removed.");
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok("Subtask " + id + " was removed.");
+        return ResponseEntity.ok(subtask);
+    }
+
+    @MessageMapping("/subtask/update/{id}/{newName}")
+    @SendTo("/topic/subtask/update/{id}")
+    public Subtask messageUpdateTitle(@DestinationVariable String id, @DestinationVariable String newName) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = update(lID, newName);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
     }
 
     /**
@@ -125,13 +176,13 @@ public class SubtaskController {
      * @param newTitle the new title
      */
     @PutMapping("/update/{id}/{newTitle}")
-    public void update(@PathVariable("id") long id,
+    public ResponseEntity<Subtask> update(@PathVariable("id") long id,
                        @PathVariable("newTitle") String newTitle) {
         if (id < 0 || !repo.existsById(id) || newTitle.length() == 0)
-            return;
+            return ResponseEntity.badRequest().build();
         Subtask param = repo.findById(id).get();
         param.setTitle(newTitle);
-        repo.save(param);
-
+        Subtask saved = repo.save(param);
+        return ResponseEntity.ok(saved);
     }
 }

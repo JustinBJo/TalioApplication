@@ -142,7 +142,7 @@ public class TaskController {
     }
 
     @MessageMapping("/task/updateTitle/{id}/{newName}")
-    @SendTo("/topic/task/update/{id}")
+    @SendTo("/topic/task/updateTitle/{id}")
     public Task messageUpdateTitle(@DestinationVariable String id, @DestinationVariable String newName) {
         long lID;
         try {
@@ -175,7 +175,7 @@ public class TaskController {
     }
 
     @MessageMapping("/task/updateDescription/{id}/{newDescription}")
-    @SendTo("/topic/task/update/{id}")
+    @SendTo("/topic/task/updateDescription/{id}")
     public Task messageUpdateDescription(@DestinationVariable String id, @DestinationVariable String newDescription) {
         long lID;
         try {

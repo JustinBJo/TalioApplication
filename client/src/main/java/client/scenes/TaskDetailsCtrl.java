@@ -1,19 +1,15 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.ChildrenManager;
-import client.utils.ServerUtils;
-import client.utils.WebsocketUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Subtask;
 import commons.Task;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
 
 import java.util.Objects;
 
@@ -25,6 +21,8 @@ public class TaskDetailsCtrl {
     private final ServerUtils server;
 
     private ChildrenManager<Subtask, SubtaskCtrl> subtaskChildrenManager;
+    private ParentWebsocketManager<Subtask, SubtaskCtrl> parentWebsocket;
+    private EntityWebsocketManager<Task> entityWebsocket;
 
     private Task task;
 
@@ -60,6 +58,7 @@ public class TaskDetailsCtrl {
      * after FXML components are initialized.
      */
     public void initialize() {
+        // Set up button icons
         Image editIcon = new Image(Objects.requireNonNull(getClass()
                 .getResourceAsStream("/client/images/editicon.png")));
         this.editIcon.setImage(editIcon);
@@ -68,41 +67,52 @@ public class TaskDetailsCtrl {
                 .getResourceAsStream("/client/images/deleteicon.png")));
         this.deleteIcon.setImage(deleteIcon);
 
+        // Set up children manager
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
                         subtaskContainer,
                         SubtaskCtrl.class,
                         "Subtask.fxml"
                 );
-    }
 
-    /**
-     * Updates this task's subtasks
-     */
-    public void refresh() {
-        if (task == null) {
-            // no children if there's no task list
-            subtaskChildrenManager.updateChildren(new ArrayList<>());
-        }
-        var subtasks = server.getTaskData(task);
-        subtaskChildrenManager.updateChildren(subtasks);
+        // Set up websockets
+        this.parentWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "subtask",
+                Subtask.class,
+                subtaskChildrenManager
+        );
 
-        for (SubtaskCtrl subtaskCtrl :
-                subtaskChildrenManager.getChildrenCtrls()) {
-            subtaskCtrl.setParentTask(task);
-        }
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "task",
+                Task.class,
+                this::setEntity
+        );
     }
 
     /**
      * @param task task whose details are shown in the scene
      */
-    public void setTask(Task task) {
+    public void setEntity(Task task) {
         if (task == null) return;
 
         this.task = task;
+        if (task.getTitle() == null) {
+            task.setTitle("Untitled");
+        }
 
-        title.setText(task.getTitle());
-        description.setText(task.getDescription());
+        Platform.runLater(() -> {
+            title.setText(task.getTitle());
+            description.setText(task.getDescription());
+        });
+
+        var subtasks = server.getTaskData(task);
+        subtaskChildrenManager.updateChildren(subtasks);
+
+        parentWebsocket.register(task.getId());
+        entityWebsocket.register(task.getId(), "updateTitle");
+        entityWebsocket.register(task.getId(), "updateDescription");
     }
 
     /**

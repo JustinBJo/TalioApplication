@@ -250,10 +250,10 @@ public class AddTitledEntityCtrl {
      */
     private void addNewSubtask(String title) {
         Subtask subtask = new Subtask(title, false);
-        server.addSubtask(subtask, currentTask);
+        websocket.addSubtask(subtask, currentTask);
     }
 
     private void editSubtask(String title) {
-        server.updateSubtask(subtaskToEdit, title);
+        websocket.updateSubtask(subtaskToEdit, title);
     }
 }
