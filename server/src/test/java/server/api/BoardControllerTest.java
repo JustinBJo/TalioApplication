@@ -21,12 +21,16 @@ public class BoardControllerTest {
     private DefaultBoardService service;
     private BoardController sut;
 
-
     @BeforeEach
     void setUp() {
         repo = new TestBoardRepository();
         service = new DefaultBoardService();
         sut = new BoardController(repo, service);
+    }
+
+    @Test
+    void messageUpdateTest() {
+        assertFalse(true);
     }
 
     @Test

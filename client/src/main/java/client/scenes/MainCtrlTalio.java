@@ -153,7 +153,7 @@ public class MainCtrlTalio {
      */
     public void setActiveBoard(Board board) {
         if (board == null) return;
-        mainSceneCtrl.setActiveBoard(board);
+        mainSceneCtrl.setEntity(board);
     }
 
     /**

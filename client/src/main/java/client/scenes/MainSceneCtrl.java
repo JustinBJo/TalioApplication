@@ -9,7 +9,6 @@ import commons.Board;
 import commons.TaskList;
 import commons.User;
 
-import jakarta.ws.rs.core.GenericType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -20,11 +19,12 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 
 import java.util.*;
 
-public class MainSceneCtrl {
+public class MainSceneCtrl implements IEntityRepresentation<Board>  {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
@@ -37,6 +37,7 @@ public class MainSceneCtrl {
     private long defaultBoardID;
 
     private Board activeBoard;
+    private StompSession.Subscription updateSub;
 
     @FXML
     Label sceneTitle;
@@ -124,7 +125,7 @@ public class MainSceneCtrl {
         }
 
         // Set default board as current board
-        setActiveBoard(server.getDefaultBoard());
+        setEntity(server.getDefaultBoard());
     }
 
     /**
@@ -138,12 +139,16 @@ public class MainSceneCtrl {
      * Sets current active board and updates the main scene accordingly
      * @param activeBoard new active board
      */
-    public void setActiveBoard(Board activeBoard) {
+    public void setEntity(Board activeBoard) {
         this.activeBoard = activeBoard;
         sceneTitle.setText(activeBoard.getTitle());
         boardCode.setText(activeBoard.getCode());
 
         taskListChildrenManager.updateChildren(server.getBoardData(activeBoard.getId()));
+
+        if (updateSub != null) {
+            updateSub.unsubscribe();
+        }
         registerWebsocket();
         // refresh();
     }
@@ -166,6 +171,13 @@ public class MainSceneCtrl {
                     System.out.println("removing " + tl);
                     taskListChildrenManager.removeChild(tl);
                 } );
+
+        updateSub = websocket.registerForMessages(
+                activeBoard,
+                "/topic/board/update/" + activeBoard.getId(),
+                Board.class,
+                this::setEntity
+        );
     }
 
     /**
@@ -224,7 +236,7 @@ public class MainSceneCtrl {
             Board b = activeBoard;
             mainCtrl.getUser().getBoards().remove(b);
             server.saveUser(mainCtrl.getUser());
-            setActiveBoard(server.getDefaultBoard());
+            setEntity(server.getDefaultBoard());
             System.out.println(server.deleteBoard(b));
         }
     }

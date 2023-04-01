@@ -2,7 +2,11 @@ package server.api;
 
 import commons.Board;
 import commons.TaskList;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
 import server.service.DefaultBoardService;
@@ -89,6 +93,23 @@ public class BoardController {
 
         Board saved = repo.save(board);
         return ResponseEntity.ok(saved);
+    }
+
+    @MessageMapping("/board/update/{id}/{newName}")
+    @SendTo("/topic/board/update/{id}")
+    public Board messageUpdate(@DestinationVariable String id, @DestinationVariable String newName) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = updateName(lID, newName);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
     }
 
     /**
