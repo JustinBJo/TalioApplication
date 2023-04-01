@@ -49,7 +49,7 @@ public class TaskController {
     }
 
     @MessageMapping("/task/add/{parentID}")
-    @SendTo("/topic/task/add")
+    @SendTo("/topic/task/add/{parentID}")
     public Task messageAdd(@Payload Task entity, @DestinationVariable String parentID) {
         long lParentID;
         try {

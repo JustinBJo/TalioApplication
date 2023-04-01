@@ -165,7 +165,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         taskListChildrenManager.updateChildren(server.getBoardData(activeBoard.getId()));
 
         entityWebsocket.register(activeBoard.getId(), "update");
-        parentWebsocket.register();
+        parentWebsocket.register(activeBoard.getId());
         // refresh();
     }
 

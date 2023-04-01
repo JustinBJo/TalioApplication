@@ -24,13 +24,13 @@ public class ParentWebsocketManager<T extends IEntity, C extends IEntityRepresen
     }
 
 
-    public void register() {
+    public void register(long entityId) {
         if (addSub != null) {
             addSub.unsubscribe();
         }
         addSub =
                 websocket.registerForMessages(
-                    "/topic/" + childEntityName + "/add",
+                    "/topic/" + childEntityName + "/add/" + entityId,
                     childEntityClass,
                     childrenManager::addOrUpdateChild
                 );

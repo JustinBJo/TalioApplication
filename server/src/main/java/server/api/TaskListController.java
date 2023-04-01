@@ -52,7 +52,7 @@ public class TaskListController {
     }
 
     @MessageMapping("/taskList/add/{boardId}")
-    @SendTo("/topic/taskList/add")
+    @SendTo("/topic/taskList/add/{boardId}")
     public TaskList messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
         long lBoardId;
         try {
