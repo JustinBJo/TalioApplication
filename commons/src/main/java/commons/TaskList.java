@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table
-public class TaskList {
+public class TaskList implements IEntity {
 
     @Id
     @GeneratedValue()
