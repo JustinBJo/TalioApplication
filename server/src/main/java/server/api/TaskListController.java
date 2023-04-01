@@ -1,6 +1,7 @@
 package server.api;
 
 import java.util.List;
+import java.util.Optional;
 
 import commons.Board;
 import commons.Task;
@@ -45,7 +46,7 @@ public class TaskListController {
         return ResponseEntity.ok(repo.getById(id));
     }
 
-    @MessageMapping("/tasklist/add/{boardId}")
+    @MessageMapping("/taskList/add/{boardId}")
     @SendTo("/topic/taskList/{boardId}")
     public List<TaskList> messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
         long lBoardId = Long.parseLong(boardId);
@@ -73,12 +74,14 @@ public class TaskListController {
             return ResponseEntity.badRequest().build();
         }
 
-        if (boardId < 0 || !boardRepo.existsById(boardId)) {
+        Optional<Board> optionalParent = boardRepo.findById(boardId);
+
+        if (optionalParent.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
         TaskList saved = repo.save(taskList);
-        Board parent = boardRepo.getById(boardId);
+        Board parent = optionalParent.get();
         boolean linkSuccess = parent.addTaskList(saved);
 
         if (!linkSuccess) {
