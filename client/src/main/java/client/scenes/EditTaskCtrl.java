@@ -68,7 +68,7 @@ public class EditTaskCtrl {
         }
 
         if (newTitle.getText().isEmpty()) {
-            ErrorUtils.alertError("Tasks can't have empty titles!");
+            alertUtils.alertError("Tasks can't have empty titles!");
             cancel();
         }
 
