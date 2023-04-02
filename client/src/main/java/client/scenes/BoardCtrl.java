@@ -59,22 +59,24 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      */
     public void leave() {
         if (!mainCtrl.isAdmin()) {
-        if (board.getId() != server.getDefaultId()) {
-        mainCtrl.getUser().removeBoard(board);
-        server.saveUser(mainCtrl.getUser());
-        board = null;
-        mainCtrl.refreshBoard(); }
-        else
-            ErrorUtils.alertError("You cannot leave the default board!"); }
+            if (board.getId() != server.getDefaultId()) {
+                mainCtrl.getUser().removeBoard(board);
+                server.saveUser(mainCtrl.getUser());
+                board = null;
+                mainCtrl.refreshBoard();
+            } else {
+                ErrorUtils.alertError("You cannot leave the default board!");
+            }
+        }
         else {
             if (board.getId() != server.getDefaultId()) {
                 mainCtrl.deleteBoard(board);
                 board = null;
                 mainCtrl.refreshBoard();
             }
-            else
+            else {
                 ErrorUtils.alertError("You cannot delete the default Board!");
-
+            }
         }
     }
 
