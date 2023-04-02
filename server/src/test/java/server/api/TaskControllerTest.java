@@ -26,11 +26,6 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void addMessageTest() {
-        assertTrue(false);
-    }
-
-    @Test
     public void addTest() {
         var a = new Task("Task Title", "Description");
         var tl = new TaskList("Test List");
@@ -146,5 +141,48 @@ public class TaskControllerTest {
         assertEquals(BAD_REQUEST, a.getStatusCode());
     }
 
+    @Test
+    public void addMessageTest() {
+        var a = new Task("Task Title", "Description");
+        var tl = new TaskList("Test List");
+        long tlID = taskListRepository.save(tl).getId();
+        var comp = sut.messageAdd(a, String.valueOf(tlID));
+        assertTrue(repo.findAll().contains(a));
+    }
 
+    @Test
+    public void deleteMessageTest() {
+        Task task = new Task("t");
+        String sID = String.valueOf(repo.save(task).getId());
+
+        sut.messageDelete(sID);
+
+        assertFalse(repo.findById(task.getId()).isPresent());
+    }
+
+    @Test
+    public void updateTitleMessageTest() {
+        Task task = new Task("Old Title",
+                "Old Description");
+        String sID = String.valueOf(repo.save(task).getId());
+
+        sut.messageUpdateTitle(sID, "new title");
+
+        assertTrue(repo.findAll().contains(task));
+        String updated = repo.getById(task.getId()).getTitle();
+        assertEquals("new title", updated);
+    }
+
+    @Test
+    public void updateDescriptionMessageTest() {
+        Task task = new Task("Old Title",
+                "Old Description");
+        String sID = String.valueOf(repo.save(task).getId());
+
+        sut.messageUpdateDescription(sID, "new description");
+
+        assertTrue(repo.findAll().contains(task));
+        String newDescription = repo.getById(task.getId()).getDescription();
+        assertEquals("new description", newDescription);
+    }
 }

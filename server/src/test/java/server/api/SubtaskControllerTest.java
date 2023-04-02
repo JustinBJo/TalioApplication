@@ -67,6 +67,8 @@ class SubtaskControllerTest {
         Long id = repo.save(k1).getId();
         assertTrue(repo.findAll().contains(k1));
 
+        System.out.println("HELLO");
+
         sut.delete(id);
 
         assertFalse(repo.findAll().contains(k1));
@@ -76,6 +78,6 @@ class SubtaskControllerTest {
     void failDelete() {
         assertFalse(repo.findAll().contains(k1));
         var res = sut.delete(k1.getId());
-        assertFalse(res.getStatusCode() == HttpStatus.OK);
+        assertNotSame(res.getStatusCode(), HttpStatus.OK);
     }
 }

@@ -29,7 +29,20 @@ public class BoardControllerTest {
 
     @Test
     void messageUpdateTest() {
-        assertFalse(true);
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        // Update the board with a new name
+        String newName = "newName";
+        Board response = sut.messageUpdate("2001", newName);
+
+        // Check endpoint
+        assertEquals(board, response);
+
+        // Check repository
+        assertTrue(repo.findAll().contains(board));
+        assertEquals(repo.findById(board.getId()).get().getTitle(), newName);
     }
 
     @Test
