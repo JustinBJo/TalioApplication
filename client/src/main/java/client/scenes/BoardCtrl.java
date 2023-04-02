@@ -25,7 +25,9 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * @param server inject the server used
      */
     @Inject
-    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server, AlertUtils alertUtils) {
+    public BoardCtrl(MainCtrlTalio mainCtrl,
+                     ServerUtils server,
+                     AlertUtils alertUtils) {
         this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.server = server;

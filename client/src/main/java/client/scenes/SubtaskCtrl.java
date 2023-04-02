@@ -2,9 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.EntityWebsocketManager;
-import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;
-import commons.Task;
 import commons.Subtask;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

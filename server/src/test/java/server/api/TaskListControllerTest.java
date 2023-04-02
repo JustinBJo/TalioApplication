@@ -9,11 +9,9 @@ import server.database.BoardRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class TaskListControllerTest {

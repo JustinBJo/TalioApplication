@@ -13,8 +13,16 @@ public class EntityWebsocketManager<T extends IEntity> {
     private final Class<T> entityClass;
     private final String entityName;
 
-    private final Map<String, StompSession.Subscription> subscriptionMap = new HashMap<>();
+    private final Map<String, StompSession.Subscription> subscriptionMap =
+            new HashMap<>();
 
+    /**
+     * @param websocket WebsocketUtils instance used in application
+     * @param entityName string representing entity name used in endpoints
+     * @param entityClass class returned by websocket messages
+     * @param setEntity consumer that updates to a new entity
+     *                  once message is received
+     */
     public EntityWebsocketManager(WebsocketUtils websocket,
                                   String entityName,
                                   Class<T> entityClass,
@@ -26,6 +34,11 @@ public class EntityWebsocketManager<T extends IEntity> {
     }
 
 
+    /**
+     * Registers for websocket updates
+     * @param entityId id of entity whose updates are watched
+     * @param topicName watched endpoint topic
+     */
     public void register(long entityId, String topicName) {
         if (subscriptionMap.containsKey(topicName)) {
             subscriptionMap.get(topicName).unsubscribe();

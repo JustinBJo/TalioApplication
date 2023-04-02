@@ -74,7 +74,10 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
+    public MainSceneCtrl(ServerUtils server,
+                         MainCtrlTalio mainCtrl,
+                         AlertUtils alertUtils,
+                         WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
@@ -131,6 +134,9 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         copyIcon.setImage(copy);
     }
 
+    /**
+     * Handles a server change
+     */
     public void changeServer() {
         this.defaultBoardID = server.getDefaultId();
 
@@ -164,7 +170,9 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
             boardCode.setText(activeBoard.getCode());
         });
 
-        taskListChildrenManager.updateChildren(server.getBoardData(activeBoard.getId()));
+        taskListChildrenManager.updateChildren(
+                server.getBoardData(activeBoard.getId())
+        );
 
         entityWebsocket.register(activeBoard.getId(), "update");
         parentWebsocket.register(activeBoard.getId());
@@ -176,11 +184,13 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         server.listenForUpdateTaskParent(t -> {
             taskListChildrenManager.getChildrenCtrls().forEach(taskListCtrl -> {
                 if (taskListCtrl.getId().equals(t.oldParentId)) {
-                    taskListCtrl.getTaskChildrenManager().removeChild(t.oldTask);
+                    taskListCtrl.getTaskChildrenManager()
+                            .removeChild(t.oldTask);
                 }
 
                 if (taskListCtrl.getId().equals(t.newParentId)) {
-                    taskListCtrl.getTaskChildrenManager().addOrUpdateChild(t.newTask);
+                    taskListCtrl.getTaskChildrenManager()
+                            .addOrUpdateChild(t.newTask);
                 }
             });
         });

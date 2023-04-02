@@ -2,9 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.EntityWebsocketManager;
-import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;
-import commons.Subtask;
 import commons.Task;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -18,7 +16,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {

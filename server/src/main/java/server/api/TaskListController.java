@@ -1,6 +1,5 @@
 package server.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,9 +50,16 @@ public class TaskListController {
         return ResponseEntity.ok(repo.getById(id));
     }
 
+    /**
+     * Adds a new entity using websocket messages
+     * @param taskList new entity
+     * @param boardId id of entity's parent
+     * @return added entity
+     */
     @MessageMapping("/taskList/add/{boardId}")
     @SendTo("/topic/taskList/add/{boardId}")
-    public TaskList messageAdd(@Payload TaskList taskList, @DestinationVariable String boardId) {
+    public TaskList messageAdd(@Payload TaskList taskList,
+                               @DestinationVariable String boardId) {
         long lBoardId;
         try {
             lBoardId = Long.parseLong(boardId);
@@ -119,6 +125,12 @@ public class TaskListController {
         return ResponseEntity.ok(taskList.getTasks());
     }
 
+
+    /**
+     * Removes an entity using websocket messages
+     * @param id entity id
+     * @return removed entity
+     */
     @MessageMapping("/taskList/delete/{id}")
     @SendTo("/topic/taskList/delete")
     public TaskList messageDelete(@DestinationVariable String id) {
@@ -178,9 +190,17 @@ public class TaskListController {
         return ResponseEntity.ok(taskList);
     }
 
+
+    /**
+     * Updates the entity name using websocket messages
+     * @param id id of updated entity
+     * @param newName entity's new name
+     * @return updated entity
+     */
     @MessageMapping("/taskList/update/{id}/{newName}")
     @SendTo("/topic/taskList/update/{id}")
-    public TaskList messageUpdate(@DestinationVariable String id, @DestinationVariable String newName) {
+    public TaskList messageUpdate(@DestinationVariable String id,
+                                  @DestinationVariable String newName) {
         long lID;
         try {
             lID = Long.parseLong(id);

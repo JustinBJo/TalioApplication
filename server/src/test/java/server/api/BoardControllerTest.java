@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.database.BoardRepository;
-import server.database.TaskListRepository;
 import server.service.DefaultBoardService;
 
 import java.util.ArrayList;

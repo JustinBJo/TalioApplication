@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.AlertUtils;
-import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -29,7 +28,9 @@ public class AddTaskCtrl {
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public AddTaskCtrl(WebsocketUtils websocket, MainCtrlTalio mainCtrl, AlertUtils alertUtils) {
+    public AddTaskCtrl(WebsocketUtils websocket,
+                       MainCtrlTalio mainCtrl,
+                       AlertUtils alertUtils) {
         this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.websocket = websocket;

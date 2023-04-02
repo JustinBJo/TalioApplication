@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import server.database.SubtaskRepository;
 import server.database.TaskRepository;
 
-import java.util.List;
-
 
 
 @RestController
@@ -46,9 +44,16 @@ public class SubtaskController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * Adds a new entity using websocket messages
+     * @param entity new entity
+     * @param parentID id of entity's parent
+     * @return added entity
+     */
     @MessageMapping("/subtask/add/{parentID}")
     @SendTo("/topic/subtask/add/{parentID}")
-    public Subtask messageAdd(@Payload Subtask entity, @DestinationVariable String parentID) {
+    public Subtask messageAdd(@Payload Subtask entity,
+                              @DestinationVariable String parentID) {
         long lParentID;
         try {
             lParentID = Long.parseLong(parentID);
@@ -94,6 +99,11 @@ public class SubtaskController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Removes an entity using websocket messages
+     * @param id entity id
+     * @return removed entity
+     */
     @MessageMapping("/subtask/delete/{id}")
     @SendTo("/topic/subtask/delete")
     public Subtask messageDelete(@DestinationVariable String id) {
@@ -153,9 +163,16 @@ public class SubtaskController {
         return ResponseEntity.ok(subtask);
     }
 
+    /**
+     * Updates the entity name using websocket messages
+     * @param id id of updated entity
+     * @param newName entity's new name
+     * @return updated entity
+     */
     @MessageMapping("/subtask/update/{id}/{newName}")
     @SendTo("/topic/subtask/update/{id}")
-    public Subtask messageUpdateTitle(@DestinationVariable String id, @DestinationVariable String newName) {
+    public Subtask messageUpdateTitle(@DestinationVariable String id,
+                                      @DestinationVariable String newName) {
         long lID;
         try {
             lID = Long.parseLong(id);

@@ -14,9 +14,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import org.springframework.messaging.simp.stomp.StompSession;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
@@ -59,7 +57,10 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * Constructor with dependency injection
      */
     @Inject
-    public TaskListCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
+    public TaskListCtrl(ServerUtils server,
+                        MainCtrlTalio mainCtrl,
+                        AlertUtils alertUtils,
+                        WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
@@ -101,11 +102,17 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         );
     }
 
+    /**
+     * @return id of tasklist represented by this scene
+     */
     public Long getId() {
         if (taskList == null) return -1L;
         return taskList.getId();
     }
 
+    /**
+     * @return children manager that handles this list's tasks
+     */
     public ChildrenManager<Task, CardCtrl> getTaskChildrenManager() {
         return taskChildrenManager;
     }

@@ -17,7 +17,16 @@ public class TaskTransfer {
         newTask = new Task();
     }
 
-    public TaskTransfer(Long oldParentId, Task oldTask, Long newParentId, Task newTask) {
+    /**
+     * @param oldParentId old parent's id
+     * @param oldTask task that was removed from old parent
+     * @param newParentId new parent's id
+     * @param newTask task that was added to new parent
+     */
+    public TaskTransfer(Long oldParentId,
+                        Task oldTask,
+                        Long newParentId,
+                        Task newTask) {
         this.oldParentId = oldParentId;
         this.oldTask = oldTask;
         this.newParentId = newParentId;

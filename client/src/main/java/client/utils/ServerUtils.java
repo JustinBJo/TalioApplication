@@ -35,8 +35,11 @@ import jakarta.ws.rs.core.GenericType;
 public class ServerUtils {
 
     private WebsocketUtils websockets;
-    private String SERVER = "http://localhost:8080/";
+    private String server = "http://localhost:8080/";
 
+    /**
+     * @param websockets WebsocketUtils instance used in application
+     */
     public void setWebsockets(WebsocketUtils websockets) {
         this.websockets = websockets;
     }
@@ -46,7 +49,7 @@ public class ServerUtils {
      */
     public void resetServer() {
         stopPollingThread();
-        SERVER = "";
+        server = "";
     }
 
     /**
@@ -67,8 +70,8 @@ public class ServerUtils {
             throw new ProcessingException("Server not found");
         }
         stopPollingThread();
-        SERVER = url.endsWith("/") ? url : url + "/";
-        websockets.updateServer(SERVER.substring(7));
+        server = url.endsWith("/") ? url : url + "/";
+        websockets.updateServer(server.substring(7));
         startPollingThread();
     }
 
@@ -78,7 +81,7 @@ public class ServerUtils {
      */
     public Board getDefaultBoard() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/default")
+                .target(server).path("board/default")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Board>() {
@@ -91,7 +94,7 @@ public class ServerUtils {
      */
     public long getDefaultId() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/defaultId")
+                .target(server).path("board/defaultId")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Long>() {
@@ -105,7 +108,7 @@ public class ServerUtils {
      */
     public List<TaskList> getBoardData(long boardId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/" + boardId + "/tasklist")
+                .target(server).path("board/" + boardId + "/tasklist")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<TaskList>>(){
@@ -119,7 +122,7 @@ public class ServerUtils {
      */
     public List<Task> getTaskListData(TaskList taskList) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
+                .target(server).path("tasklist/getTasks/" + taskList.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Task>>() {});
     }
@@ -131,7 +134,7 @@ public class ServerUtils {
      */
     public List<Subtask> getTaskData(Task task) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasks/getSubtasks/" + task.getId())
+                .target(server).path("tasks/getSubtasks/" + task.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Subtask>>() {});
     }
@@ -143,7 +146,7 @@ public class ServerUtils {
      */
     public Board getBoardByCode(String code) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/code/" + code)
+                .target(server).path("board/code/" + code)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Board.class);
@@ -158,7 +161,7 @@ public class ServerUtils {
      */
     public Board addBoard(Board board) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board")
+                .target(server).path("board")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
@@ -174,7 +177,7 @@ public class ServerUtils {
         long id = board.getId();
         System.out.println(id);
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/delete/" + id)
+                .target(server).path("board/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(String.class);
@@ -189,7 +192,7 @@ public class ServerUtils {
      */
     public Board getBoardById(long id) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/" + id)
+                .target(server).path("board/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Board.class);
@@ -203,13 +206,13 @@ public class ServerUtils {
      */
     public User checkUser() {
         String ip = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("user/ip")
+                .target(server).path("user/ip")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(String.class);
 
         List<User> users = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("user")
+                .target(server).path("user")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<User>>() { });
@@ -224,7 +227,7 @@ public class ServerUtils {
         }
         if (!exists) {
             ClientBuilder.newClient(new ClientConfig())
-                    .target(SERVER).path("user/add")
+                    .target(server).path("user/add")
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(user, APPLICATION_JSON));
@@ -238,7 +241,7 @@ public class ServerUtils {
      */
     public void saveUser(User user) {
         List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("user/save")
+                .target(server).path("user/save")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(user, APPLICATION_JSON),
@@ -253,7 +256,7 @@ public class ServerUtils {
      * @param newParent list that now holds the task
      */
     public void updateTaskParent(long taskId, TaskList newParent) {
-        ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+        ClientBuilder.newClient(new ClientConfig()).target(server)
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
@@ -261,11 +264,16 @@ public class ServerUtils {
 
     // long polling
 
-    private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+    private static final ExecutorService EXEC =
+            Executors.newSingleThreadExecutor();
 
     private Future<?> runnable;
     private Consumer<TaskTransfer> pollingConsumer;
 
+    /**
+     * Start listening for an update in task parent
+     * @param consumer action taken when task parent is updated
+     */
     public void listenForUpdateTaskParent(Consumer<TaskTransfer> consumer) {
         pollingConsumer = consumer;
     }
@@ -274,7 +282,7 @@ public class ServerUtils {
         runnable = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
                 var res = ClientBuilder.newClient(new ClientConfig())
-                        .target(SERVER).path("tasks/listen/updateParent/")
+                        .target(server).path("tasks/listen/updateParent/")
                         .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                         .get();
                 if (res.getStatus() == 204) { // No content
@@ -290,6 +298,9 @@ public class ServerUtils {
         });
     }
 
+    /**
+     * Stops the thread that's doing long polling from running
+     */
     public void stopPollingThread() {
         if (runnable != null && !runnable.isCancelled()) {
             runnable.cancel(true);

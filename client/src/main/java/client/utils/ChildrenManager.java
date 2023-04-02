@@ -34,6 +34,10 @@ public class ChildrenManager
         this.childUIMap = new HashMap<>();
     }
 
+    /**
+     * Removes a single child scene
+     * @param child to be removed
+     */
     public void removeChild(T child) {
         List<T> children = new ArrayList<>(childUIMap.keySet());
         T forRemoval = null;
@@ -49,6 +53,11 @@ public class ChildrenManager
         }
     }
 
+    /**
+     * Adds or updates a single child scene
+     * @param child to be added or updated
+     * @return the child's scene controller
+     */
     public C addOrUpdateChild(T child) {
         List<T> children = new ArrayList<>(childUIMap.keySet());
 

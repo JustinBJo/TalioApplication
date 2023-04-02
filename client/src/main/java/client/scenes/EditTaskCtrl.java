@@ -32,7 +32,10 @@ public class EditTaskCtrl {
      * @param mainCtrl  injects a mainCtrl object
      */
     @Inject
-    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
+    public EditTaskCtrl(ServerUtils server,
+                        MainCtrlTalio mainCtrl,
+                        AlertUtils alertUtils,
+                        WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
@@ -93,7 +96,10 @@ public class EditTaskCtrl {
 
             if (!currentDescription.equals(newDescriptionString)) {
                 editedTask.setTitle(newDescriptionString);
-                websocket.updateTaskDescription(editedTask, newDescriptionString);
+                websocket.updateTaskDescription(
+                        editedTask,
+                        newDescriptionString
+                );
             }
 
         }

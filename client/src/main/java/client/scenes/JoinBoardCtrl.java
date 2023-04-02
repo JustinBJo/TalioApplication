@@ -21,7 +21,9 @@ public class JoinBoardCtrl {
      * @param server the server used
      */
     @Inject
-    public JoinBoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server, AlertUtils alertUtils) {
+    public JoinBoardCtrl(MainCtrlTalio mainCtrl,
+                         ServerUtils server,
+                         AlertUtils alertUtils) {
         this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.server = server;

@@ -4,10 +4,6 @@ import commons.Board;
 import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import javafx.util.Pair;
-import org.glassfish.jersey.client.ClientConfig;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -17,16 +13,16 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class WebsocketUtils {
     private StompSession session;
 
+    /**
+     * Handles a server change in the application
+     * @param address new server address without "http://" and ending in "/"
+     */
     public void updateServer(String address) {
         if (session != null) {
             session.disconnect();
@@ -39,7 +35,9 @@ public class WebsocketUtils {
         var stomp = new WebSocketStompClient(client);
         stomp.setMessageConverter(new MappingJackson2MessageConverter());
         try {
-            return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
+            return stomp
+                    .connect(url, new StompSessionHandlerAdapter() {})
+                    .get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
@@ -55,7 +53,11 @@ public class WebsocketUtils {
      * @param consumer what happens with the received message
      * @param <T> payload type returned to the consumer
      */
-    public <T> StompSession.Subscription registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
+    public <T> StompSession.Subscription registerForMessages(
+            String dest,
+            Class<T> type,
+            Consumer<T> consumer
+    ) {
         return session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -73,47 +75,78 @@ public class WebsocketUtils {
         });
     }
 
+    /**
+     * Adds a new task list to the server using the
+     * /taskList/add/ websocket endpoint
+     * @param taskList new task list
+     * @param board task list's parent board
+     */
     public void addTaskList(TaskList taskList, Board board) {
         session.send("/app/taskList/add/" + board.getId(), taskList);
     }
 
+    /**
+     * Removes a task list from the server using the
+     * /taskList/delete/ websocket endpoint
+     * @param taskList deleted task list
+     */
     public void deleteTaskList(TaskList taskList) {
         session.send("/app/taskList/delete/" + taskList.getId(), taskList);
     }
 
+    /**
+     * Updates a task list's title in the server using the
+     * /taskList/update/ websocket endpoint
+     * @param taskList update task list
+     * @param title new title
+     */
     public void updateTaskList(TaskList taskList, String title) {
-        session.send("/app/taskList/update/" + taskList.getId() + "/" + title, taskList);
+        session.send(
+                "/app/taskList/update/" + taskList.getId() + "/" + title,
+                taskList
+        );
     }
 
     /**
-     * Update the title of the given board using the board/update endpoint
+     * Update the title of the given board using the
+     * board/update websocket endpoint
      *
      * @param board   the board that is being updated
      * @param newName the new name of the board
      */
     public void updateBoard(Board board, String newName) {
-        session.send("/app/board/update/" + board.getId() + "/" + newName, board);
+        session.send(
+                "/app/board/update/" + board.getId() + "/" + newName,
+                board
+        );
     }
 
     /**
-     * Update the title of the given task using the tasks/updateTitle endpoint
+     * Update the title of the given task using the
+     * tasks/updateTitle websocket endpoint
      *
      * @param task   the task that is being updated
      * @param newTitle the new title of the task
      */
     public void updateTaskTitle(Task task, String newTitle) {
-        session.send("/app/task/updateTitle/" + task.getId() + "/" + newTitle, task);
+        session.send(
+                "/app/task/updateTitle/" + task.getId() + "/" + newTitle,
+                task
+        );
     }
 
     /**
      * Update the description of the given task,
-     * using the tasks/updateDescription endpoint
+     * using the tasks/updateDescription websocket endpoint
      *
      * @param task   the task that is being updated
-     * @param newDescription the new description of the task
+     * @param newDesc the new description of the task
      */
-    public void updateTaskDescription(Task task, String newDescription) {
-        session.send("/app/task/updateDescription/" + task.getId() + "/" + newDescription, task);
+    public void updateTaskDescription(Task task, String newDesc) {
+        session.send(
+                "/app/task/updateDescription/" + task.getId() + "/" + newDesc,
+                task
+        );
     }
 
     /**
@@ -158,6 +191,9 @@ public class WebsocketUtils {
      * @param newTitle the new title of the subtask
      */
     public void updateSubtask(Subtask subtask, String newTitle) {
-        session.send("/app/subtask/update/" + subtask.getId() + "/" + newTitle, subtask);
+        session.send(
+                "/app/subtask/update/" + subtask.getId() + "/" + newTitle,
+                subtask
+        );
     }
 }

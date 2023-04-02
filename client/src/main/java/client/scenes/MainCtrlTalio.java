@@ -84,6 +84,10 @@ public class MainCtrlTalio {
         primaryStage.show();
     }
 
+    /**
+     * Sets a new server address for the application
+     * @param newAddress new server's address
+     */
     public void changeServer(String newAddress) {
         setServerAddress(newAddress);
         mainSceneCtrl.changeServer();

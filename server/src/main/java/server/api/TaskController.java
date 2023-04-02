@@ -54,9 +54,16 @@ public class TaskController {
         return ResponseEntity.ok(repo.getById(id));
     }
 
+    /**
+     * Adds a new entity using websocket messages
+     * @param entity new entity
+     * @param parentID id of entity's parent
+     * @return added entity
+     */
     @MessageMapping("/task/add/{parentID}")
     @SendTo("/topic/task/add/{parentID}")
-    public Task messageAdd(@Payload Task entity, @DestinationVariable String parentID) {
+    public Task messageAdd(@Payload Task entity,
+                           @DestinationVariable String parentID) {
         long lParentID;
         try {
             lParentID = Long.parseLong(parentID);
@@ -120,16 +127,24 @@ public class TaskController {
         return ResponseEntity.ok(saved);
     }
 
-    private final Map<Object, Consumer<TaskTransfer>> parentChangeListeners = new HashMap<>();
+    private final Map<Object, Consumer<TaskTransfer>> parentChangeListeners =
+            new HashMap<>();
 
+    /**
+     * Start listening for a call to updateParent
+     * @return deferred result with task transfer results
+     */
     @GetMapping("/listen/updateParent")
-    public DeferredResult<ResponseEntity<TaskTransfer>> listenForParentChange() {
+    public DeferredResult<ResponseEntity<TaskTransfer>> listenParentChange() {
         var res = new DeferredResult<ResponseEntity<TaskTransfer>>(
                 5000L, ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         );
         var key = new Object();
 
-        parentChangeListeners.put(key, taskTransfer -> res.setResult(ResponseEntity.ok(taskTransfer)));
+        parentChangeListeners.put(
+                key,
+                taskTransfer -> res.setResult(ResponseEntity.ok(taskTransfer))
+        );
         res.onCompletion(() -> parentChangeListeners.remove(key));
 
         return res;
@@ -166,7 +181,14 @@ public class TaskController {
         }
 
         parentChangeListeners.forEach((k, v) -> {
-            v.accept(new TaskTransfer(oldParentId, deleteResponse.getBody(), newParentId, res.getBody()));
+            v.accept(
+                    new TaskTransfer(
+                            oldParentId,
+                            deleteResponse.getBody(),
+                            newParentId,
+                            res.getBody()
+                    )
+            );
         });
 
         return res;
@@ -183,9 +205,16 @@ public class TaskController {
         return -1L;
     }
 
+    /**
+     * Updates the entity name using websocket messages
+     * @param id id of updated entity
+     * @param newName entity's new name
+     * @return updated entity
+     */
     @MessageMapping("/task/updateTitle/{id}/{newName}")
     @SendTo("/topic/task/updateTitle/{id}")
-    public Task messageUpdateTitle(@DestinationVariable String id, @DestinationVariable String newName) {
+    public Task messageUpdateTitle(@DestinationVariable String id,
+                                   @DestinationVariable String newName) {
         long lID;
         try {
             lID = Long.parseLong(id);
@@ -216,9 +245,18 @@ public class TaskController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Updates the entity description using websocket messages
+     * @param id id of updated entity
+     * @param newDescription entity's new description
+     * @return updated entity
+     */
     @MessageMapping("/task/updateDescription/{id}/{newDescription}")
     @SendTo("/topic/task/updateDescription/{id}")
-    public Task messageUpdateDescription(@DestinationVariable String id, @DestinationVariable String newDescription) {
+    public Task messageUpdateDescription(
+            @DestinationVariable String id,
+            @DestinationVariable String newDescription
+    ) {
         long lID;
         try {
             lID = Long.parseLong(id);
@@ -253,6 +291,11 @@ public class TaskController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Removes an entity using websocket messages
+     * @param id entity id
+     * @return removed entity
+     */
     @MessageMapping("/task/delete/{id}")
     @SendTo("/topic/task/delete")
     public Task messageDelete(@DestinationVariable String id) {

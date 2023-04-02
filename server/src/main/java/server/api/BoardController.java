@@ -95,9 +95,16 @@ public class BoardController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Updates the board name using websocket messages
+     * @param id id of updated board
+     * @param newName board's new name
+     * @return updated board
+     */
     @MessageMapping("/board/update/{id}/{newName}")
     @SendTo("/topic/board/update/{id}")
-    public Board messageUpdate(@DestinationVariable String id, @DestinationVariable String newName) {
+    public Board messageUpdate(@DestinationVariable String id,
+                               @DestinationVariable String newName) {
         long lID;
         try {
             lID = Long.parseLong(id);

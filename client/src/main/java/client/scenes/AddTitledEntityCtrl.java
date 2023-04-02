@@ -52,7 +52,10 @@ public class AddTitledEntityCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl, AlertUtils alertUtils, WebsocketUtils websocket) {
+    public AddTitledEntityCtrl(ServerUtils server,
+                               MainCtrlTalio mainCtrl,
+                               AlertUtils alertUtils,
+                               WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
