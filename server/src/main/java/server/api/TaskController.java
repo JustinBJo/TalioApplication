@@ -197,11 +197,16 @@ public class TaskController {
             if (!unlinkSuccess) {
                 return ResponseEntity.badRequest().build();
             }
+            for (Task t : parent.getTasks()) {
+                Task repoTask = repo.findById(t.getId()).get();
+                repo.save(repoTask);
+            }
 
             taskListRepository.save(parent);
         }
 
         repo.delete(task);
+
         if (repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }

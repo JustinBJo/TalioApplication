@@ -1,8 +1,10 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import commons.Subtask;
 import commons.Task;
+import commons.TaskList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -22,6 +24,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     private final MainCtrlTalio mainCtrl;
 
     private Task task;
+    private TaskList parentList;
 
     @FXML
     AnchorPane root;
@@ -32,7 +35,15 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @FXML
     Button edit;
     @FXML
+    Button moveUp;
+    @FXML
+    Button moveDown;
+    @FXML
     ImageView editIcon;
+    @FXML
+    ImageView upIcon;
+    @FXML
+    ImageView downIcon;
     @FXML
     ImageView descriptionIndicator;
 
@@ -54,10 +65,19 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * after FXML components are initialized.
      */
     public void initialize() {
-        // Set up button icon
-        Image editIcon = new Image(Objects.requireNonNull(getClass()
-                .getResourceAsStream("/client/images/editicon.png")));
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        Image upIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png"));
+        Image downIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png"));
+        Image descInd = new Image(getClass()
+                .getResourceAsStream("/client/images/menuicon.png"));
+
         this.editIcon.setImage(editIcon);
+        this.upIcon.setImage(upIcon);
+        this.downIcon.setImage(downIcon);
+        this.descriptionIndicator.setImage(descInd);
 
         // Set up drag and drop
         setupDragSource();
@@ -84,10 +104,6 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             mainCtrl.refreshBoard();
             event.consume();
         });
-
-        Image descInd = new Image(getClass()
-                .getResourceAsStream("/client/images/menuicon.png"));
-        this.descriptionIndicator.setImage(descInd);
     }
 
     /**
@@ -103,6 +119,13 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         if (task.getDescription().isEmpty()) {
             descriptionIndicator.setImage(null);
         }
+    }
+
+    /**
+     * @param taskList list that holds this task
+     */
+    public void setParentList(TaskList taskList) {
+        this.parentList = taskList;
     }
 
     /**
@@ -144,6 +167,55 @@ public class CardCtrl implements IEntityRepresentation<Task> {
                 }
             }
         });
+    }
+
+    /**
+     * Used to move a task up in the parent list
+     */
+    public void moveUp() {
+        TaskList currentTaskList = parentList;
+
+        List<Task> currentTasks = currentTaskList.getTasks();
+        int taskIndex = currentTasks.indexOf(task);
+        taskIndex--;
+        if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
+            ErrorUtils.alertError("You cannot move the task higher.");
+            return;
+        }
+        currentTasks.remove(task);
+        currentTasks.add(taskIndex, task);
+        currentTaskList.setTasks(currentTasks);
+
+        server.updateTasksInTasklist(currentTaskList, currentTasks);
+
+        mainCtrl.refreshBoard();
+    }
+
+    /**
+     * Used to move a task down in the parent list
+     */
+    public void moveDown() {
+        TaskList currentTaskList = parentList;
+
+        if (currentTaskList == null) {
+            System.out.println("The task is not part of a list");
+            mainCtrl.refreshBoard();
+            return;
+        }
+        List<Task> currentTasks = currentTaskList.getTasks();
+        int taskIndex = currentTasks.indexOf(task);
+        taskIndex++;
+        if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
+            ErrorUtils.alertError("You cannot move the task lower.");
+            return;
+        }
+        currentTasks.remove(task);
+        currentTasks.add(taskIndex, task);
+        currentTaskList.setTasks(currentTasks);
+
+        server.updateTasksInTasklist(currentTaskList, currentTasks);
+
+        mainCtrl.refreshBoard();
     }
 
 }
