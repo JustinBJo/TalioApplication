@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import commons.Board;
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 
@@ -184,6 +185,18 @@ public class ServerUtils {
                 .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Task>>() {});
+    }
+
+    /**
+     * Gets all subtasks belonging to a certain task
+     * @param task parent of desired subtasks
+     * @return list of subtasks belonging to task
+     */
+    public List<Subtask> getTaskData(Task task) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("tasks/getSubtasks/" + task.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Subtask>>() {});
     }
 
     /**
@@ -523,7 +536,16 @@ public class ServerUtils {
      */
     public Task updateTaskDescription(Task task, String newDescription) {
         long id = task.getId();
-        return ClientBuilder.newClient(new ClientConfig())
+        if (newDescription.length() == 0)
+            return ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).
+                    path("tasks/updateDescription/" + id + "/HARDCODED-EMPTY" +
+                            "-DESCRIPTION-METHOD-FOR-EDITING-TASKS")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+        else
+            return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).
                 path("tasks/updateDescription/" + id + "/" + newDescription)
                 .request(APPLICATION_JSON)
@@ -532,15 +554,74 @@ public class ServerUtils {
     }
 
     /**
+     * Sets a new task list to hold a given task
+     * @param taskId id of the changed task
+     * @param newParent list that now holds the task
+     * @return updated task
+     */
+    public Task updateTaskParent(long taskId, TaskList newParent) {
+        return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+    }
+
+    /**
      * Deletes a task from the server
      * @param task the task to be deleted
      * @return the removed task
      */
-    public String deleteTask(Task task) {
+    public Task deleteTask(Task task) {
         long id = task.getId();
-        String result = ClientBuilder.newClient(new ClientConfig())
+        Task result = ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER)
                 .path("tasks/delete/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(Task.class);
+
+        return result;
+    }
+
+    /**
+     * Method used to insert a subtask into the database
+     *
+     * @param subtask the subtask to be added to the database
+     * @param parentTask task that will hold this subtask
+     * @return the added subtask, in order for future operations
+     * with it to be possible
+     */
+    public Subtask addSubtask(Subtask subtask, Task parentTask) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER)
+                .path("subtask/" + parentTask.getId()) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
+    }
+
+
+    /**
+     * Remove subtask from repository without unlinking it from parent task
+     * @param subtaskId of task list to be removed
+     */
+    private Response removeSubtask(long subtaskId) {
+        return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+                .path("subtask/delete/" + subtaskId) //
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .delete();
+    }
+
+    /**
+     * Deletes a subtask from the server
+     * @param subtask the subtask to be deleted
+     * @return the removed subtask
+     */
+    public String deleteSubtask(Subtask subtask) {
+        long id = subtask.getId();
+        String result = ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("subtask/delete/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(String.class);
@@ -560,5 +641,20 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Board>>() { } );
+    }
+
+    /**
+     * Updates the title of the subtask in the database
+     * @param subtask the subtask to be edited
+     * @param newTitle the new title of the subtask
+     * @return the edited subtask
+     */
+    public Subtask updateSubtask(Subtask subtask, String newTitle) {
+        long id = subtask.getId();
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("subtask/update/" + id + "/" + newTitle)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
     }
 }

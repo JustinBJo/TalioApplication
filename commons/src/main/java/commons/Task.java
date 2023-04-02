@@ -9,7 +9,7 @@ import java.util.List;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
-public class Task {
+public class Task implements IEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -123,6 +123,26 @@ public class Task {
      */
     public List<Subtask> getSubtasks() {
         return subtasks;
+    }
+
+    /**
+     * Remove a subtask from this task
+     * @param subtask the subtask that is being removed
+     * @return true if the subtask has been removed successfully,
+     * false otherwise
+     */
+    public boolean removeSubtask(Subtask subtask) {
+        return this.subtasks.remove(subtask);
+    }
+
+    /**
+     * Adds a subtask to the task
+     * @param subtask the new subtask to be added
+     * @return true if subtask was added successfully, false otherwise
+     */
+    public boolean addSubtask(Subtask subtask) {
+        if (this.subtasks == null) this.subtasks = new ArrayList<>();
+        return this.subtasks.add(subtask);
     }
 
     /**
