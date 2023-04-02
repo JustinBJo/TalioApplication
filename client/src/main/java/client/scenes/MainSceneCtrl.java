@@ -17,7 +17,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.springframework.messaging.simp.stomp.StompSession;
 
 
 import java.util.*;
@@ -101,6 +100,9 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
                 "Board.fxml"
         );
 
+        // Long polling for drag and drop
+        startLongPolling();
+
         // Create websocket managers
         this.entityWebsocket = new EntityWebsocketManager<>(
                 websocket,
@@ -170,7 +172,19 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         refreshJoinedBoards();
     }
 
+    private void startLongPolling() {
+        server.listenForUpdateTaskParent(t -> {
+            taskListChildrenManager.getChildrenCtrls().forEach(taskListCtrl -> {
+                if (taskListCtrl.getId().equals(t.oldParentId)) {
+                    taskListCtrl.getTaskChildrenManager().removeChild(t.oldTask);
+                }
 
+                if (taskListCtrl.getId().equals(t.newParentId)) {
+                    taskListCtrl.getTaskChildrenManager().addOrUpdateChild(t.newTask);
+                }
+            });
+        });
+    }
 
     /**
      * go back to the connect screen

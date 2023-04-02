@@ -3,6 +3,7 @@ package server.api;
 import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
+import commons.TaskTransfer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -10,11 +11,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-import server.database.SubtaskRepository;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/tasks")
@@ -116,6 +120,21 @@ public class TaskController {
         return ResponseEntity.ok(saved);
     }
 
+    private final Map<Object, Consumer<TaskTransfer>> parentChangeListeners = new HashMap<>();
+
+    @GetMapping("/listen/updateParent")
+    public DeferredResult<ResponseEntity<TaskTransfer>> listenForParentChange() {
+        var res = new DeferredResult<ResponseEntity<TaskTransfer>>(
+                5000L, ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        );
+        var key = new Object();
+
+        parentChangeListeners.put(key, taskTransfer -> res.setResult(ResponseEntity.ok(taskTransfer)));
+        res.onCompletion(() -> parentChangeListeners.remove(key));
+
+        return res;
+    }
+
     /**
      * Sets a new task list to hold a given task
      * @param id id of the changed task
@@ -132,13 +151,36 @@ public class TaskController {
             return ResponseEntity.badRequest().build();
         }
 
+        Long oldParentId = findParentsId(id); // Needs to happen before deleting
+
         var deleteResponse = delete(id);
         if (deleteResponse.getStatusCode() != HttpStatus.OK
                 || deleteResponse.getBody() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        return add(deleteResponse.getBody(), newParentId);
+        var res = add(deleteResponse.getBody(), newParentId);
+
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        parentChangeListeners.forEach((k, v) -> {
+            v.accept(new TaskTransfer(oldParentId, deleteResponse.getBody(), newParentId, res.getBody()));
+        });
+
+        return res;
+    }
+
+    private Long findParentsId(Long taskId) {
+        for (TaskList taskList : taskListRepository.findAll()) {
+            for (Task t : taskList.getTasks()) {
+                if (t.getId().equals(taskId)) {
+                    return taskList.getId();
+                }
+            }
+        }
+        return -1L;
     }
 
     @MessageMapping("/task/updateTitle/{id}/{newName}")

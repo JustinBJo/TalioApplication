@@ -18,13 +18,13 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
-import commons.Board;
-import commons.Subtask;
-import commons.Task;
-import commons.TaskList;
+import commons.*;
 
-import commons.User;
 import jakarta.ws.rs.ProcessingException;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -45,6 +45,7 @@ public class ServerUtils {
      * get the server url to empty string
      */
     public void resetServer() {
+        stopPollingThread();
         SERVER = "";
     }
 
@@ -65,8 +66,10 @@ public class ServerUtils {
         } catch (ProcessingException e) {
             throw new ProcessingException("Server not found");
         }
+        stopPollingThread();
         SERVER = url.endsWith("/") ? url : url + "/";
         websockets.updateServer(SERVER.substring(7));
+        startPollingThread();
     }
 
     /**
@@ -245,16 +248,52 @@ public class ServerUtils {
 
     /**
      * Sets a new task list to hold a given task
-     * @param taskId id of the changed task
+     *
+     * @param taskId    id of the changed task
      * @param newParent list that now holds the task
-     * @return updated task
      */
-    public Task updateTaskParent(long taskId, TaskList newParent) {
-        return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+    public void updateTaskParent(long taskId, TaskList newParent) {
+        ClientBuilder.newClient(new ClientConfig()).target(SERVER)
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
     }
 
+    // long polling
 
+    private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+    private Future<?> runnable;
+    private Consumer<TaskTransfer> pollingConsumer;
+
+    public void listenForUpdateTaskParent(Consumer<TaskTransfer> consumer) {
+        pollingConsumer = consumer;
+    }
+
+    private void startPollingThread() {
+        runnable = EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(SERVER).path("tasks/listen/updateParent/")
+                        .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                        .get();
+                if (res.getStatus() == 204) { // No content
+                    continue;
+                }
+
+                var taskTransfer = res.readEntity(TaskTransfer.class);
+
+                if (pollingConsumer != null) {
+                    pollingConsumer.accept(taskTransfer);
+                }
+            }
+        });
+    }
+
+    public void stopPollingThread() {
+        if (runnable != null && !runnable.isCancelled()) {
+            runnable.cancel(true);
+            EXEC.shutdownNow();
+        }
+    }
 }

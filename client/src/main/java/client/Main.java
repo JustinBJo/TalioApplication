@@ -42,9 +42,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        BuildUtils.getInstance(ServerUtils.class).setWebsockets(
-                BuildUtils.getInstance(WebsocketUtils.class)
-        );
+        var server = BuildUtils.getInstance(ServerUtils.class);
+        server.setWebsockets(BuildUtils.getInstance(WebsocketUtils.class));
+
+        primaryStage.setOnCloseRequest(e -> server.stopPollingThread());
 
         var connect = BuildUtils.loadFXML(
                 ConnectScreenCtrl.class,

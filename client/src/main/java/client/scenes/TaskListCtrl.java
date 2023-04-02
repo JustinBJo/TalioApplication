@@ -101,6 +101,15 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         );
     }
 
+    public Long getId() {
+        if (taskList == null) return -1L;
+        return taskList.getId();
+    }
+
+    public ChildrenManager<Task, CardCtrl> getTaskChildrenManager() {
+        return taskChildrenManager;
+    }
+
     private void setupDropTarget() {
 
         // Define behaviour when holding a dragged object here
