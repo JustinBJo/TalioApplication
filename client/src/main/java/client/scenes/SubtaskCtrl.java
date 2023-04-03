@@ -28,9 +28,17 @@ public class SubtaskCtrl
     @FXML
     Button delete;
     @FXML
+    Button moveUp;
+    @FXML
+    Button moveDown;
+    @FXML
     private ImageView editIcon;
     @FXML
     private ImageView deleteIcon;
+    @FXML
+    ImageView upIcon;
+    @FXML
+    ImageView downIcon;
 
     /**
      * Main constructor for SubtaskCtrl
@@ -75,6 +83,13 @@ public class SubtaskCtrl
         Image deleteIcon = new Image(getClass()
                 .getResourceAsStream("/client/images/deleteicon.png"));
         this.deleteIcon.setImage(deleteIcon);
+
+        Image upIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png"));
+        Image downIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png"));
+        this.upIcon.setImage(upIcon);
+        this.downIcon.setImage(downIcon);
     }
 
 
