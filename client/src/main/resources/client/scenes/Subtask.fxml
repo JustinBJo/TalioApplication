@@ -43,7 +43,7 @@
             <Insets bottom="-10.0" left="-10.0" right="-10.0" top="-10.0" />
          </padding>
       </Button>
-      <Button fx:id="moveUp" layoutX="4.0" layoutY="3.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" textFill="WHITE">
+      <Button fx:id="moveUp" layoutX="4.0" layoutY="3.0" mnemonicParsing="false" onAction="#moveUp" prefHeight="20.0" prefWidth="20.0" textFill="WHITE">
          <graphic>
             <ImageView fx:id="upIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -55,7 +55,7 @@
             <Insets bottom="-10.0" top="-10.0" />
          </padding>
       </Button>
-      <Button fx:id="moveDown" layoutX="4.0" layoutY="33.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" textFill="WHITE">
+      <Button fx:id="moveDown" layoutX="4.0" layoutY="33.0" mnemonicParsing="false" onAction="#moveDown" prefHeight="20.0" prefWidth="20.0" textFill="WHITE">
          <graphic>
             <ImageView fx:id="downIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                <image>

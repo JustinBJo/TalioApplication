@@ -10,6 +10,7 @@ import server.database.SubtaskRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -215,6 +216,27 @@ public class TaskController {
 
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
+    }
+
+    /**
+     * Updates the subtasks in a tasks
+     * @param id - the id of the task that will be updated
+     * @param subtaskIds - list of the ids of subtasks
+     */
+    @PutMapping("/updateSubtasks/{id}/[{subtaskIds}]")
+    public void updateSubtasks(@PathVariable("id") long id,
+                            @PathVariable("subtaskIds") List<Long> subtaskIds) {
+        if (id < 0 || !repo.existsById(id))
+            return;
+        Task param = repo.getById(id);
+        List<Subtask> subtasks = new ArrayList<>();
+        for (long subtaskId : subtaskIds) {
+            subtasks.add(subtaskRepo.findById(subtaskId).get());
+        }
+
+        param.setSubtasks(subtasks);
+        repo.save(param);
+
     }
 
 }

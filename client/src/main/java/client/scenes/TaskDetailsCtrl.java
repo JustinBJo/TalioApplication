@@ -70,6 +70,12 @@ public class TaskDetailsCtrl {
      * Updates this task's subtasks
      */
     public void refresh() {
+        subtaskContainer.getChildren().clear();
+        this.subtaskChildrenManager = new ChildrenManager<>(
+                subtaskContainer,
+                SubtaskCtrl.class,
+                "Subtask.fxml"
+        );
         if (task == null) {
             // no children if there's no task list
             subtaskChildrenManager.updateChildren(new ArrayList<>());
