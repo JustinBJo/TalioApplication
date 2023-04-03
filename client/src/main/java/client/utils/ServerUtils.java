@@ -523,10 +523,27 @@ public class ServerUtils {
      * @return updated task
      */
     public Task updateTaskParent(long taskId, TaskList newParent) {
-        return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+        List<Task> tasks = getTasks();
+        Task oldTask = null;
+        for (Task t : tasks) {
+            if (t.getId() == taskId)
+                oldTask = t;
+        }
+        if (oldTask == null)
+            System.out.println("The task does not exist in the repository.");
+        List<Subtask> subtasksOfOldTask = oldTask.getSubtasks();
+
+        Task task = ClientBuilder.newClient(new ClientConfig()).target(SERVER)
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+
+
+        for (Subtask subtask : subtasksOfOldTask) {
+            addSubtask(subtask, task);
+        }
+
+        return task;
     }
 
     /**
