@@ -103,6 +103,7 @@ public class SubtaskCtrl
 
         if (confirmation) {
             server.deleteSubtask(subtask);
+            parentTask.removeSubtask(subtask);
             mainCtrl.showTaskDetails(parentTask);
         }
     }
@@ -132,7 +133,8 @@ public class SubtaskCtrl
         currentSubtasks.add(taskIndex, subtask);
         currentTask.setSubtasks(currentSubtasks);
 
-        server.updateSubtasksInTask(currentTask, currentSubtasks);
+        Task task = server.updateSubtasksInTask(currentTask, currentSubtasks);
+        this.parentTask = task;
 
         mainCtrl.showTaskDetails(parentTask);
     }
