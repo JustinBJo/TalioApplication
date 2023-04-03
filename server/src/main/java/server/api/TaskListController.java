@@ -1,5 +1,6 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import commons.Task;
@@ -140,6 +141,27 @@ public class TaskListController {
             return;
         TaskList param = repo.getById(id);
         param.setTitle(newName);
+        repo.save(param);
+
+    }
+
+    /**
+     * Updates the tasks in a tasklist
+     * @param id - the id of the tasklist that will be updated
+     * @param taskIds - list of the id of tasks
+     */
+    @PutMapping("/updateTasks/{id}/[{taskIds}]")
+    public void updateTasks(@PathVariable("id") long id,
+                            @PathVariable("taskIds") List<Long> taskIds) {
+        if (id < 0 || !repo.existsById(id))
+            return;
+        TaskList param = repo.getById(id);
+        List<Task> tasks = new ArrayList<>();
+        for (long taskId : taskIds) {
+            tasks.add(taskRepo.findById(taskId).get());
+        }
+
+        param.setTasks(tasks);
         repo.save(param);
 
     }

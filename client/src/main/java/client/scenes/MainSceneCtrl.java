@@ -153,6 +153,12 @@ public class MainSceneCtrl {
      * Refresh the view, showing all task lists
      */
     public void refresh() {
+        taskListsContainer.getChildren().clear();
+        this.taskListChildrenManager = new ChildrenManager<>(
+                taskListsContainer,
+                TaskListCtrl.class,
+                "TaskList.fxml"
+        );
         List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
         taskListChildrenManager.updateChildren(taskLists);
         for (TaskListCtrl taskListCtrl :
@@ -160,11 +166,20 @@ public class MainSceneCtrl {
             taskListCtrl.refresh();
         }
 
-        List<Board> joinedBoards = new ArrayList<>();
-        boardListChildrenManager.updateChildren(joinedBoards);
-        joinedBoards = mainCtrl.getUser().getBoards();
-        boardListChildrenManager.updateChildren(joinedBoards);
+        if (!mainCtrl.isAdmin()) {
+            List<Board> joinedBoards = new ArrayList<>();
+            boardListChildrenManager.updateChildren(joinedBoards);
+            joinedBoards = mainCtrl.getUser().getBoards();
+            boardListChildrenManager.updateChildren(joinedBoards);
+        }
+        else {
+            List<Board> boards = new ArrayList<>();
+            boardListChildrenManager.updateChildren(boards);
+            boards = server.getAllBoards();
+            boardListChildrenManager.updateChildren(boards);
+        }
     }
+
 
     /**
      * add a board to the list
@@ -190,22 +205,28 @@ public class MainSceneCtrl {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        if (activeBoard.getId() == defaultBoardID) {
-            ErrorUtils.alertError("You cannot delete the default board!");
-            return;
+        if (!mainCtrl.isAdmin()) {
+            if (activeBoard.getId() == defaultBoardID) {
+                ErrorUtils.alertError("You cannot delete the default board!");
+                return;
+            }
+
+            boolean confirmation = server.confirmDeletion("board");
+
+            // Check the user's response and perform the desired action
+            if (confirmation) {
+                Board b = activeBoard;
+                mainCtrl.getUser().getBoards().remove(b);
+                server.saveUser(mainCtrl.getUser());
+                setActiveBoard(server.getDefaultBoard());
+                System.out.println(server.deleteBoard(b)); } }
+            else {
+                Board b = activeBoard;
+                deleteBoard(b);
+                refresh();
+            }
         }
 
-        boolean confirmation = server.confirmDeletion("board");
-
-        // Check the user's response and perform the desired action
-        if (confirmation) {
-            Board b = activeBoard;
-            mainCtrl.getUser().getBoards().remove(b);
-            server.saveUser(mainCtrl.getUser());
-            setActiveBoard(server.getDefaultBoard());
-            System.out.println(server.deleteBoard(b));
-        }
-    }
 
     /**
      * Copies the code of current board
@@ -254,5 +275,45 @@ public class MainSceneCtrl {
         mainCtrl.setUser(u);
     }
 
+    /**
+     * functionality for the "admin" icon button
+     */
+    public void adminPassword() {
+        if (!mainCtrl.isAdmin()) {
+        mainCtrl.showAdmin(); }
+        else {
+            boolean accept = server.confirmRevertAdmin();
+
+            if (accept) {
+                mainCtrl.setAdmin(false);
+                mainCtrl.setUser(server.checkUser());
+                mainCtrl.showMain();
+            }
+        }
+    }
+
+    /**
+     * deletes a given board from the system and all the users' joined boards
+     * @param b the board to be deleted
+     */
+    public void deleteBoard(Board b) {
+        if (b.getId() == defaultBoardID) {
+            ErrorUtils.alertError("You cannot delete the default board!");
+            return;
+        }
+        boolean confirmation = server.confirmDeletion("Board");
+
+        if (confirmation) {
+            for (User u : server.getAllUsers()) {
+                if (u.getBoards().contains(b)) {
+                    u.getBoards().remove(b);
+                    server.saveUser(u);
+                }
+            }
+            setActiveBoard(server.getDefaultBoard());
+            System.out.println(server.deleteBoard(b));
+        }
+
+    }
 }
 

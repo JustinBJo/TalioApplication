@@ -17,6 +17,7 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -273,6 +274,31 @@ public class ServerUtils {
     }
 
     /**
+     * confirmation message for leaving admin mode
+     * @return whether it has been confirmed or not
+     */
+    public boolean confirmRevertAdmin() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Leave admin mode?");
+        alert.setHeaderText("Leave admin mode");
+        alert.setContentText("Are you sure you want to leave the admin " +
+                "mode? \n You will need to input the password again " +
+                "to re-join!");
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == confirmButton) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * Deletes a tasklist from the server
      *
      * @param taskList the tasklist to be deleted
@@ -344,6 +370,27 @@ public class ServerUtils {
     }
 
     /**
+     * Updates the lists of tasks in a tasklist
+     * @param taskList - the tasklist to be updated
+     * @param newTasks - the new list of tasks
+     * @return the updated tasklist
+     */
+    public TaskList updateTasksInTasklist(TaskList taskList,
+                                          List<Task> newTasks) {
+        List<Long> taskIds = new ArrayList<>();
+        for (Task task : newTasks) {
+            taskIds.add(task.getId());
+        }
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasklist/updateTasks/" +
+                        taskList.getId() + "/" + taskIds)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
+    }
+
+    /**
      * return board from database based on its code
      * @param code the code of the board
      * @return the board
@@ -354,7 +401,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Board.class);
-
     }
 
     /**
@@ -469,6 +515,18 @@ public class ServerUtils {
                 .put(Entity.entity(user, APPLICATION_JSON),
                         new GenericType<List<Board>>() {});
         System.out.println(boards);
+    }
+
+    /**
+     * gets all users in the database
+     * @return the list of users in the database
+     */
+    public List<User> getAllUsers() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { } );
     }
 
 
@@ -608,6 +666,19 @@ public class ServerUtils {
 
         System.out.println(result);
         return result;
+    }
+
+    /**
+     * gets all boards in the database
+     * @return the list of boards in the database
+     */
+    public List<Board> getAllBoards() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() { } );
     }
 
     /**
