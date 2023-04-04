@@ -31,6 +31,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @FXML
     Label title;
     @FXML
+    Label progress;
+    @FXML
     Button delete;
     @FXML
     Button edit;
@@ -116,6 +118,17 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
         }
         title.setText(task.getTitle());
+
+        if (task.getSubtasks().size() == 0) {
+            progress.setText("");
+            return;
+        }
+        int progressNb = 0;
+        for (Subtask subtask : task.getSubtasks()) {
+            if (subtask.isCompleted()) progressNb++;
+        }
+        progress.setText(progressNb + "/" + task.getSubtasks().size());
+
         if (task.getDescription().isEmpty()) {
             descriptionIndicator.setImage(null);
         }
