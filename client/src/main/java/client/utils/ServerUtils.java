@@ -167,23 +167,6 @@ public class ServerUtils {
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
     }
 
-    /**
-     * Delete an existing board using the board/delete endpoint
-     *
-     * @param board the board that is being removed
-     * @return the removed board
-     */
-    public String deleteBoard(Board board) {
-        long id = board.getId();
-        System.out.println(id);
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(String.class);
-
-    }
-
 
     /**
      * returns a board based on its ID
@@ -233,20 +216,6 @@ public class ServerUtils {
                     .post(Entity.entity(user, APPLICATION_JSON));
         }
         return user;
-    }
-
-    /**
-     * saves the current state of the user in the database
-     * @param user the user to be saved
-     */
-    public void saveUser(User user) {
-        List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("user/save")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(user, APPLICATION_JSON),
-                        new GenericType<List<Board>>() {});
-        System.out.println(boards);
     }
 
     /**

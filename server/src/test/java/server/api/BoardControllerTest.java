@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.database.BoardRepository;
+import server.database.UserRepository;
 import server.service.DefaultBoardService;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoardControllerTest {
 
     private BoardRepository repo;
+    private UserRepository userRepository;
     private DefaultBoardService service;
     private BoardController sut;
 
@@ -24,7 +26,8 @@ public class BoardControllerTest {
     void setUp() {
         repo = new TestBoardRepository();
         service = new DefaultBoardService();
-        sut = new BoardController(repo, service);
+        userRepository = new TestUserRepository();
+        sut = new BoardController(repo, service, userRepository);
     }
 
     @Test
@@ -173,7 +176,7 @@ public class BoardControllerTest {
         );
 
         // Check repository
-        assertNull(repo.getById(board.getId()));
+        assertTrue(repo.findAll().contains(board));
     }
 
     @Test

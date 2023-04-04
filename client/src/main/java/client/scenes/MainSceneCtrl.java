@@ -31,7 +31,8 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
     private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
-    private ParentWebsocketManager<TaskList, TaskListCtrl> parentWebsocket;
+    private EntityWebsocketManager<User> joinedBoardsWebsocket;
+    private ParentWebsocketManager<TaskList, TaskListCtrl> taskListsWebsocket;
     private EntityWebsocketManager<Board> entityWebsocket;
 
     private long defaultBoardID;
@@ -113,11 +114,17 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
                 Board.class,
                 this::setEntity
         );
-        this.parentWebsocket = new ParentWebsocketManager<>(
+        this.taskListsWebsocket = new ParentWebsocketManager<>(
                 websocket,
                 "taskList",
                 TaskList.class,
                 taskListChildrenManager
+        );
+        this.joinedBoardsWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "user",
+                User.class,
+                this::updateJoinedBoards
         );
 
         // Set button icons
@@ -144,11 +151,12 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         Board defaultBoard = server.getBoardById(defaultBoardID);
         if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
             mainCtrl.getUser().getBoards().add(defaultBoard);
-            server.saveUser(mainCtrl.getUser());
+            websocket.saveUser(mainCtrl.getUser());
         }
 
-        // Set default board as current board
+        // Reset user and board
         setEntity(server.getDefaultBoard());
+        updateJoinedBoards(mainCtrl.getUser());
     }
 
     /**
@@ -175,9 +183,18 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         );
 
         entityWebsocket.register(activeBoard.getId(), "update");
-        parentWebsocket.register(activeBoard.getId());
+        taskListsWebsocket.register(activeBoard.getId());
 
-        refreshJoinedBoards();
+        // Go to default board if this board is deleted somewhere else
+        websocket.registerForMessages(
+                "/topic/board/delete/" + activeBoard.getId(),
+                Integer.class,
+                (status) -> {
+                    if (status == 200) { // Delete successful
+                        setEntity(server.getDefaultBoard());
+                    }
+                }
+        );
     }
 
     private void startLongPolling() {
@@ -209,10 +226,9 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
     /**
      * Refresh the view, showing all task lists
      */
-    public void refreshJoinedBoards() {
-        List<Board> joinedBoards = new ArrayList<>();
-        boardListChildrenManager.updateChildren(joinedBoards);
-        joinedBoards = mainCtrl.getUser().getBoards();
+    public void updateJoinedBoards(User user) {
+        boardListChildrenManager.updateChildren(new ArrayList<>());
+        List<Board> joinedBoards = user.getBoards();
         boardListChildrenManager.updateChildren(joinedBoards);
     }
 
@@ -232,7 +248,6 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
             return;
         }
         mainCtrl.showRenameBoard();
-        refreshJoinedBoards();
     }
 
     /**
@@ -251,10 +266,10 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         // Check the user's response and perform the desired action
         if (confirmation) {
             Board b = activeBoard;
-            mainCtrl.getUser().getBoards().remove(b);
-            server.saveUser(mainCtrl.getUser());
             setEntity(server.getDefaultBoard());
-            refreshJoinedBoards();
+            websocket.deleteBoard(b);
+            mainCtrl.getUser().getBoards().remove(b);
+            websocket.saveUser(mainCtrl.getUser());
         }
     }
 
@@ -295,15 +310,15 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      */
     public void joinBoard() {
         mainCtrl.showJoinBoard();
-        refreshJoinedBoards();
     }
 
     /**
-     * checks whether this user has already been registered
+     * Handles setting the current user
      */
     public void validateUser() {
         User u = server.checkUser();
         mainCtrl.setUser(u);
+        joinedBoardsWebsocket.register(u.getId(), "save");
     }
 
 }

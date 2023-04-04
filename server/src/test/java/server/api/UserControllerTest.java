@@ -56,9 +56,9 @@ public class UserControllerTest {
 
         User u = new User("127.0.0.1", boards);
 
-        List<Board> res = sut.update(u);
+        var res = sut.update(u);
 
         assertEquals(repo.getById("127.0.0.1"), u);
-        assertEquals(res, boards);
+        assertEquals(res, u);
     }
 }

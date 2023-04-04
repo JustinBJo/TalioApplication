@@ -53,13 +53,13 @@ public class UserTest {
 
     @Test
     void testGetIp() {
-        assertEquals(user.getIp(), "127.0.0.1");
+        assertEquals("127.0.0.1", user.getIp());
     }
 
     @Test
     void testSetIp() {
-        user.setIp("localhost");
-        assertEquals(user.getIp(), "localhost");
+        user.setIp("1.2.3.4");
+        assertEquals("1.2.3.4", user.getIp());
     }
 
     @Test

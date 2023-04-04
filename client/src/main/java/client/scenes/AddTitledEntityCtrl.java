@@ -226,8 +226,7 @@ public class AddTitledEntityCtrl {
         board = server.addBoard(board);
         mainCtrl.setActiveBoard(board);
         mainCtrl.getUser().addBoard(board);
-        System.out.println(mainCtrl.getUser().getBoards());
-        server.saveUser(mainCtrl.getUser());
+        websocket.saveUser(mainCtrl.getUser());
     }
 
     private void editTaskList(String title) {
@@ -243,7 +242,7 @@ public class AddTitledEntityCtrl {
         int index = mainCtrl.getUser().getBoards()
                 .indexOf(mainCtrl.getActiveBoard());
         mainCtrl.getUser().getBoards().get(index).setTitle(title);
-        server.saveUser(mainCtrl.getUser());
+        websocket.saveUser(mainCtrl.getUser());
     }
 
     /**

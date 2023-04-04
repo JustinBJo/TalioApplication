@@ -1,9 +1,6 @@
 package client.utils;
 
-import commons.Board;
-import commons.Subtask;
-import commons.Task;
-import commons.TaskList;
+import commons.*;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -195,5 +192,22 @@ public class WebsocketUtils {
                 "/app/subtask/update/" + subtask.getId() + "/" + newTitle,
                 subtask
         );
+    }
+
+    /**
+     * saves the current state of the user in the database
+     * @param user the user to be saved
+     */
+    public void saveUser(User user) {
+        session.send("/app/user/save/" + user.getId(), user);
+    }
+
+    /**
+     * Delete an existing board using the board/delete websocket endpoint
+     *
+     * @param board the board that is being removed
+     */
+    public void deleteBoard(Board board) {
+        session.send("/app/board/delete/" + board.getId(), board);
     }
 }

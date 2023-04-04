@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;
@@ -12,18 +13,22 @@ import javafx.scene.control.TextField;
 public class JoinBoardCtrl {
 
     private final MainCtrlTalio mainCtrl;
+    private final WebsocketUtils websocket;
     private final ServerUtils server;
     private final AlertUtils alertUtils;
 
     /**
      * Injector constructor
-     * @param mainCtrl the main controller
-     * @param server the server used
+     *
+     * @param mainCtrl  the main controller
+     * @param server    the server used
      */
     @Inject
     public JoinBoardCtrl(MainCtrlTalio mainCtrl,
+                         WebsocketUtils websocket,
                          ServerUtils server,
                          AlertUtils alertUtils) {
+        this.websocket = websocket;
         this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.server = server;
@@ -61,7 +66,7 @@ public class JoinBoardCtrl {
 
             if (added) {
                 mainCtrl.setActiveBoard(b);
-                server.saveUser(mainCtrl.getUser());
+                websocket.saveUser(mainCtrl.getUser());
             }
             else {
                 alertUtils.alertError("There is no board with this code!");

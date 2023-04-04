@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Board;
 import commons.TaskList;
+import commons.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -9,6 +10,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
+import server.database.UserRepository;
 import server.service.DefaultBoardService;
 import java.util.List;
 
@@ -18,19 +20,22 @@ public class BoardController {
 
     private final BoardRepository repo;
     private final DefaultBoardService defaultBoardService;
+    private final UserRepository userRepository;
 
     private static final long DEFAULT_ID = 1030;
 
     /**
      * Constructor
-     * @param repo BoardRepository
+     *
+     * @param repo           BoardRepository
      */
     public BoardController(
             BoardRepository repo,
-            DefaultBoardService defaultBoardService
-    ) {
+            DefaultBoardService defaultBoardService,
+            UserRepository userRepository) {
         this.repo = repo;
         this.defaultBoardService = defaultBoardService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -137,6 +142,25 @@ public class BoardController {
     }
 
     /**
+     * Removes an entity using websocket messages
+     * @param id entity id
+     * @return removed entity
+     */
+    @MessageMapping("/board/delete/{id}")
+    @SendTo("/topic/board/delete/{id}")
+    public int messageDelete(@DestinationVariable String id) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return HttpStatus.BAD_REQUEST.value();
+        }
+
+        var res = deleteBoard(lID);
+        return res.getStatusCode().value();
+    }
+
+    /**
      * Delete the board from the repository
      * @param id the id of the board that is being removed
      * @return the deleted board
@@ -149,9 +173,33 @@ public class BoardController {
         if  (!repo.existsById(id)) {
             return ResponseEntity.badRequest().body("Board does not exist.");
         }
-        Board board = repo.findById(id).get();
-        System.out.println(board.getCode());
-        repo.delete(board);
+
+        Board board = null;
+        User parent = null;
+
+        for (User user : userRepository.findAll()) {
+            for (Board b : user.getBoards()) {
+                if (b.getId().equals(id)) {
+                    board = b;
+                    parent = user;
+                    break;
+                }
+            }
+            if (parent != null) {
+                break;
+            }
+        }
+
+        if (parent != null) {
+            boolean unlinkSuccess = parent.removeBoard(board);
+            if (!unlinkSuccess) {
+                return ResponseEntity.badRequest().build();
+            }
+            userRepository.save(parent);
+        }
+
+        repo.deleteById(id);
+
         return ResponseEntity.ok("Board " + id + " is removed.");
     }
 
