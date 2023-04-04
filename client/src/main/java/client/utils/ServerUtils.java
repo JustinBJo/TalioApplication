@@ -391,6 +391,27 @@ public class ServerUtils {
     }
 
     /**
+     * Updates the list of subtasks in a task
+     * @param task - the task to be updated
+     * @param newSubtasks - the new list of subtasks
+     * @return the updated task
+     */
+    public Task updateSubtasksInTask(Task task,
+                                          List<Subtask> newSubtasks) {
+        List<Long> subtaskIds = new ArrayList<>();
+        for (Subtask subtask : newSubtasks) {
+            subtaskIds.add(subtask.getId());
+        }
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER)
+                .path("tasks/updateSubtasks/" +
+                        task.getId() + "/" + subtaskIds)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+    }
+
+    /**
      * return board from database based on its code
      * @param code the code of the board
      * @return the board

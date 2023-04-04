@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import commons.Task;
 import commons.Subtask;
@@ -12,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class SubtaskCtrl
         implements IEntityRepresentation<Subtask> {
@@ -29,11 +31,20 @@ public class SubtaskCtrl
     @FXML
     Button delete;
     @FXML
+    Button moveUp;
+    @FXML
+    Button moveDown;
+    @FXML
     CheckBox completed;
+
     @FXML
     private ImageView editIcon;
     @FXML
     private ImageView deleteIcon;
+    @FXML
+    ImageView upIcon;
+    @FXML
+    ImageView downIcon;
 
     /**
      * Main constructor for SubtaskCtrl
@@ -84,6 +95,13 @@ public class SubtaskCtrl
         Image deleteIcon = new Image(getClass()
                 .getResourceAsStream("/client/images/deleteicon.png"));
         this.deleteIcon.setImage(deleteIcon);
+
+        Image upIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png"));
+        Image downIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png"));
+        this.upIcon.setImage(upIcon);
+        this.downIcon.setImage(downIcon);
     }
 
 
@@ -95,6 +113,7 @@ public class SubtaskCtrl
 
         if (confirmation) {
             server.deleteSubtask(subtask);
+            parentTask.removeSubtask(subtask);
             mainCtrl.showTaskDetails(parentTask);
         }
     }
@@ -105,6 +124,51 @@ public class SubtaskCtrl
     public void edit() {
         mainCtrl.showRenameSubtask(subtask);
         mainCtrl.refreshBoard();
+    }
+
+    /**
+     * Used to move a subtask up in the parent task
+     */
+    public void moveUp() {
+        Task currentTask = parentTask;
+
+        List<Subtask> currentSubtasks = currentTask.getSubtasks();
+        int taskIndex = currentSubtasks.indexOf(subtask);
+        taskIndex--;
+        if (taskIndex < 0 || taskIndex >= currentSubtasks.size()) {
+            ErrorUtils.alertError("You cannot move the subtask higher.");
+            return;
+        }
+        currentSubtasks.remove(subtask);
+        currentSubtasks.add(taskIndex, subtask);
+        currentTask.setSubtasks(currentSubtasks);
+
+        Task task = server.updateSubtasksInTask(currentTask, currentSubtasks);
+        this.parentTask = task;
+
+        mainCtrl.showTaskDetails(parentTask);
+    }
+
+    /**
+     * Used to move a subtask down in the parent task
+     */
+    public void moveDown() {
+        Task currentTask = parentTask;
+
+        List<Subtask> currentSubtasks = currentTask.getSubtasks();
+        int taskIndex = currentSubtasks.indexOf(subtask);
+        taskIndex++;
+        if (taskIndex < 0 || taskIndex >= currentSubtasks.size()) {
+            ErrorUtils.alertError("You cannot move the subtask lower.");
+            return;
+        }
+        currentSubtasks.remove(subtask);
+        currentSubtasks.add(taskIndex, subtask);
+        currentTask.setSubtasks(currentSubtasks);
+
+        server.updateSubtasksInTask(currentTask, currentSubtasks);
+
+        mainCtrl.showTaskDetails(parentTask);
     }
 
     /**
