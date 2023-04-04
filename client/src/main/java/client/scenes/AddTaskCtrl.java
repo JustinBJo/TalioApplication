@@ -1,10 +1,12 @@
 package client.scenes;
 
 import client.utils.AddTaskService;
+import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
@@ -69,6 +71,35 @@ public class AddTaskCtrl {
      */
     public ServerUtils getServer() {
         return service.getServer();
+    }
+
+    /**
+     * Method cancel for cancelling the insertion of a new task
+     * returns to main scene
+     */
+    public void cancel() {
+        clearFields();
+        service.getMainCtrl().showMain();
+    }
+
+    /**
+     * Method confirm adds the inserted task to the database,
+     * returns to the main scene and refreshes it in order for
+     * the new task to be displayed
+     * Throws error in case of exception
+     *
+     */
+    public void confirm() {
+        try {
+            service.getServer().addTask(getTask(), service.getParentTaskList());
+        } catch (WebApplicationException e) {
+            ErrorUtils.alertError(e.getMessage());
+            return;
+        }
+
+        clearFields();
+        service.setParentTaskList(null);
+        service.getMainCtrl().showMain();
     }
 
 }

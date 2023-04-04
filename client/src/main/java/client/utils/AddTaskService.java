@@ -49,4 +49,12 @@ public class AddTaskService {
     public ServerUtils getServer() {
         return server;
     }
+
+    /**
+     * @return the main ctrl
+     */
+    public MainCtrlTalio getMainCtrl() {
+        return mainCtrl;
+    }
+
 }
