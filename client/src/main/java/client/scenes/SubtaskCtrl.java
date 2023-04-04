@@ -169,6 +169,7 @@ public class SubtaskCtrl
         server.updateSubtasksInTask(currentTask, currentSubtasks);
 
         mainCtrl.showTaskDetails(parentTask);
+    }
 
     /**
      * Updates the status of the current subtask
