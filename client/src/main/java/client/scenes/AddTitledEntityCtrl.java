@@ -253,7 +253,7 @@ public class AddTitledEntityCtrl {
         List<Task> allTasks = server.getTasks();
         Task newCurrentTask = null;
         for (Task t : allTasks) {
-            if (t.getId() == currentTask.getId()) {
+            if (t.getId().equals(currentTask.getId())) {
                 newCurrentTask = t;
             }
         }
