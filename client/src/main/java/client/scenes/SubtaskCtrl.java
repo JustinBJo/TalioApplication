@@ -3,6 +3,8 @@ package client.scenes;
 import client.utils.AlertUtils;
 import client.utils.EntityWebsocketManager;
 import client.utils.WebsocketUtils;
+import client.utils.ServerUtils;
+import commons.Task;
 import commons.Subtask;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
 import java.util.Objects;
+import java.util.List;
 
 public class SubtaskCtrl
         implements IEntityRepresentation<Subtask> {
@@ -24,6 +27,7 @@ public class SubtaskCtrl
     private final MainCtrlTalio mainCtrl;
 
     private Subtask subtask;
+    private Task parentTask;
 
     private final EntityWebsocketManager<Subtask> entityWebsocket;
 
@@ -34,11 +38,20 @@ public class SubtaskCtrl
     @FXML
     Button delete;
     @FXML
+    Button moveUp;
+    @FXML
+    Button moveDown;
+    @FXML
     CheckBox completed;
+
     @FXML
     private ImageView editIcon;
     @FXML
     private ImageView deleteIcon;
+    @FXML
+    ImageView upIcon;
+    @FXML
+    ImageView downIcon;
 
     /**
      * Main constructor for SubtaskCtrl
@@ -92,6 +105,14 @@ public class SubtaskCtrl
         Image deleteIcon = new Image(Objects.requireNonNull(getClass()
                 .getResourceAsStream("/client/images/deleteicon.png")));
         this.deleteIcon.setImage(deleteIcon);
+
+        Image upIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png")));
+        Image downIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png")));
+
+        this.upIcon.setImage(upIcon);
+        this.downIcon.setImage(downIcon);
     }
 
 
@@ -103,6 +124,8 @@ public class SubtaskCtrl
 
         if (confirmation) {
             websocket.deleteSubtask(subtask);
+            parentTask.removeSubtask(subtask);
+            mainCtrl.showTaskDetails(parentTask);
         }
     }
 
@@ -111,6 +134,50 @@ public class SubtaskCtrl
      */
     public void edit() {
         mainCtrl.showRenameSubtask(subtask);
+    }
+
+    /**
+     * Used to move a subtask up in the parent task
+     */
+    public void moveUp() {
+        Task currentTask = parentTask;
+
+        List<Subtask> currentSubtasks = currentTask.getSubtasks();
+        int taskIndex = currentSubtasks.indexOf(subtask);
+        taskIndex--;
+        if (taskIndex < 0 || taskIndex >= currentSubtasks.size()) {
+            alertUtils.alertError("You cannot move the subtask higher.");
+            return;
+        }
+        currentSubtasks.remove(subtask);
+        currentSubtasks.add(taskIndex, subtask);
+        currentTask.setSubtasks(currentSubtasks);
+
+        websocket.updateSubtasksInTask(currentTask, currentSubtasks);
+
+        mainCtrl.showTaskDetails(parentTask);
+    }
+
+    /**
+     * Used to move a subtask down in the parent task
+     */
+    public void moveDown() {
+        Task currentTask = parentTask;
+
+        List<Subtask> currentSubtasks = currentTask.getSubtasks();
+        int taskIndex = currentSubtasks.indexOf(subtask);
+        taskIndex++;
+        if (taskIndex < 0 || taskIndex >= currentSubtasks.size()) {
+            alertUtils.alertError("You cannot move the subtask lower.");
+            return;
+        }
+        currentSubtasks.remove(subtask);
+        currentSubtasks.add(taskIndex, subtask);
+        currentTask.setSubtasks(currentSubtasks);
+
+        websocket.updateSubtasksInTask(currentTask, currentSubtasks);
+
+        mainCtrl.showTaskDetails(parentTask);
     }
 
     /**

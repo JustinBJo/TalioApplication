@@ -146,6 +146,14 @@ public class Task implements IEntity {
     }
 
     /**
+     * set the subtasks of the task
+     * @param subtasks the subtasks of the task
+     */
+    public void setSubtasks(List<Subtask> subtasks) {
+        this.subtasks = subtasks;
+    }
+
+    /**
      * get the tags of the task
      * @return the tags of the task
      */

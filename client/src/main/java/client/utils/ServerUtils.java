@@ -140,6 +140,20 @@ public class ServerUtils {
     }
 
     /**
+     * Method used to fetch the tasks from the database
+     *
+     * @return a List of all the tasks in the database
+     */
+    public List<Task> getTasks() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("tasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Task>>() {
+                });
+    }
+
+    /**
      * return board from database based on its code
      * @param code the code of the board
      * @return the board

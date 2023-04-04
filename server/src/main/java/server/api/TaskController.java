@@ -12,10 +12,12 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
+import server.database.SubtaskRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -26,6 +28,7 @@ public class TaskController {
 
     private final TaskRepository repo;
     private final TaskListRepository taskListRepository;
+    private final SubtaskRepository subtaskRepo;
 
     /**
      * constructor of the task controller
@@ -35,10 +38,11 @@ public class TaskController {
      */
     public TaskController(
             TaskRepository repo,
-            TaskListRepository taskListRepository
-    ) {
+            TaskListRepository taskListRepository,
+            SubtaskRepository subtaskRepo) {
         this.repo = repo;
         this.taskListRepository = taskListRepository;
+        this.subtaskRepo = subtaskRepo;
     }
 
     /**
@@ -372,6 +376,58 @@ public class TaskController {
 
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
+    }
+
+    /**
+     * Updates the entity's children using websocket messages
+     * @param id id of updated entity
+     * @param childIds ids of new children
+     * @return updated entity
+     */
+    @MessageMapping("/task/updateChildren/{id}/{taskIds}")
+    @SendTo("/topic/task/updateChildren/{id}")
+    public Task messageUpdateChildren(@DestinationVariable String id,
+                                          @DestinationVariable String childIds) {
+        List<Long> lChildIds = new ArrayList<>();
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+
+            var sIds = childIds.split(",");
+            for (var sChildID : sIds) {
+                var lChildID = Long.parseLong(sChildID.replaceAll("[^0-9]", ""));
+                lChildIds.add(lChildID);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = updateSubtasks(lID, lChildIds);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
+    /**
+     * Updates the subtasks in a tasks
+     * @param id - the id of the task that will be updated
+     * @param subtaskIds - list of the ids of subtasks
+     */
+    @PutMapping("/updateSubtasks/{id}/[{subtaskIds}]")
+    public ResponseEntity<Task> updateSubtasks(@PathVariable("id") long id,
+                            @PathVariable("subtaskIds") List<Long> subtaskIds) {
+        if (id < 0 || !repo.existsById(id))
+            return ResponseEntity.badRequest().build();
+        Task param = repo.getById(id);
+        List<Subtask> subtasks = new ArrayList<>();
+        for (long subtaskId : subtaskIds) {
+            subtasks.add(subtaskRepo.findById(subtaskId).get());
+        }
+
+        param.setSubtasks(subtasks);
+        var saved = repo.save(param);
+        return ResponseEntity.ok(saved);
     }
 
 }

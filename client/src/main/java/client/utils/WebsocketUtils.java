@@ -241,8 +241,25 @@ public class WebsocketUtils {
             ids.append(t.getId());
         }
         session.send(
-                "/taskList/updateChildren/" + taskList.getId() + "/" + ids,
+                "/app/taskList/updateChildren/" + taskList.getId() + "/" + ids,
                 taskList
+        );
+    }
+
+    /**
+     * Updates the list of subtasks in a task
+     * @param task        - the task to be updated
+     * @param newSubtasks - the new list of subtasks
+     */
+    public void updateSubtasksInTask(Task task,
+                                     List<Subtask> newSubtasks) {
+        StringBuilder ids = new StringBuilder();
+        for (var s : newSubtasks) {
+            ids.append(s.getId());
+        }
+        session.send(
+                "/app/task/updateChildren/" + task.getId() + "/" + ids,
+                task
         );
     }
 }

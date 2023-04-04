@@ -176,6 +176,10 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
         taskChildrenManager.updateChildren(server.getTaskListData(taskList));
 
+        for (CardCtrl cardCtrl : taskChildrenManager.getChildrenCtrls()) {
+            cardCtrl.setParentList(taskList);
+        }
+
         entityWebsocket.register(taskList.getId(), "update");
         parentWebsocket.register(taskList.getId());
         websocket.registerForMessages(

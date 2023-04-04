@@ -14,6 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.util.List;
+
 public class AddTitledEntityCtrl {
 
     enum Type {
@@ -252,6 +254,16 @@ public class AddTitledEntityCtrl {
     private void addNewSubtask(String title) {
         Subtask subtask = new Subtask(title, false);
         websocket.addSubtask(subtask, currentTask);
+        List<Task> allTasks = server.getTasks();
+        Task newCurrentTask = null;
+        for (Task t : allTasks) {
+            if (t.getId().equals(currentTask.getId())) {
+                newCurrentTask = t;
+            }
+        }
+        if (newCurrentTask != null) {
+            currentTask = newCurrentTask;
+        }
     }
 
     private void editSubtask(String title) {

@@ -4,6 +4,7 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Subtask;
 import commons.Task;
+import commons.TaskList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.List;
 
@@ -114,6 +116,14 @@ public class TaskDetailsCtrl {
         parentWebsocket.register(task.getId());
         entityWebsocket.register(task.getId(), "updateTitle");
         entityWebsocket.register(task.getId(), "updateDescription");
+        websocket.registerForMessages(
+                "/topic/task/updateChildren/" + task.getId(),
+                Task.class,
+                (t) -> {
+                    subtaskChildrenManager.updateChildren(new ArrayList<>());
+                    subtaskChildrenManager.updateChildren(t.getSubtasks());
+                }
+        );
         setupCloseOnDelete();
     }
 

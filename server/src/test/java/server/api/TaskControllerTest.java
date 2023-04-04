@@ -4,6 +4,7 @@ import commons.Task;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.database.SubtaskRepository;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class TaskControllerTest {
 
     private TestTaskRepository repo;
     private TestTaskListRepository taskListRepository;
+    private SubtaskRepository subtaskRepo;
 
     private TaskController sut;
 
@@ -22,7 +24,8 @@ public class TaskControllerTest {
     public void setup() {
         repo = new TestTaskRepository();
         taskListRepository = new TestTaskListRepository();
-        sut = new TaskController(repo, taskListRepository);
+        subtaskRepo = new TestSubtaskRepository();
+        sut = new TaskController(repo, taskListRepository, subtaskRepo);
     }
 
     @Test
