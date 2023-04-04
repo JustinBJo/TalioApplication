@@ -11,7 +11,7 @@
 
 <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SubtaskCtrl">
    <children>
-      <CheckBox fx:id="completed" layoutX="226.0" layoutY="16.0" mnemonicParsing="false" text="Done" AnchorPane.rightAnchor="62.80000000000001" />
+      <CheckBox fx:id="completed" layoutX="226.0" layoutY="16.0" mnemonicParsing="false" onAction="#completeness" text="Done" AnchorPane.rightAnchor="62.80000000000001" />
       <Button fx:id="delete" layoutX="316.0" layoutY="15.0" mnemonicParsing="false" onAction="#deleteSubtask" prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: red;" textFill="WHITE" AnchorPane.rightAnchor="4.0">
          <graphic>
             <ImageView fx:id="deleteIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">

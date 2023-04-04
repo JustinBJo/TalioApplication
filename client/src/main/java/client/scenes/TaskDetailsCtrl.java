@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class TaskDetailsCtrl {
@@ -58,6 +59,7 @@ public class TaskDetailsCtrl {
                 .getResourceAsStream("/client/images/deleteicon.png"));
         this.deleteIcon.setImage(deleteIcon);
 
+        subtaskContainer.getChildren().clear();
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
                         subtaskContainer,
@@ -81,6 +83,13 @@ public class TaskDetailsCtrl {
             subtaskChildrenManager.updateChildren(new ArrayList<>());
         }
         var subtasks = server.getTaskData(task);
+        subtaskContainer.getChildren().clear();
+        this.subtaskChildrenManager =
+                new ChildrenManager<>(
+                        subtaskContainer,
+                        SubtaskCtrl.class,
+                        "Subtask.fxml"
+                );
         subtaskChildrenManager.updateChildren(subtasks);
 
         for (SubtaskCtrl subtaskCtrl :
@@ -133,6 +142,9 @@ public class TaskDetailsCtrl {
 
         // Check the user's response and perform the desired action
         if (confirmation) {
+            List<Subtask> subtasks = task.getSubtasks();
+            for (Subtask subtask : subtasks)
+                server.deleteSubtask(subtask);
             server.deleteTask(task);
             exit();
         }

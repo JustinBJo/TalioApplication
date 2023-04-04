@@ -43,6 +43,12 @@ class SubtaskTest {
     }
 
     @Test
+    void setCompleted() {
+        sut.setCompleted(true);
+        assertTrue(sut.isCompleted());
+    }
+
+    @Test
     void testEquals() {
         Subtask k = new Subtask("test", true);
         assertEquals(k, sut);
