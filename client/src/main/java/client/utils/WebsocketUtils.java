@@ -1,6 +1,9 @@
 package client.utils;
 
 import commons.*;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import org.glassfish.jersey.client.ClientConfig;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -10,8 +13,11 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class WebsocketUtils {
     private StompSession session;
@@ -209,5 +215,34 @@ public class WebsocketUtils {
      */
     public void deleteBoard(Board board) {
         session.send("/app/board/delete/" + board.getId(), board);
+    }
+
+    /**
+     * Updates the status of the selected subtask in the database
+     *
+     * @param subtask the subtask to be updates
+     * @param value  the value it should be updated to
+     */
+    public void updateSubtaskCompleteness(Subtask subtask, boolean value) {
+        session.send(
+                "/app/subtask/updateCompleteness/" + subtask.getId() + "/" + value,
+                subtask
+        );
+    }
+
+    /**
+     * Updates the lists of tasks in a tasklist
+     * @param taskList - the tasklist to be updated
+     * @param tasks - the new list of tasks
+     */
+    public void updateTaskListChildren(TaskList taskList, List<Task> tasks) {
+        StringBuilder ids = new StringBuilder();
+        for (Task t : tasks) {
+            ids.append(t.getId());
+        }
+        session.send(
+                "/taskList/updateChildren/" + taskList.getId() + "/" + ids,
+                taskList
+        );
     }
 }

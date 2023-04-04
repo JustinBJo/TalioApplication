@@ -46,4 +46,29 @@ public class AlertUtils {
             return false;
         }
     }
+
+    /**
+     * confirmation message for leaving admin mode
+     * @return whether it has been confirmed or not
+     */
+    public boolean confirmRevertAdmin() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Leave admin mode?");
+        alert.setHeaderText("Leave admin mode");
+        alert.setContentText("Are you sure you want to leave the admin " +
+                "mode? \n You will need to input the password again " +
+                "to re-join!");
+        ButtonType confirmButton = new ButtonType("Confirm");
+        ButtonType cancelButton = new ButtonType("Cancel");
+
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == confirmButton) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

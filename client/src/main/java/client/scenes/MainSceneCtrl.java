@@ -256,21 +256,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        if (activeBoard.getId() == defaultBoardID) {
-            alertUtils.alertError("You cannot delete the default board!");
-            return;
-        }
-
-        boolean confirmation = alertUtils.confirmDeletion("board");
-
-        // Check the user's response and perform the desired action
-        if (confirmation) {
-            Board b = activeBoard;
-            setEntity(server.getDefaultBoard());
-            websocket.deleteBoard(b);
-            mainCtrl.getUser().getBoards().remove(b);
-            websocket.saveUser(mainCtrl.getUser());
-        }
+        mainCtrl.deleteBoard(activeBoard);
     }
 
     /**
@@ -321,5 +307,22 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         joinedBoardsWebsocket.register(u.getId(), "save");
     }
 
+    /**
+     * functionality for the "admin" icon button
+     */
+    public void adminPassword() {
+        if (!mainCtrl.isAdmin()) {
+            mainCtrl.showAdmin();
+        }
+        else {
+            boolean accept = alertUtils.confirmRevertAdmin();
+
+            if (accept) {
+                mainCtrl.setAdmin(false);
+                mainCtrl.setUser(server.checkUser());
+                mainCtrl.showMain();
+            }
+        }
+    }
 }
 

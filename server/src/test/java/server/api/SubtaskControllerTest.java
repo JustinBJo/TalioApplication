@@ -62,6 +62,14 @@ class SubtaskControllerTest {
     }
 
     @Test
+    void updateCompletenessTest() {
+        repo.save(k1);
+        sut.updateCompleteness(k1.getId(), true);
+
+        assertTrue(repo.findAll().contains(k1));
+        assertTrue(repo.findById(k1.getId()).get().isCompleted());
+    }
+
     void delete() {
         assertFalse(repo.findAll().contains(k1));
         Long id = repo.save(k1).getId();

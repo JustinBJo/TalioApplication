@@ -15,6 +15,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
@@ -177,6 +178,14 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
         entityWebsocket.register(taskList.getId(), "update");
         parentWebsocket.register(taskList.getId());
+        websocket.registerForMessages(
+                "/topic/taskList/updateChildren/" + taskList.getId(),
+                TaskList.class,
+                (tl) -> {
+                   taskChildrenManager.updateChildren(new ArrayList<>());
+                   taskChildrenManager.updateChildren(tl.getTasks());
+                }
+        );
     }
 
     /**

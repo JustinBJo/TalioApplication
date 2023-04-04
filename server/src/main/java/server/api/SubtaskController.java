@@ -202,4 +202,44 @@ public class SubtaskController {
         Subtask saved = repo.save(param);
         return ResponseEntity.ok(saved);
     }
+
+    /**
+     * Updates the subtask completed status using websocket messages
+     * @param id id of updated entity
+     * @param status new status
+     * @return updated entity
+     */
+    @MessageMapping("/subtask/updateCompleteness/{id}/{status}")
+    @SendTo("/topic/subtask/updateCompleteness/{id}")
+    public Subtask messageUpdateCompleteness(@DestinationVariable String id,
+                                             @DestinationVariable boolean status) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = updateCompleteness(lID, status);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
+    /**
+     * Updates in the database the status of the subtask
+     * @param id the id of the subtask to be edited
+     * @param newValue the new title
+     */
+    @PutMapping("/updateCompleteness/{id}/{newValue}")
+    public ResponseEntity<Subtask> updateCompleteness(@PathVariable("id") long id,
+                       @PathVariable("newValue") boolean newValue) {
+        if (id < 0 || !repo.existsById(id))
+            return ResponseEntity.badRequest().build();
+        Subtask param = repo.findById(id).get();
+        param.setCompleted(newValue);
+        var saved = repo.save(param);
+        return ResponseEntity.ok(saved);
+    }
 }

@@ -6,6 +6,10 @@ import client.utils.WebsocketUtils;
 import commons.Task;
 import javafx.application.Platform;
 import javafx.event.Event;
+import client.utils.ServerUtils;
+import commons.Subtask;
+import commons.Task;
+import commons.TaskList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,6 +20,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
@@ -25,6 +30,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     private final AlertUtils alert;
 
     private Task task;
+    private TaskList parentList;
 
     private final EntityWebsocketManager<Task> entityWebsocket;
 
@@ -33,11 +39,21 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @FXML
     Label title;
     @FXML
+    Label progress;
+    @FXML
     Button delete;
     @FXML
     Button edit;
     @FXML
+    Button moveUp;
+    @FXML
+    Button moveDown;
+    @FXML
     ImageView editIcon;
+    @FXML
+    ImageView upIcon;
+    @FXML
+    ImageView downIcon;
     @FXML
     ImageView descriptionIndicator;
 
@@ -67,10 +83,19 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * after FXML components are initialized.
      */
     public void initialize() {
-        // Set up button icon
-        Image editIcon = new Image(Objects.requireNonNull(getClass()
-                .getResourceAsStream("/client/images/editicon.png")));
+        Image editIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/editicon.png"));
+        Image upIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png"));
+        Image downIcon = new Image(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png"));
+        Image descInd = new Image(getClass()
+                .getResourceAsStream("/client/images/menuicon.png"));
+
         this.editIcon.setImage(editIcon);
+        this.upIcon.setImage(upIcon);
+        this.downIcon.setImage(downIcon);
+        this.descriptionIndicator.setImage(descInd);
 
         // Set up drag and drop
         setupDragSource();
@@ -107,15 +132,33 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
         }
 
+        entityWebsocket.register(task.getId(), "updateTitle");
+        entityWebsocket.register(task.getId(), "updateDescription");
+
         Platform.runLater(() -> {
             title.setText(task.getTitle());
+
+            if (task.getSubtasks().size() == 0) {
+                progress.setText("");
+                return;
+            }
+            int progressNb = 0;
+            for (Subtask subtask : task.getSubtasks()) {
+                if (subtask.isCompleted()) progressNb++;
+            }
+            progress.setText(progressNb + "/" + task.getSubtasks().size());
+
             if (task.getDescription().isEmpty()) {
                 descriptionIndicator.setImage(null);
             }
         });
+    }
 
-        entityWebsocket.register(task.getId(), "updateTitle");
-        entityWebsocket.register(task.getId(), "updateDescription");
+    /**
+     * @param taskList list that holds this task
+     */
+    public void setParentList(TaskList taskList) {
+        this.parentList = taskList;
     }
 
     /**
@@ -152,6 +195,50 @@ public class CardCtrl implements IEntityRepresentation<Task> {
                 }
             }
         });
+    }
+
+    /**
+     * Used to move a task up in the parent list
+     */
+    public void moveUp() {
+        TaskList currentTaskList = parentList;
+
+        List<Task> currentTasks = currentTaskList.getTasks();
+        int taskIndex = currentTasks.indexOf(task);
+        taskIndex--;
+        if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
+            alert.alertError("You cannot move the task higher.");
+            return;
+        }
+        currentTasks.remove(task);
+        currentTasks.add(taskIndex, task);
+        currentTaskList.setTasks(currentTasks);
+
+        websocket.updateTaskListChildren(currentTaskList, currentTasks);
+    }
+
+    /**
+     * Used to move a task down in the parent list
+     */
+    public void moveDown() {
+        TaskList currentTaskList = parentList;
+
+        if (currentTaskList == null) {
+            System.out.println("The task is not part of a list");
+            return;
+        }
+        List<Task> currentTasks = currentTaskList.getTasks();
+        int taskIndex = currentTasks.indexOf(task);
+        taskIndex++;
+        if (taskIndex >= currentTasks.size()) {
+            alert.alertError("You cannot move the task lower.");
+            return;
+        }
+        currentTasks.remove(task);
+        currentTasks.add(taskIndex, task);
+        currentTaskList.setTasks(currentTasks);
+
+        websocket.updateTaskListChildren(currentTaskList, currentTasks);
     }
 
 }

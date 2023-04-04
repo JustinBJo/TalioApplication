@@ -1,5 +1,6 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -230,6 +231,59 @@ public class TaskListController {
         TaskList saved = repo.save(param);
         return ResponseEntity.ok(saved);
     }
+
+    /**
+     * Updates the entity's children using websocket messages
+     * @param id id of updated entity
+     * @param taskIds ids of new tasks
+     * @return updated entity
+     */
+    @MessageMapping("/taskList/updateChildren/{id}/{taskIds}")
+    @SendTo("/topic/taskList/updateChildren/{id}")
+    public TaskList messageUpdateChildren(@DestinationVariable String id,
+                                  @DestinationVariable String taskIds) {
+        List<Long> lTaskIds = new ArrayList<>();
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+
+            var sIds = taskIds.split(",");
+            for (var sTaskID : sIds) {
+                var lTaskID = Long.parseLong(sTaskID.replaceAll("[^0-9]", ""));
+                lTaskIds.add(lTaskID);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = updateTasks(lID, lTaskIds);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
+    /**
+     * Updates the tasks in a tasklist
+     * @param id - the id of the tasklist that will be updated
+     * @param taskIds - list of the id of tasks
+     */
+    @PutMapping("/updateTasks/{id}/[{taskIds}]")
+    public ResponseEntity<TaskList> updateTasks(@PathVariable("id") long id,
+                            @PathVariable("taskIds") List<Long> taskIds) {
+        if (id < 0 || !repo.existsById(id))
+            return ResponseEntity.badRequest().build();
+        TaskList param = repo.getById(id);
+        List<Task> tasks = new ArrayList<>();
+        for (long taskId : taskIds) {
+            tasks.add(taskRepo.findById(taskId).get());
+        }
+
+        param.setTasks(tasks);
+        var saved = repo.save(param);
+        return ResponseEntity.ok(saved);
+    }
+
 
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();

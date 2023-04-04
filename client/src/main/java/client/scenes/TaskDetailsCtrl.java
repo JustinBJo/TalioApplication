@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import java.util.Objects;
+import java.util.List;
 
 
 public class TaskDetailsCtrl {
@@ -160,6 +161,9 @@ public class TaskDetailsCtrl {
 
         // Check the user's response and perform the desired action
         if (confirmation) {
+            List<Subtask> subtasks = task.getSubtasks();
+            for (Subtask subtask : subtasks)
+                websocket.deleteSubtask(subtask);
             websocket.deleteTask(task);
             exit();
         }

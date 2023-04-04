@@ -62,20 +62,25 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
         boardName.setText(board.getTitle());
     }
 
-
-
     /**
      * Leave method associated to the "X" button in the FXML view of the board
      * Allows the user to leave a board
      */
     public void leave() {
-        if (board.getId() != server.getDefaultId()) {
+        if (board.getId() == server.getDefaultId()) {
+            alertUtils.alertError("You cannot leave the default board!");
+            return;
+        }
+
+        if (!mainCtrl.isAdmin()) {
             mainCtrl.getUser().removeBoard(board);
             websocket.saveUser(mainCtrl.getUser());
             board = null;
+            return;
         }
-        else
-            alertUtils.alertError("You cannot leave the default board!");
+
+        mainCtrl.deleteBoard(board);
+        board = null;
     }
 
     /**

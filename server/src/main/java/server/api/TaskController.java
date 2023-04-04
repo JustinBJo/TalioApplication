@@ -168,6 +168,8 @@ public class TaskController {
 
         Long oldParentId = findParentsId(id); // Needs to happen before deleting
 
+        List<Subtask> transferredSubtasks = repo.findById(id).get().getSubtasks();
+
         var deleteResponse = delete(id);
         if (deleteResponse.getStatusCode() != HttpStatus.OK
                 || deleteResponse.getBody() == null) {
@@ -176,9 +178,15 @@ public class TaskController {
 
         var res = add(deleteResponse.getBody(), newParentId);
 
-        if (res.getStatusCode() != HttpStatus.OK) {
+        if (res.getStatusCode() != HttpStatus.OK || res.getBody() == null) {
             return ResponseEntity.badRequest().build();
         }
+
+        Task newTask = res.getBody();
+        for (Subtask subtask : transferredSubtasks) {
+            newTask.addSubtask(subtask);
+        }
+        var savedTask = repo.save(newTask);
 
         parentChangeListeners.forEach((k, v) -> {
             v.accept(
@@ -186,7 +194,7 @@ public class TaskController {
                             oldParentId,
                             deleteResponse.getBody(),
                             newParentId,
-                            res.getBody()
+                            savedTask
                     )
             );
         });
@@ -345,6 +353,12 @@ public class TaskController {
             if (!unlinkSuccess) {
                 return ResponseEntity.badRequest().build();
             }
+
+            for (Task t : parent.getTasks()) {
+                Task repoTask = repo.findById(t.getId()).get();
+                repo.save(repoTask);
+            }
+
             taskListRepository.save(parent);
         }
 

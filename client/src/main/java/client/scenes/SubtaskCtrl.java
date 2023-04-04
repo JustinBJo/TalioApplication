@@ -7,6 +7,7 @@ import commons.Subtask;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,7 +25,7 @@ public class SubtaskCtrl
 
     private Subtask subtask;
 
-    private EntityWebsocketManager<Subtask> entityWebsocket;
+    private final EntityWebsocketManager<Subtask> entityWebsocket;
 
     @FXML
     AnchorPane root;
@@ -32,6 +33,8 @@ public class SubtaskCtrl
     Label title;
     @FXML
     Button delete;
+    @FXML
+    CheckBox completed;
     @FXML
     private ImageView editIcon;
     @FXML
@@ -67,11 +70,14 @@ public class SubtaskCtrl
         if (subtask.getTitle() == null) {
             subtask.setTitle("Untitled");
         }
+
         Platform.runLater(() -> {
             title.setText(subtask.getTitle());
+            completed.setSelected(subtask.isCompleted());
         });
 
         entityWebsocket.register(subtask.getId(), "update");
+        entityWebsocket.register(subtask.getId(), "updateCompleteness");
     }
 
     /**
@@ -107,4 +113,12 @@ public class SubtaskCtrl
         mainCtrl.showRenameSubtask(subtask);
     }
 
+    /**
+     * Updates the status of the current subtask
+     */
+    public void completeness() {
+        boolean newValue = completed.isSelected();
+        subtask.setCompleted(newValue);
+        websocket.updateSubtaskCompleteness(subtask, newValue);
+    }
 }

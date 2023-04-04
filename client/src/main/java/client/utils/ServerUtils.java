@@ -150,7 +150,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Board.class);
-
     }
 
     /**
@@ -217,6 +216,19 @@ public class ServerUtils {
         }
         return user;
     }
+
+    /**
+     * gets all users in the database
+     * @return the list of users in the database
+     */
+    public List<User> getAllUsers() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { } );
+    }
+
 
     /**
      * Sets a new task list to hold a given task
