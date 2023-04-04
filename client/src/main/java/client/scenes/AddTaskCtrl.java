@@ -19,6 +19,7 @@ public class AddTaskCtrl {
 
     /**
      * Constructor for the AddTaskCtrl
+     * @param service the AddTaskCtrl service
      */
     @Inject
     public AddTaskCtrl(AddTaskService service) {

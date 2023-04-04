@@ -16,7 +16,9 @@ class AddTaskServiceTest {
     void setup() {
         service = new AddTaskService(null, null);
         ServerUtils server = Mockito.mock(ServerUtils.class);
+        MainCtrlTalio mainCtrl = Mockito.mock(MainCtrlTalio.class);
         service.setServer(server);
+        service.setMainCtrl(mainCtrl);
     }
 
     @Test
@@ -49,6 +51,22 @@ class AddTaskServiceTest {
         service.setServer(server1);
         ServerUtils server2 = service.getServer();
         assertEquals(server1, server2);
+    }
+
+    @Test
+    void setMainCtrl() {
+        MainCtrlTalio mainCtrl1 = Mockito.mock(MainCtrlTalio.class);
+        service.setMainCtrl(mainCtrl1);
+        MainCtrlTalio mainCtrl2 = service.getMainCtrl();
+        assertEquals(mainCtrl1, mainCtrl2);
+    }
+
+    @Test
+    void getMainCtrl() {
+        MainCtrlTalio mainCtrl1 = Mockito.mock(MainCtrlTalio.class);
+        service.setMainCtrl(mainCtrl1);
+        MainCtrlTalio mainCtrl2 = service.getMainCtrl();
+        assertEquals(mainCtrl1, mainCtrl2);
     }
 
 }
