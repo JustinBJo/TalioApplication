@@ -188,8 +188,10 @@ public class TaskController {
                 || deleteResponse.getBody() == null) {
             return ResponseEntity.badRequest().build();
         }
+        Task oldTask = deleteResponse.getBody();
+        oldTask.setSubtasks(new ArrayList<>());
 
-        var res = add(deleteResponse.getBody(), newParentId);
+        var res = add(oldTask, newParentId);
 
         if (res.getStatusCode() != HttpStatus.OK || res.getBody() == null) {
             return ResponseEntity.badRequest().build();
@@ -197,7 +199,8 @@ public class TaskController {
 
         Task newTask = res.getBody();
         for (Subtask subtask : transfSubtasks) {
-            newTask.addSubtask(subtask);
+            Subtask savedSubtask = subtaskRepo.save(subtask);
+            newTask.addSubtask(savedSubtask);
         }
         var savedTask = repo.save(newTask);
 

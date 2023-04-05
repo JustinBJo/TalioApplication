@@ -137,25 +137,35 @@ public class CardCtrl implements IEntityRepresentation<Task> {
 
         entityWebsocket.register(task.getId(), "updateTitle");
         entityWebsocket.register(task.getId(), "updateDescription");
+        websocket.registerForMessages(
+                "/topic/subtask/add/" + task.getId(),
+                Subtask.class,
+                ignored -> Platform.runLater(this::setProgress)
+        );
 
         Platform.runLater(() -> {
             title.setText(task.getTitle());
-
-            if (task.getSubtasks() == null || task.getSubtasks().size() == 0) {
-                progress.setText("");
-                return;
-            }
-            int progressNb = 0;
-            for (Subtask subtask : task.getSubtasks()) {
-                if (subtask.isCompleted()) progressNb++;
-            }
-            progress.setText(progressNb + "/" + task.getSubtasks().size());
 
             if (task.getDescription() == null
                     || task.getDescription().isEmpty()) {
                 descriptionIndicator.setImage(null);
             }
+
+            setProgress();
         });
+    }
+
+    private void setProgress() {
+        List<Subtask> subtasks = server.getTaskData(task);
+        if (subtasks == null || subtasks.size() == 0) {
+            progress.setText("");
+            return;
+        }
+        int progressNb = 0;
+        for (Subtask subtask : subtasks) {
+            if (subtask.isCompleted()) progressNb++;
+        }
+        progress.setText(progressNb + "/" + subtasks.size());
     }
 
     /**
