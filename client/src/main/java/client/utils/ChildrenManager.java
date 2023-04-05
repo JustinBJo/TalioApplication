@@ -97,4 +97,20 @@ public class ChildrenManager
         }
         return ctrlList;
     }
+
+    public Pane getChildrenContainer() {
+        return childrenContainer;
+    }
+
+    public Class<C> getChildSceneCtrl() {
+        return childSceneCtrl;
+    }
+
+    public String getChildFxmlFileName() {
+        return childFxmlFileName;
+    }
+
+    public Map<T, Pair<C, Parent>> getChildUIMap() {
+        return childUIMap;
+    }
 }
