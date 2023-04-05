@@ -4,7 +4,6 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Subtask;
 import commons.Task;
-import commons.TaskList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -77,6 +76,9 @@ public class TaskDetailsCtrl {
                         SubtaskCtrl.class,
                         "Subtask.fxml"
                 );
+        subtaskChildrenManager.setUpdatedChildConsumer(
+                subtaskCtrl -> subtaskCtrl.setParent(task)
+        );
 
         // Set up websockets
         this.parentWebsocket = new ParentWebsocketManager<>(
@@ -112,6 +114,10 @@ public class TaskDetailsCtrl {
 
         var subtasks = server.getTaskData(task);
         subtaskChildrenManager.updateChildren(subtasks);
+        for (SubtaskCtrl subtaskCtrl :
+                subtaskChildrenManager.getChildrenCtrls()) {
+            subtaskCtrl.setParent(task);
+        }
 
         parentWebsocket.register(task.getId());
         entityWebsocket.register(task.getId(), "updateTitle");

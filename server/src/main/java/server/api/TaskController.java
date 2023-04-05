@@ -46,6 +46,15 @@ public class TaskController {
     }
 
     /**
+     * get all the tasks
+     * @return all the tasks
+     */
+    @GetMapping(path = { "", "/" })
+    public List<Task> getAll() {
+        return repo.findAll();
+    }
+
+    /**
      * get a task by id
      * @param id the id of the task
      * @return the task
@@ -172,7 +181,7 @@ public class TaskController {
 
         Long oldParentId = findParentsId(id); // Needs to happen before deleting
 
-        List<Subtask> transferredSubtasks = repo.findById(id).get().getSubtasks();
+        List<Subtask> transfSubtasks = repo.findById(id).get().getSubtasks();
 
         var deleteResponse = delete(id);
         if (deleteResponse.getStatusCode() != HttpStatus.OK
@@ -187,7 +196,7 @@ public class TaskController {
         }
 
         Task newTask = res.getBody();
-        for (Subtask subtask : transferredSubtasks) {
+        for (Subtask subtask : transfSubtasks) {
             newTask.addSubtask(subtask);
         }
         var savedTask = repo.save(newTask);
@@ -384,10 +393,10 @@ public class TaskController {
      * @param childIds ids of new children
      * @return updated entity
      */
-    @MessageMapping("/task/updateChildren/{id}/{taskIds}")
+    @MessageMapping("/task/updateChildren/{id}/{childIds}")
     @SendTo("/topic/task/updateChildren/{id}")
     public Task messageUpdateChildren(@DestinationVariable String id,
-                                          @DestinationVariable String childIds) {
+                                      @DestinationVariable String childIds) {
         List<Long> lChildIds = new ArrayList<>();
         long lID;
         try {
@@ -395,7 +404,8 @@ public class TaskController {
 
             var sIds = childIds.split(",");
             for (var sChildID : sIds) {
-                var lChildID = Long.parseLong(sChildID.replaceAll("[^0-9]", ""));
+                var lChildID =
+                        Long.parseLong(sChildID.replaceAll("[^0-9]", ""));
                 lChildIds.add(lChildID);
             }
         } catch (Exception e) {

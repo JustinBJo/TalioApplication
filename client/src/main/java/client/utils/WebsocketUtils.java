@@ -1,9 +1,6 @@
 package client.utils;
 
 import commons.*;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import org.glassfish.jersey.client.ClientConfig;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -16,8 +13,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class WebsocketUtils {
     private StompSession session;
@@ -225,8 +220,8 @@ public class WebsocketUtils {
      */
     public void updateSubtaskCompleteness(Subtask subtask, boolean value) {
         session.send(
-                "/app/subtask/updateCompleteness/" + subtask.getId() + "/" + value,
-                subtask
+            "/app/subtask/updateCompleteness/" + subtask.getId() + "/" + value,
+            subtask
         );
     }
 
@@ -239,6 +234,7 @@ public class WebsocketUtils {
         StringBuilder ids = new StringBuilder();
         for (Task t : tasks) {
             ids.append(t.getId());
+            ids.append(",");
         }
         session.send(
                 "/app/taskList/updateChildren/" + taskList.getId() + "/" + ids,
@@ -256,6 +252,7 @@ public class WebsocketUtils {
         StringBuilder ids = new StringBuilder();
         for (var s : newSubtasks) {
             ids.append(s.getId());
+            ids.append(",");
         }
         session.send(
                 "/app/task/updateChildren/" + task.getId() + "/" + ids,

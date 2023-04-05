@@ -3,7 +3,6 @@ package client.scenes;
 import client.utils.AlertUtils;
 import client.utils.EntityWebsocketManager;
 import client.utils.WebsocketUtils;
-import client.utils.ServerUtils;
 import commons.Task;
 import commons.Subtask;
 import javafx.application.Platform;
@@ -115,6 +114,13 @@ public class SubtaskCtrl
         this.downIcon.setImage(downIcon);
     }
 
+    /**
+     * @param task task that holds this subtask
+     */
+    public void setParent(Task task) {
+        this.parentTask = task;
+    }
+
 
     /**
      * Used to delete a task from a list
@@ -151,11 +157,8 @@ public class SubtaskCtrl
         }
         currentSubtasks.remove(subtask);
         currentSubtasks.add(taskIndex, subtask);
-        currentTask.setSubtasks(currentSubtasks);
 
         websocket.updateSubtasksInTask(currentTask, currentSubtasks);
-
-        mainCtrl.showTaskDetails(parentTask);
     }
 
     /**
@@ -173,11 +176,8 @@ public class SubtaskCtrl
         }
         currentSubtasks.remove(subtask);
         currentSubtasks.add(taskIndex, subtask);
-        currentTask.setSubtasks(currentSubtasks);
 
         websocket.updateSubtasksInTask(currentTask, currentSubtasks);
-
-        mainCtrl.showTaskDetails(parentTask);
     }
 
     /**

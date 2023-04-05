@@ -211,8 +211,9 @@ public class SubtaskController {
      */
     @MessageMapping("/subtask/updateCompleteness/{id}/{status}")
     @SendTo("/topic/subtask/updateCompleteness/{id}")
-    public Subtask messageUpdateCompleteness(@DestinationVariable String id,
-                                             @DestinationVariable boolean status) {
+    public Subtask messageUpdateCompleteness(
+            @DestinationVariable String id,
+            @DestinationVariable boolean status) {
         long lID;
         try {
             lID = Long.parseLong(id);
@@ -233,8 +234,9 @@ public class SubtaskController {
      * @param newValue the new title
      */
     @PutMapping("/updateCompleteness/{id}/{newValue}")
-    public ResponseEntity<Subtask> updateCompleteness(@PathVariable("id") long id,
-                       @PathVariable("newValue") boolean newValue) {
+    public ResponseEntity<Subtask> updateCompleteness(
+            @PathVariable("id") long id,
+            @PathVariable("newValue") boolean newValue) {
         if (id < 0 || !repo.existsById(id))
             return ResponseEntity.badRequest().build();
         Subtask param = repo.findById(id).get();

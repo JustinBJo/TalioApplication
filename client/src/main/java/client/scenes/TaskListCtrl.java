@@ -79,6 +79,9 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
                 CardCtrl.class,
                 "Card.fxml"
         );
+        taskChildrenManager.setUpdatedChildConsumer(
+                cardCtrl -> cardCtrl.setParentList(taskList)
+        );
 
         // Set up button icon
         Image editIcon = new Image(Objects.requireNonNull(getClass()

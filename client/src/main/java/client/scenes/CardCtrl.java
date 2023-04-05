@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import client.utils.ServerUtils;
 import commons.Subtask;
-import commons.Task;
 import commons.TaskList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,6 +27,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     private final WebsocketUtils websocket;
     private final MainCtrlTalio mainCtrl;
     private final AlertUtils alert;
+    private final ServerUtils server;
 
     private Task task;
     private TaskList parentList;
@@ -60,15 +60,17 @@ public class CardCtrl implements IEntityRepresentation<Task> {
 
     /**
      * Main constructor for CardCtrl
+     *
      * @param mainCtrlTalio main controller of the application
      */
     @Inject
     public CardCtrl(MainCtrlTalio mainCtrlTalio,
                     AlertUtils alert,
-                    WebsocketUtils websocket) {
+                    WebsocketUtils websocket, ServerUtils server) {
         this.mainCtrl = mainCtrlTalio;
         this.alert = alert;
         this.websocket = websocket;
+        this.server = server;
 
         this.entityWebsocket = new EntityWebsocketManager<>(
                 websocket,
@@ -130,6 +132,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         this.task = task;
         if (task.getTitle() == null) {
             task.setTitle("Untitled");
+            return;
         }
 
         entityWebsocket.register(task.getId(), "updateTitle");
@@ -138,7 +141,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
         Platform.runLater(() -> {
             title.setText(task.getTitle());
 
-            if (task.getSubtasks().size() == 0) {
+            if (task.getSubtasks() == null || task.getSubtasks().size() == 0) {
                 progress.setText("");
                 return;
             }
@@ -148,7 +151,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             }
             progress.setText(progressNb + "/" + task.getSubtasks().size());
 
-            if (task.getDescription().isEmpty()) {
+            if (task.getDescription() == null
+                    || task.getDescription().isEmpty()) {
                 descriptionIndicator.setImage(null);
             }
         });
@@ -203,7 +207,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     public void moveUp() {
         TaskList currentTaskList = parentList;
 
-        List<Task> currentTasks = currentTaskList.getTasks();
+        List<Task> currentTasks = server.getTaskListData(currentTaskList);
         int taskIndex = currentTasks.indexOf(task);
         taskIndex--;
         if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
@@ -227,7 +231,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             System.out.println("The task is not part of a list");
             return;
         }
-        List<Task> currentTasks = currentTaskList.getTasks();
+        List<Task> currentTasks = server.getTaskListData(currentTaskList);
         int taskIndex = currentTasks.indexOf(task);
         taskIndex++;
         if (taskIndex >= currentTasks.size()) {

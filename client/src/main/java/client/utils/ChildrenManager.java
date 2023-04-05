@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ChildrenManager
         <T extends IEntity, C extends IEntityRepresentation<T>> {
@@ -18,6 +19,7 @@ public class ChildrenManager
     private final Map<T, Pair<C, Parent>> childUIMap;
     private final Class<C> childSceneCtrl;
     private final String childFxmlFileName;
+    private Consumer<C> updatedChildConsumer;
 
     /**
      * @param childrenContainer JavaFX pane which contains the children
@@ -127,6 +129,10 @@ public class ChildrenManager
             }
             // Initialize its controller with this task list
             loadedChild.getKey().setEntity(child);
+            // Do any additional actions
+            if (updatedChildConsumer != null) {
+                updatedChildConsumer.accept(loadedChild.getKey());
+            }
             // Add its reference to the map
             childUIMap.put(child, loadedChild);
         }
@@ -151,5 +157,13 @@ public class ChildrenManager
             ctrlList.add(ctrlAndParent.getKey());
         }
         return ctrlList;
+    }
+
+    /**
+     * Defines a consumer that will be called for every updated child
+     * @param updatedChildConsumer consumer
+     */
+    public void setUpdatedChildConsumer(Consumer<C> updatedChildConsumer) {
+        this.updatedChildConsumer = updatedChildConsumer;
     }
 }
