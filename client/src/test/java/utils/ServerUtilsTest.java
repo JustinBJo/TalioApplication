@@ -9,15 +9,9 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -83,8 +77,24 @@ public class ServerUtilsTest {
         assertEquals("", set);
     }
 
-//    @Test
-//    void setServerTest()
+    @Test
+    void setServerTest() {
+        WebsocketUtils websockets = Mockito.mock(WebsocketUtils.class);
+        doNothing().when(websockets).updateServer(anyString());
+
+        serverUtils.setWebsockets(websockets);
+
+        when(builder.get()).thenReturn(null);
+
+        assertDoesNotThrow(() -> serverUtils.setServer("http://localhost:8080/"));
+    }
+
+    @Test
+    void setServerFailTest() {
+        when(builder.get()).thenThrow(ProcessingException.class);
+
+        assertThrows(ProcessingException.class, () -> serverUtils.setServer("http://localhost:9999/"));
+    }
 
     @Test
     void listenForUpdateTaskParentTest() throws NoSuchFieldException, IllegalAccessException {
@@ -193,23 +203,36 @@ public class ServerUtilsTest {
         assertEquals(test, result);
     }
 
-//    @Test
-//    void updateTaskParentTest() {
-//        Task testTask = new Task("Test task");
-//        testTask.setId(2001L);
-//        TaskList test = new TaskList("test taskList");
-//        when(builder.put(Entity.entity(test, APPLICATION_JSON), Task.class)).thenReturn(testTask);
-//
-//        Task result = serverUtils.updateTaskParent(testTask.getId(), test);
-//        assertEquals(testTask, result);
-//    }
+    @Test
+    void updateTaskParentTest() {
+        Task testTask = new Task("Test task");
+        testTask.setId(2001L);
+        TaskList test = new TaskList("test taskList");
+        when(builder.put(Entity.entity(test, APPLICATION_JSON), Task.class)).thenReturn(testTask);
+
+        Task result = serverUtils.updateTaskParent(testTask.getId(), test);
+        assertEquals(testTask, result);
+    }
 
     @Test
     void checkUserTest() {
-        String testIp = "127.0.0.1";
-        User test = new User("127.0.0.1");
+        String testIp = "1030";
+        User test = new User(testIp);
 
-        when(builder.get((GenericType<String>) any())).thenReturn(testIp);
+        List<User> users = new ArrayList<>();
+        users.add(test);
+
+        when(builder.get(any(GenericType.class))).thenAnswer(invocation -> {
+            GenericType<?> type = invocation.getArgument(0);
+
+            if (type.getType().equals(String.class)) {
+                return testIp;
+            } else if (type.getType().equals(new GenericType<List<User>>() {}.getType())) {
+                return users;
+            } else {
+                throw new IllegalArgumentException("Unexpected type: " + type.getType());
+            }
+        });
 
         User result = serverUtils.checkUser();
         assertEquals(test.getIp(), result.getIp());

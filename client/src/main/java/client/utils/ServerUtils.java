@@ -103,7 +103,7 @@ public class ServerUtils {
     private void startPollingThread() {
         runnable = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
-                var res = ClientBuilder.newClient(new ClientConfig())
+                var res = createClient()
                         .target(server).path("tasks/listen/updateParent/")
                         .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                         .get();
@@ -265,7 +265,7 @@ public class ServerUtils {
      * @param newParent list that now holds the task
      */
     public Task updateTaskParent(long taskId, TaskList newParent) {
-        return ClientBuilder.newClient(new ClientConfig()).target(server)
+        return createClient().target(server)
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
@@ -281,14 +281,14 @@ public class ServerUtils {
      * no existent one is found
      */
     public User checkUser() {
-        String ip = ClientBuilder.newClient(new ClientConfig())
+        String ip = createClient()
                 .target(server).path("user/ip")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<String>() {
                 });
 
-        List<User> users = ClientBuilder.newClient(new ClientConfig())
+        List<User> users = createClient()
                 .target(server).path("user")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -303,7 +303,7 @@ public class ServerUtils {
             }
         }
         if (!exists) {
-            ClientBuilder.newClient(new ClientConfig())
+            createClient()
                     .target(server).path("user/add")
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
