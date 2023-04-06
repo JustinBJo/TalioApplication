@@ -3,6 +3,8 @@ package client.scenes;
 import client.utils.AddTaskService;
 import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
+import client.utils.AlertUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
@@ -11,7 +13,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 public class AddTaskCtrl {
+
     private final AddTaskService service;
+    private final WebsocketUtils websocket;
+    private final AlertUtils alertUtils;
+
+    private TaskList parentTaskList;
+
     @FXML
     private TextField title;
     @FXML
@@ -22,8 +30,12 @@ public class AddTaskCtrl {
      * @param service the AddTaskCtrl service
      */
     @Inject
-    public AddTaskCtrl(AddTaskService service) {
+    public AddTaskCtrl(AddTaskService service,
+                        AlertUtils alertUtils,
+                        WebsocketUtils websocket) {
         this.service = service;
+        this.alertUtils = alertUtils;
+        this.websocket = websocket;
     }
 
     /**
@@ -93,8 +105,9 @@ public class AddTaskCtrl {
     public void confirm() {
         try {
             service.getServer().addTask(getTask(), service.getParentTaskList());
+            websocket.addTask(getTask(), parentTaskList);
         } catch (WebApplicationException e) {
-            ErrorUtils.alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 

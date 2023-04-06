@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 @Entity
-public class User {
+public class User implements IEntity {
     @Id
     private String ip;
+
+    private Long id;
 
     @OneToMany(cascade =  CascadeType.PERSIST)
     private List<Board> joinedBoards;
@@ -28,6 +30,7 @@ public class User {
      */
     public User(String ip) {
         this.joinedBoards = new ArrayList<>();
+        setId(ip);
         this.ip = ip;
     }
 
@@ -37,6 +40,7 @@ public class User {
      * @param joinedBoards the user's joined boards
      */
     public User(String ip, List<Board> joinedBoards) {
+        setId(ip);
         this.ip = ip;
         this.joinedBoards = joinedBoards;
     }
@@ -54,6 +58,7 @@ public class User {
      * @param ip the ip to be set
      */
     public void setIp(String ip) {
+        setId(ip);
         this.ip = ip;
     }
 
@@ -90,10 +95,12 @@ public class User {
 
     /**
      * removes a board from the user's collection
+     *
      * @param b the board to be removed
+     * @return success state of removal
      */
-    public void removeBoard(Board b) {
-        joinedBoards.remove(b);
+    public boolean removeBoard(Board b) {
+        return joinedBoards.remove(b);
     }
 
     /**
@@ -102,5 +109,16 @@ public class User {
      */
     public List<Board> getBoards() {
         return joinedBoards;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    private void setId(String ip) {
+        if (ip != null) {
+            this.id = Long.parseLong(ip.replaceAll("[^0-9]", ""));
+        }
     }
 }

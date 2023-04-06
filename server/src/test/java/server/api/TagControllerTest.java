@@ -3,6 +3,7 @@ package server.api;
 import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.api.testRepository.TestTagRepository;
 
 import java.util.List;
 

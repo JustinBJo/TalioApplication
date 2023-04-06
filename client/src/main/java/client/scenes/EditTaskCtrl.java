@@ -1,7 +1,8 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
 import jakarta.ws.rs.WebApplicationException;
@@ -11,6 +12,8 @@ import javafx.scene.control.TextField;
 public class EditTaskCtrl {
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
+    private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
 
     private Task editedTask;
 
@@ -24,13 +27,19 @@ public class EditTaskCtrl {
 
     /**
      * Constructor for the EditTask
-     * @param server injects a server object
-     * @param mainCtrl injects a mainCtrl object
+     *
+     * @param server    injects a server object
+     * @param mainCtrl  injects a mainCtrl object
      */
     @Inject
-    public EditTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public EditTaskCtrl(ServerUtils server,
+                        MainCtrlTalio mainCtrl,
+                        AlertUtils alertUtils,
+                        WebsocketUtils websocket) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
     /**
@@ -61,12 +70,12 @@ public class EditTaskCtrl {
      */
     public void saveChanges() {
         if (editedTask == null) {
-            ErrorUtils.alertError("No task to edit!");
+            alertUtils.alertError("No task to edit!");
             cancel();
         }
 
         if (newTitle.getText().isEmpty()) {
-            ErrorUtils.alertError("Tasks can't have empty titles!");
+            alertUtils.alertError("Tasks can't have empty titles!");
             cancel();
         }
 
@@ -82,17 +91,20 @@ public class EditTaskCtrl {
 
             if (!currentTitle.equals(newTitleString)) {
                 editedTask.setTitle(newTitleString);
-                server.updateTaskTitle(editedTask, newTitleString);
+                websocket.updateTaskTitle(editedTask, newTitleString);
             }
 
             if (!currentDescription.equals(newDescriptionString)) {
                 editedTask.setTitle(newDescriptionString);
-                server.updateTaskDescription(editedTask, newDescriptionString);
+                websocket.updateTaskDescription(
+                        editedTask,
+                        newDescriptionString
+                );
             }
 
         }
         catch (WebApplicationException e) {
-            ErrorUtils.alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 

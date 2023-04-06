@@ -17,7 +17,7 @@ public class TaskList implements IEntity {
     @Column(name = "title")
     private String title;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Task> tasks;
 
     /**

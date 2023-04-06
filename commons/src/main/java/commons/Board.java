@@ -16,7 +16,7 @@ public class Board implements IEntity {
 
     private String code;
     private String title;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TaskList> taskLists;
 
     /**

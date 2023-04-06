@@ -28,6 +28,15 @@ public class TaskTest {
     }
 
     @Test
+    public void checkTitleDescriptionConstructor() {
+        var t = new Task("Task Title", "Description");
+        assertEquals("Task Title", t.getTitle());
+        assertEquals("Description", t.getDescription());
+        assertEquals(0, t.getSubtasks().size());
+        assertEquals(0, t.getTags().size());
+    }
+
+    @Test
     public void testToString() {
         var actual = new Task("Task Title", "Description",
                 new ArrayList<>(), new ArrayList<>()).toString();
@@ -107,6 +116,19 @@ public class TaskTest {
         assertEquals(0, task.getSubtasks().size());
         task.addSubtask(subtask);
         assertEquals(1, task.getSubtasks().size());
+    }
+
+    @Test
+    void setSubtask() {
+        Task task = new Task("title");
+        Subtask s1 = new Subtask("s1", false);
+        Subtask s2 = new Subtask("s2", false);
+        List<Subtask> subtasks = new ArrayList<>();
+        subtasks.add(s1);
+        subtasks.add(s2);
+
+        task.setSubtasks(subtasks);
+        assertEquals(subtasks, task.getSubtasks());
     }
 
     @Test
