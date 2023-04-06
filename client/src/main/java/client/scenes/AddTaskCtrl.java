@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.AddTaskService;
-import client.utils.ErrorUtils;
 import client.utils.ServerUtils;
 import client.utils.AlertUtils;
 import client.utils.WebsocketUtils;
