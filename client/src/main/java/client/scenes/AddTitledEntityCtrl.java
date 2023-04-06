@@ -1,28 +1,43 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
+import commons.Subtask;
+import commons.Task;
 import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
+
+import java.util.List;
 
 public class AddTitledEntityCtrl {
 
     enum Type {
         TaskList,
-        Board
+        Board,
+        RenameTaskList,
+        RenameBoard,
+        Subtask,
+        RenameSubtask
     }
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
 
     private Type type;
+    private TaskList taskListToEdit;
+
+    private Subtask subtaskToEdit;
+
+    private Task currentTask;
 
     @FXML
     Button cancel;
@@ -39,9 +54,14 @@ public class AddTitledEntityCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public AddTitledEntityCtrl(ServerUtils server,
+                               MainCtrlTalio mainCtrl,
+                               AlertUtils alertUtils,
+                               WebsocketUtils websocket) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
     /**
@@ -58,12 +78,48 @@ public class AddTitledEntityCtrl {
             case Board:
                 setHeader("Add new board");
                 break;
+            case RenameTaskList:
+                setHeader("Edit list");
+                break;
+            case RenameBoard:
+                setHeader("Edit current board");
+                break;
+            case Subtask:
+                setHeader("Add a new subtask");
+                break;
+            case RenameSubtask:
+                setHeader("Edit subtask");
+                break;
 
             // Error handling (very unlikely, as it is an enum)
             default:
                 pressCancel();
                 break;
         }
+    }
+
+    /**
+     * @param taskListToEdit task list which will be edited
+     *                       if type is RenameTaskList
+     */
+    public void setTaskListToEdit(TaskList taskListToEdit) {
+        this.taskListToEdit = taskListToEdit;
+    }
+
+    /**
+     * @param subtask subtask which will be edited
+     *                if type is RenameSubtask
+     */
+    public void setSubtaskToEdit(Subtask subtask) {
+        this.subtaskToEdit = subtask;
+    }
+
+    /**
+     * Setter for the current task
+     * @param currentTask - the task we are adding the subtask to
+     */
+    public void setCurrentTask(Task currentTask) {
+        this.currentTask = currentTask;
     }
 
     /**
@@ -79,7 +135,6 @@ public class AddTitledEntityCtrl {
      */
     public void pressCancel() {
         textField.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -104,60 +159,114 @@ public class AddTitledEntityCtrl {
                 case Board:
                     addNewBoard(title);
                     break;
+                case RenameTaskList:
+                    if (taskListToEdit == null) {
+                        alertUtils.alertError("No task list to edit!");
+                        break;
+                    }
+                    editTaskList(title);
+                    break;
+                case RenameBoard:
+                    editBoard(title);
+
+                    break;
+                case Subtask:
+                    addNewSubtask(title);
+                    textField.clear();
+                    mainCtrl.showTaskDetails(currentTask);
+                    return;
+                //break;
+                case RenameSubtask:
+                    editSubtask(title);
+                    textField.clear();
+                    mainCtrl.showTaskDetails(currentTask);
+                    return;
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
-                    alertError("Something went wrong, please try again!");
+                    alertUtils.alertError(
+                        "Something went wrong, please try again!"
+                    );
                     pressCancel();
                     break;
             }
 
         } catch (WebApplicationException e) {
-            alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 
         textField.clear();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
-    }
-
-    /**
-     * Creates an error alert with given text
-     * @param text text shown in error alert
-     */
-    private void alertError(String text) {
-        var alert = new Alert(Alert.AlertType.ERROR);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setContentText(text);
-        alert.showAndWait();
     }
 
     /**
      * Add a new task list
      * @param title task list title
      */
-    private void addNewTaskList(String title) throws WebApplicationException {
+    private void addNewTaskList(String title) {
         TaskList taskList = new TaskList(title);
         Board parentBoard = mainCtrl.getActiveBoard();
 
         if (parentBoard == null) {
             // Error handling
-            alertError("Lists must be created within boards!");
+            alertUtils.alertError("Lists must be created within boards!");
             pressCancel();
             return;
         }
 
-        server.addTaskList(taskList, parentBoard);
-        mainCtrl.mainSceneCtrl.lists.getItems().add(taskList);
+        websocket.addTaskList(taskList, parentBoard);
     }
 
     /**
      * Add a new board
      * @param title board title
      */
-    private void addNewBoard(String title) throws WebApplicationException {
+    private void addNewBoard(String title) {
         Board board = new Board(title);
-        mainCtrl.setActiveBoard(server.addBoard(board));
+
+        board = server.addBoard(board);
+        mainCtrl.setActiveBoard(board);
+        mainCtrl.getUser().addBoard(board);
+        websocket.saveUser(mainCtrl.getUser());
+    }
+
+    private void editTaskList(String title) {
+       websocket.updateTaskList(taskListToEdit, title);
+    }
+
+    private void editBoard(String title) {
+       websocket.updateBoard(
+            mainCtrl.getActiveBoard(),
+            title
+        );
+
+        int index = mainCtrl.getUser().getBoards()
+                .indexOf(mainCtrl.getActiveBoard());
+        mainCtrl.getUser().getBoards().get(index).setTitle(title);
+        websocket.saveUser(mainCtrl.getUser());
+    }
+
+    /**
+     * Add a new subtask
+     * @param title subtask title
+     */
+    private void addNewSubtask(String title) {
+        Subtask subtask = new Subtask(title, false);
+        websocket.addSubtask(subtask, currentTask);
+        List<Task> allTasks = server.getTasks();
+        Task newCurrentTask = null;
+        for (Task t : allTasks) {
+            if (t.getId().equals(currentTask.getId())) {
+                newCurrentTask = t;
+            }
+        }
+        if (newCurrentTask != null) {
+            currentTask = newCurrentTask;
+        }
+    }
+
+    private void editSubtask(String title) {
+        websocket.updateSubtask(subtaskToEdit, title);
     }
 }

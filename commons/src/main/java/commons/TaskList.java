@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table
-public class TaskList {
+public class TaskList implements IEntity {
 
     @Id
     @GeneratedValue()
@@ -17,7 +17,7 @@ public class TaskList {
     @Column(name = "title")
     private String title;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Task> tasks;
 
     /**
@@ -96,12 +96,20 @@ public class TaskList {
         return this.tasks.add(task);
     }
 
+    /**
+     * Remove a task from this tasklist
+     * @param task the task that is being removed
+     * @return true if the task has been removed successfully, false otherwise
+     */
+    public boolean removeTask(Task task) {
+        return this.tasks.remove(task);
+    }
+
     @Override
     public boolean equals(Object o) {
 
         if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-        if (o == null || !(o instanceof TaskList)) return false;
+        if (!(o instanceof TaskList)) return false;
 
         TaskList taskList = (TaskList) o;
         return (getId() == null && taskList.getId() == null

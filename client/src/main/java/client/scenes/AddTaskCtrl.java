@@ -1,38 +1,47 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
+import client.utils.AlertUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
+import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 
 public class AddTaskCtrl {
 
-    private final ServerUtils server;
+    private final WebsocketUtils websocket;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
+
+    private TaskList parentTaskList;
 
     @FXML
     private TextField title;
-
     @FXML
     private TextField description;
 
 
     /**
      * Constructor for the Addtask
-     * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public AddTaskCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public AddTaskCtrl(WebsocketUtils websocket,
+                       MainCtrlTalio mainCtrl,
+                       AlertUtils alertUtils) {
+        this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
-        this.server = server;
-
+        this.websocket = websocket;
     }
 
+    /**
+     * @param parentTaskList task list to which the new task will be added
+     */
+    public void setParentTaskList(TaskList parentTaskList) {
+        this.parentTaskList = parentTaskList;
+    }
 
     /**
      * Method cancel for cancelling the insertion of a new task
@@ -40,7 +49,6 @@ public class AddTaskCtrl {
      */
     public void cancel() {
         clearFields();
-        mainCtrl.mainSceneCtrl.refresh();
         mainCtrl.showMain();
     }
 
@@ -53,18 +61,14 @@ public class AddTaskCtrl {
      */
     public void confirm() {
         try {
-            server.addTask(getTask());
+            websocket.addTask(getTask(), parentTaskList);
         } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            alertUtils.alertError(e.getMessage());
             return;
         }
 
         clearFields();
-        mainCtrl.mainSceneCtrl.refresh();
+        parentTaskList = null;
         mainCtrl.showMain();
     }
 

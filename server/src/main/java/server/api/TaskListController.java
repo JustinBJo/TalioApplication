@@ -1,11 +1,20 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import commons.Board;
 import commons.Task;
 import commons.TaskList;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import server.database.BoardRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
@@ -14,6 +23,7 @@ import server.database.TaskRepository;
 public class TaskListController {
 
     private final TaskListRepository repo;
+    private final BoardRepository boardRepo;
     private final TaskRepository taskRepo;
 
     /**
@@ -21,18 +31,11 @@ public class TaskListController {
      * @param repo the task list repository
      */
     public TaskListController(TaskListRepository repo,
+                              BoardRepository boardRepo,
                               TaskRepository taskRepo) {
         this.repo = repo;
+        this.boardRepo = boardRepo;
         this.taskRepo = taskRepo;
-    }
-
-    /**
-     * get all the task lists
-     * @return all the task lists
-     */
-    @GetMapping(path = { "", "/" })
-    public List<TaskList> getAll() {
-        return repo.findAll();
     }
 
     /**
@@ -49,48 +52,101 @@ public class TaskListController {
     }
 
     /**
+     * Adds a new entity using websocket messages
+     * @param taskList new entity
+     * @param boardId id of entity's parent
+     * @return added entity
+     */
+    @MessageMapping("/taskList/add/{boardId}")
+    @SendTo("/topic/taskList/add/{boardId}")
+    public TaskList messageAdd(@Payload TaskList taskList,
+                               @DestinationVariable String boardId) {
+        long lBoardId;
+        try {
+            lBoardId = Long.parseLong(boardId);
+        } catch (Exception e) {
+            return null;
+        }
+        var res = add(taskList, lBoardId);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
+    /**
      * add a task list
      * @param taskList the task list to add
+     * @param boardId id of the board that holds the new list
      * @return the added task list
      */
-    @PostMapping(path = { "", "/" })
-    public ResponseEntity<TaskList> add(@RequestBody TaskList taskList) {
+    @PostMapping(path = { "/{boardId}" })
+    public ResponseEntity<TaskList> add(
+            @RequestBody TaskList taskList,
+            @PathVariable("boardId") long boardId) {
 
-        if (taskList.getTitle() == null || taskList.getTasks() == null) {
+        if (isNullOrEmpty(taskList.getTitle())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Board> optionalParent = boardRepo.findById(boardId);
+
+        if (optionalParent.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
         TaskList saved = repo.save(taskList);
+        Board parent = optionalParent.get();
+        boolean linkSuccess = parent.addTaskList(saved);
+
+        if (!linkSuccess) {
+            repo.delete(saved);
+            return ResponseEntity.badRequest().build();
+        }
+
+        boardRepo.save(parent);
         return ResponseEntity.ok(saved);
     }
 
     /**
-     * Add a task to a specific list
-     * @param taskListId the id of the list that the task is being added to
-     * @param taskId the id of the task that is being added
-     * @return OK if the task has been added to the tasklist,
-     *         BAD_REQUEST otherwise
+     * Gets all tasks belonging to a given task list
+     * @param taskListId ID of the task list whose tasks wil be retrieved
+     * @return BAD_REQUEST if the task list doesn't exist,
+     *         OK with the list of tasks in body if it does
      */
-    @PutMapping("addTask/{taskListId}/{taskId}")
-    public ResponseEntity<String> addChildTask(
-            @PathVariable("taskListId") long taskListId,
-            @PathVariable("taskId") long taskId
+    @GetMapping("getTasks/{taskListId}")
+    public ResponseEntity<List<Task>> getChildTasks(
+            @PathVariable("taskListId") long taskListId
     ) {
-        if (taskListId < 0 || !repo.existsById(taskListId)
-                || taskId < 0 || !taskRepo.existsById(taskId)) {
+        if (taskListId < 0 || !repo.existsById(taskListId)) {
             return ResponseEntity.badRequest().build();
         }
 
         TaskList taskList = repo.getById(taskListId);
-        Task task = taskRepo.getById(taskId);
+        return ResponseEntity.ok(taskList.getTasks());
+    }
 
-        boolean success = taskList.addTask(task);
-        if (!success) return ResponseEntity.badRequest().build();
 
-        repo.save(taskList);
-        return ResponseEntity.ok(
-                "Added Task " + taskId + " to List " + taskListId
-        );
+    /**
+     * Removes an entity using websocket messages
+     * @param id entity id
+     * @return removed entity
+     */
+    @MessageMapping("/taskList/delete/{id}")
+    @SendTo("/topic/taskList/delete")
+    public TaskList messageDelete(@DestinationVariable String id) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = delete(lID);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
     }
 
     /**
@@ -98,16 +154,66 @@ public class TaskListController {
      * @param id the id of the tasklist to be removed
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
-        if (id < 0) {
-            return ResponseEntity.badRequest().body("Invalid id!");
+    public ResponseEntity<TaskList> delete(@PathVariable("id") Long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
         }
-        if  (!repo.existsById(id)) {
-            return ResponseEntity.badRequest().body("TaskList does not exist.");
+
+        TaskList taskList = null;
+        Board parent = null;
+
+        for (Board board : boardRepo.findAll()) {
+            for (TaskList tl : board.getTaskLists()) {
+                if (tl.getId().equals(id)) {
+                    taskList = tl;
+                    parent = board;
+                    break;
+                }
+            }
+            if (parent != null) {
+                break;
+            }
         }
-        TaskList taskList = repo.findById(id).get();
-        repo.delete(taskList);
-        return ResponseEntity.ok("TaskList " + id + " is removed.");
+
+        if (parent != null) {
+            boolean unlinkSuccess = parent.removeTaskList(taskList);
+            if (!unlinkSuccess) {
+                return ResponseEntity.badRequest().build();
+            }
+            boardRepo.save(parent);
+        }
+
+        repo.deleteById(id);
+
+        if (repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(taskList);
+    }
+
+
+    /**
+     * Updates the entity name using websocket messages
+     * @param id id of updated entity
+     * @param newName entity's new name
+     * @return updated entity
+     */
+    @MessageMapping("/taskList/update/{id}/{newName}")
+    @SendTo("/topic/taskList/update/{id}")
+    public TaskList messageUpdate(@DestinationVariable String id,
+                                  @DestinationVariable String newName) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = update(lID, newName);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
     }
 
     /**
@@ -116,14 +222,70 @@ public class TaskListController {
      * @param newName the new name
      */
     @PutMapping("update/{id}/{newName}")
-    public void update(@PathVariable("id") long id,
+    public ResponseEntity<TaskList> update(@PathVariable("id") long id,
                        @PathVariable("newName") String newName) {
         if (id < 0 || !repo.existsById(id) || newName.length() == 0)
-            return;
+            return ResponseEntity.badRequest().build();
         TaskList param = repo.getById(id);
         param.setTitle(newName);
-        repo.save(param);
-
+        TaskList saved = repo.save(param);
+        return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Updates the entity's children using websocket messages
+     * @param id id of updated entity
+     * @param taskIds ids of new tasks
+     * @return updated entity
+     */
+    @MessageMapping("/taskList/updateChildren/{id}/{taskIds}")
+    @SendTo("/topic/taskList/updateChildren/{id}")
+    public TaskList messageUpdateChildren(@DestinationVariable String id,
+                                  @DestinationVariable String taskIds) {
+        List<Long> lTaskIds = new ArrayList<>();
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+
+            var sIds = taskIds.split(",");
+            for (var sTaskID : sIds) {
+                var lTaskID = Long.parseLong(sTaskID.replaceAll("[^0-9]", ""));
+                lTaskIds.add(lTaskID);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = updateTasks(lID, lTaskIds);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
+    }
+
+    /**
+     * Updates the tasks in a tasklist
+     * @param id - the id of the tasklist that will be updated
+     * @param taskIds - list of the id of tasks
+     */
+    @PutMapping("/updateTasks/{id}/[{taskIds}]")
+    public ResponseEntity<TaskList> updateTasks(@PathVariable("id") long id,
+                            @PathVariable("taskIds") List<Long> taskIds) {
+        if (id < 0 || !repo.existsById(id))
+            return ResponseEntity.badRequest().build();
+        TaskList param = repo.getById(id);
+        List<Task> tasks = new ArrayList<>();
+        for (long taskId : taskIds) {
+            tasks.add(taskRepo.findById(taskId).get());
+        }
+
+        param.setTasks(tasks);
+        var saved = repo.save(param);
+        return ResponseEntity.ok(saved);
+    }
+
+
+    private static boolean isNullOrEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
 }

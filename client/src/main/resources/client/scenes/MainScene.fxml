@@ -1,28 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="600.0" prefWidth="831.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainSceneCtrl">
    <children>
-      <Button layoutX="758.0" layoutY="552.0" mnemonicParsing="false" onAction="#addTask" prefHeight="25.0" prefWidth="66.0" text="Add Task" />
-      <Button layoutX="14.0" layoutY="5.0" mnemonicParsing="false" onAction="#addBoard" prefHeight="16.0" prefWidth="92.0" text="Create board" />
-      <Label fx:id="sceneTitle" alignment="CENTER" layoutX="217.0" layoutY="14.0" prefHeight="28.0" prefWidth="398.0" text="Board X">
-         <font>
-            <Font size="19.0" />
-         </font>
-      </Label>
-      <Button fx:id="removeBoard" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#removeBoard" prefHeight="22.0" prefWidth="92.0" text="Delete board" />
-      <Button layoutX="758.0" layoutY="60.0" mnemonicParsing="false" onAction="#back" prefHeight="51.0" prefWidth="66.0" text="New server" textAlignment="CENTER" wrapText="true" />
-      <Button layoutX="758.0" layoutY="478.0" mnemonicParsing="false" onAction="#refresh" prefHeight="25.0" prefWidth="66.0" text="Refresh" />
-      <ListView fx:id="boards" layoutX="-1.0" layoutY="60.0" prefHeight="539.0" prefWidth="129.0" />
-      <ListView fx:id="lists" layoutX="128.0" layoutY="60.0" orientation="HORIZONTAL" prefHeight="539.0" prefWidth="423.0" />
-      <Button layoutX="758.0" layoutY="514.0" mnemonicParsing="false" onAction="#addList" prefHeight="25.0" prefWidth="66.0" text="Add list" />
-      <ListView fx:id="tasks" layoutX="551.0" layoutY="60.0" onMouseClicked="#viewTask" prefHeight="539.0" prefWidth="200.0" />
-      <Button fx:id="renameBoard" layoutX="725.0" layoutY="7.0" mnemonicParsing="false" onAction="#renameBoard" prefHeight="22.0" prefWidth="92.0" text="Rename board" />
-      <Button fx:id="copyCode" layoutX="725.0" layoutY="32.0" mnemonicParsing="false" onAction="#copyBoardCode" prefHeight="22.0" prefWidth="92.0" text="Copy code" />
+      <AnchorPane layoutX="-1.0" prefHeight="57.0" prefWidth="498.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label fx:id="sceneTitle" alignment="CENTER" layoutX="246.0" layoutY="14.0" text="Board Title" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="0.0">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <MenuButton layoutX="6.0" layoutY="7.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="94.0" style="-fx-background-color: transparent;" AnchorPane.leftAnchor="6.0">
+              <items>
+                <MenuItem fx:id="createBoardMenu" mnemonicParsing="false" onAction="#addBoard" text="Create new Board" />
+                  <MenuItem fx:id="renameBoardMenu" mnemonicParsing="false" onAction="#renameBoard" text="Rename this Board" />
+                  <MenuItem fx:id="deleteBoardMenu" mnemonicParsing="false" onAction="#removeBoard" text="Delete this Board" />
+                <MenuItem fx:id="joinBoardMenu" mnemonicParsing="false" onAction="#joinBoard" text="Join another Board" />
+                  <MenuItem fx:id="joinServerMenu" mnemonicParsing="false" onAction="#back" text="Join different Server" />
+              </items>
+               <graphic>
+                  <ImageView fx:id="menuIcon" fitHeight="49.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/menuicon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </MenuButton>
+            <Button layoutX="62.0" layoutY="2.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="50.0" style="-fx-background-color: transparent;" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="62.0">
+               <graphic>
+                  <Pane prefHeight="32.0" prefWidth="34.0">
+                     <children>
+                        <Label alignment="BOTTOM_CENTER" layoutY="13.0" prefHeight="41.0" prefWidth="36.0" text="Admin" />
+                        <ImageView fx:id="adminIcon" fitHeight="31.0" fitWidth="36.0" layoutX="3.0" layoutY="9.0" onMouseClicked="#adminPassword" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/adminicon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+               </graphic>
+            </Button>
+            <VBox layoutX="672.0" layoutY="2.0" prefHeight="57.0" prefWidth="152.0" AnchorPane.rightAnchor="7.0">
+               <children>
+                  <HBox prefHeight="31.0" prefWidth="150.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="73.0" text="Board code: " />
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#copyBoardCode" prefHeight="31.0" prefWidth="81.0" style="-fx-background-color: transparent;">
+                           <graphic>
+                              <Label fx:id="boardCode" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="88.0" text="Label" />
+                           </graphic>
+                           <HBox.margin>
+                              <Insets left="-5.0" right="-6.0" />
+                           </HBox.margin>
+                        </Button>
+                        <ImageView fx:id="copyIcon" fitHeight="18.0" fitWidth="12.0" onMouseClicked="#copyBoardCode" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/copyicon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="25.0" prefWidth="138.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="58.0" text="Server:" />
+                        <Label fx:id="serverAddr" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="107.0" text="Label">
+                           <padding>
+                              <Insets right="13.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <SplitPane dividerPositions="0.15" layoutY="65.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="65.0">
+         <items>
+            <ScrollPane fitToWidth="true" vbarPolicy="NEVER">
+               <content>
+                  <VBox fx:id="boardsContainer" prefHeight="521.0" prefWidth="120.0" spacing="10.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <ScrollPane fitToHeight="true">
+               <content>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <HBox fx:id="taskListsContainer" spacing="10.0">
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#addList" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #17D50A;" text="+" textFill="WHITE">
+                           <HBox.margin>
+                              <Insets bottom="60.0" left="10.0" right="10.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+               </content>
+            </ScrollPane>
+         </items>
+      </SplitPane>
    </children>
 </AnchorPane>

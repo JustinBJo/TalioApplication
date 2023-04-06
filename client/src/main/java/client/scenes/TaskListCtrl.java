@@ -1,152 +1,228 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 
-public class TaskListCtrl {
-
-    private final ServerUtils server;
-    private final MainSceneCtrl mainSceneCtrl;
-    private final MainCtrlTalio mainCtrl;
-    private final RenameCtrl renameCtrl;
-
-    private TaskList taskList;
-
-    private static ServerUtils serverCopy;
-    private static MainSceneCtrl mainSceneCtrlCopy;
-    private static MainCtrlTalio mainCtrlTalioCopy;
-    private static RenameCtrl renameCtrlCopy;
-
+public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
     AnchorPane root;
-
     @FXML
     Label title;
-    @FXML
-    ListView<Task> tasks;
     @FXML
     Button deleteList;
     @FXML
     Button addTask;
     @FXML
     Button rename;
+    @FXML
+    VBox taskContainer;
+    @FXML
+    ImageView editIcon;
 
-    ObservableList<Task> taskData;
+    private final Border highlightBorder = new Border(
+            new BorderStroke(
+                    Color.BLACK,
+                    BorderStrokeStyle.SOLID,
+                    CornerRadii.EMPTY,
+                    BorderStroke.THICK
+            )
+    );
+
+    private final ServerUtils server;
+    private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
+
+    private EntityWebsocketManager<TaskList> entityWebsocket;
+    private ParentWebsocketManager<Task, CardCtrl> parentWebsocket;
+    private ChildrenManager<Task, CardCtrl> taskChildrenManager;
+
+    private TaskList taskList;
 
     /**
-     * Default constructor for TaskListCtrl
-     */
-
-    public TaskListCtrl() {
-        if (serverCopy != null) {
-            this.server = serverCopy;
-            this.mainSceneCtrl = mainSceneCtrlCopy;
-            this.mainCtrl = mainCtrlTalioCopy;
-            this.renameCtrl = renameCtrlCopy;
-        }
-        else {
-            this.server = null;
-            this.mainCtrl = null;
-            this.mainSceneCtrl = null;
-            this.renameCtrl = null; }
-    }
-
-    /**
-     * Main Constructor for TaskListCtrl
-     * @param server the server to fetch the data from
-     * @param mainSceneCtrl the board scene that the TaskList belongs to
+     * Constructor with dependency injection
      */
     @Inject
     public TaskListCtrl(ServerUtils server,
-                        MainSceneCtrl mainSceneCtrl, MainCtrlTalio mainCtrl,
-                        RenameCtrl renameCtrl) {
+                        MainCtrlTalio mainCtrl,
+                        AlertUtils alertUtils,
+                        WebsocketUtils websocket) {
+        this.alertUtils = alertUtils;
         this.server = server;
-        this.mainSceneCtrl = mainSceneCtrl;
         this.mainCtrl = mainCtrl;
-        this.renameCtrl = renameCtrl;
-
-        this.serverCopy = server;
-        this.mainSceneCtrlCopy = mainSceneCtrl;
-        this.mainCtrlTalioCopy = mainCtrl;
-        this.renameCtrlCopy = renameCtrl;
-
-        FXMLLoader fxmlLoader = new FXMLLoader((getClass()
-                .getResource("TaskList.fxml")));
-        try {
-            fxmlLoader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.websocket = websocket;
     }
 
+
     /**
-     * Initialise the scene
+     * Create children manager after FXML components are initialized
      */
     public void initialize() {
-        taskData = FXCollections.observableArrayList();
-        tasks.setItems(taskData);
-        tasks.setCellFactory(new CardCtrl(
-                server, this, mainSceneCtrl, mainCtrl));
-        tasks.setFixedCellSize(0);
-        refresh();
+        // Set up tasks manager
+        taskChildrenManager = new ChildrenManager<>(
+                taskContainer,
+                CardCtrl.class,
+                "Card.fxml"
+        );
+        taskChildrenManager.setUpdatedChildConsumer(
+                cardCtrl -> cardCtrl.setParentList(taskList)
+        );
+
+        // Set up button icon
+        Image editIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/editicon.png")));
+        this.editIcon.setImage(editIcon);
+
+        // Set up drag and drop
+        setupDropTarget();
+
+        // Set up websockets
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "taskList",
+                TaskList.class,
+                this::setEntity
+        );
+        this.parentWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "task",
+                Task.class,
+                taskChildrenManager
+        );
     }
 
     /**
-     * Refresh the tasklist
+     * @return id of tasklist represented by this scene
      */
-    public void refresh() {
-        taskData = FXCollections.observableList(server.getTasks());
-        tasks.setItems(taskData);
+    public Long getId() {
+        if (taskList == null) return -1L;
+        return taskList.getId();
+    }
+
+    /**
+     * @return children manager that handles this list's tasks
+     */
+    public ChildrenManager<Task, CardCtrl> getTaskChildrenManager() {
+        return taskChildrenManager;
+    }
+
+    private void setupDropTarget() {
+
+        // Define behaviour when holding a dragged object here
+        root.setOnDragOver(event -> {
+            // Sets this as a drop target accepting copying or moving strings
+            Dragboard db = event.getDragboard();
+            if (db.hasString()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+
+                // Displays a border on the task list
+                root.setBorder(highlightBorder);
+            }
+            event.consume();
+        });
+
+        // Remove highlight when mouse exists list
+        root.setOnDragExited(event -> root.setBorder(Border.EMPTY));
+
+        // Define behaviour when dropping here
+        root.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            long taskId = -1;
+            try {
+                // Try to get task id from dropped object
+                if (!db.hasString()) throw new Exception();
+                taskId = Long.parseLong(db.getString());
+                if (taskId < 0) throw new Exception();
+            } catch (Exception ignored) {
+                // Tell source drop failed in case something goes wrong
+                event.setDropCompleted(false);
+                event.consume();
+                return;
+            }
+
+            // Send update to server
+            server.updateTaskParent(taskId, taskList);
+
+            // Tell source drop was successful
+            event.setDropCompleted(true);
+            event.consume();
+        });
     }
 
     /**
      * Set the TaskList instance that this Scene holds
      * @param taskList the TaskList instance to be set
      */
-    public void setTaskList(TaskList taskList) {
+    public void setEntity(TaskList taskList) {
         this.taskList = taskList;
         if (taskList.getTitle() == null) {
             taskList.setTitle("Untitled");
         }
-        title.setText(taskList.getTitle());
+        Platform.runLater(() -> {
+            title.setText(taskList.getTitle());
+        });
 
-        if (taskList.getTasks() == null) {
-            return;
+        taskChildrenManager.updateChildren(server.getTaskListData(taskList));
+
+        for (CardCtrl cardCtrl : taskChildrenManager.getChildrenCtrls()) {
+            cardCtrl.setParentList(taskList);
         }
-        tasks.getItems().addAll(taskList.getTasks());
+
+        entityWebsocket.register(taskList.getId(), "update");
+        parentWebsocket.register(taskList.getId());
+        websocket.registerForMessages(
+                "/topic/taskList/updateChildren/" + taskList.getId(),
+                TaskList.class,
+                (tl) -> {
+                   taskChildrenManager.updateChildren(new ArrayList<>());
+                   taskChildrenManager.updateChildren(tl.getTasks());
+                }
+        );
     }
 
     /**
-     * used to delete a tasklist from the main scene
+     * Deletes this task list
      */
     public void delete() {
-        TaskList copy = taskList;
-        mainCtrl.mainSceneCtrl.lists.getItems().remove(copy);
-        mainCtrl.mainSceneCtrl.listData.remove(copy);
-        server.deleteTaskList(copy);
+        boolean confirmation = alertUtils.confirmDeletion("list");
 
-
+        if (confirmation) {
+            websocket.deleteTaskList(taskList);
+            taskList = null;
+        }
     }
 
     /**
      * Switches to the rename scene and refreshes main scene
      */
     public void rename() {
-        mainCtrl.setCurrentTaskList(taskList);
-        mainCtrl.showRenameList();
-        mainCtrl.mainSceneCtrl.refresh();
+        mainCtrl.showRenameList(taskList);
+    }
 
+
+    /**
+     * add a task to the list
+     */
+    public void addTask() {
+        if (taskList == null) {
+            alertUtils.alertError("No list to add task to!");
+            return;
+        }
+        mainCtrl.showAddTask(taskList);
     }
 }

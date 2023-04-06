@@ -15,22 +15,19 @@
  */
 package client;
 
-import static com.google.inject.Guice.createInjector;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
-import client.utils.ServerUtils;
-import com.google.inject.Injector;
+import client.utils.AlertUtils;
+import client.utils.BuildUtils;
 
+import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
 
     /**
      * main method
@@ -46,41 +43,68 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        ServerUtils server = INJECTOR.getInstance(ServerUtils.class);
+        var server = BuildUtils.getInstance(ServerUtils.class);
+        var websocket = BuildUtils.getInstance(WebsocketUtils.class);
+        server.setWebsockets(websocket);
 
-        var connect = FXML.load(ConnectScreenCtrl.class,
-                "client", "scenes", "ConnectScreen.fxml");
+        primaryStage.setOnCloseRequest(e -> server.stopPollingThread());
 
-        var mainScene = FXML.load(MainSceneCtrl.class,
-                "client", "scenes", "MainScene.fxml");
+        var connect = BuildUtils.loadFXML(
+                ConnectScreenCtrl.class,
+                "ConnectScreen.fxml"
+        );
 
-        var addTitledEntity = FXML.load(AddTitledEntityCtrl.class,
-                "client", "scenes", "AddTitledEntity.fxml");
+        var mainScene = BuildUtils.loadFXML(
+                MainSceneCtrl.class,
+                "MainScene.fxml"
+        );
 
-        var addTask = FXML.load(AddTaskCtrl.class,
-                "client", "scenes", "AddTask.fxml");
+        var addTitledEntity = BuildUtils.loadFXML(
+                AddTitledEntityCtrl.class,
+                "AddTitledEntity.fxml"
+        );
 
-        var taskList = FXML.load(TaskListCtrl.class,
-                "client", "scenes", "TaskList.fxml");
+        var addTask = BuildUtils.loadFXML(
+                AddTaskCtrl.class,
+                "AddTask.fxml"
+        );
 
-        var task = FXML.load(CardCtrl.class,
-                "client", "scenes", "Card.fxml");
-
-        var renameTaskList = FXML.load(
-                RenameCtrl.class, "client", "scenes",
-                "RenameEntity.fxml");
-
-        var editTask = FXML.load(EditTaskCtrl.class,
-                "client", "scenes", "EditTask.fxml");
-
-        var viewTask = FXML.load(TaskDetailsCtrl.class,
-                "client", "scenes", "TaskDetails.fxml");
+        var viewTask = BuildUtils.loadFXML(
+                TaskDetailsCtrl.class,
+                "TaskDetails.fxml"
+        );
 
 
-        var mainCtrl =
-                INJECTOR.getInstance(MainCtrlTalio.class);
-        mainCtrl.initialize(primaryStage, server, connect, mainScene,
-                addTitledEntity, addTask, taskList, task,
-                renameTaskList, editTask, viewTask);
+        var editTask = BuildUtils.loadFXML(
+                EditTaskCtrl.class,
+                "EditTask.fxml"
+        );
+
+        var joinBoard = BuildUtils.loadFXML(
+                JoinBoardCtrl.class,
+                "JoinBoard.fxml"
+        );
+
+        var admin = BuildUtils.loadFXML(
+                AdminCtrl.class,
+                "Admin.fxml"
+        );
+
+
+
+        var mainCtrl = BuildUtils.getInstance(MainCtrlTalio.class);
+        mainCtrl.initialize(
+                primaryStage,
+                server,
+                BuildUtils.getInstance(AlertUtils.class),
+                websocket,
+                connect,
+                mainScene,
+                addTitledEntity,
+                addTask,
+                editTask,
+                viewTask,
+                joinBoard,
+                admin);
     }
 }

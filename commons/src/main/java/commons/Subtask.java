@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Subtask {
+public class Subtask implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -16,7 +16,10 @@ public class Subtask {
     private String title;
     private boolean completed;
 
-    private Subtask() {
+    /**
+     * empty constructor
+     */
+    public Subtask() {
 
     }
 
@@ -31,11 +34,19 @@ public class Subtask {
     }
 
     /**
-     * get the the title of the subtask
+     * get the title of the subtask
      * @return the title of the subtask
      */
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * set the title of the subtask
+     * @param title the new title
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
@@ -44,6 +55,14 @@ public class Subtask {
      */
     public boolean isCompleted() {
         return completed;
+    }
+
+    /**
+     * Setter for the complete attribute
+     * @param completed the new value for "completed"
+     */
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     /**
@@ -81,7 +100,7 @@ public class Subtask {
      * returns the id of the subtask
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 }

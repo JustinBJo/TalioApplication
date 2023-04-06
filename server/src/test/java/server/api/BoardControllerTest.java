@@ -7,9 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.api.testRepository.TestBoardRepository;
-import server.api.testRepository.TestTaskListRepository;
 import server.database.BoardRepository;
-import server.database.TaskListRepository;
+import server.database.UserRepository;
 import server.service.DefaultBoardService;
 
 import java.util.ArrayList;
@@ -20,17 +19,34 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoardControllerTest {
 
     private BoardRepository repo;
-    private TaskListRepository listRepo;
+    private UserRepository userRepository;
     private DefaultBoardService service;
     private BoardController sut;
-
 
     @BeforeEach
     void setUp() {
         repo = new TestBoardRepository();
-        listRepo = new TestTaskListRepository();
         service = new DefaultBoardService();
-        sut = new BoardController(repo, listRepo, service);
+        userRepository = new TestUserRepository();
+        sut = new BoardController(repo, service, userRepository);
+    }
+
+    @Test
+    void messageUpdateTest() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        // Update the board with a new name
+        String newName = "newName";
+        Board response = sut.messageUpdate("2001", newName);
+
+        // Check endpoint
+        assertEquals(board, response);
+
+        // Check repository
+        assertTrue(repo.findAll().contains(board));
+        assertEquals(repo.findById(board.getId()).get().getTitle(), newName);
     }
 
     @Test
@@ -151,7 +167,7 @@ public class BoardControllerTest {
         board.setId(2001);
         repo.save(board);
 
-        ResponseEntity<String> response = sut.delete(board.getId());
+        ResponseEntity<String> response = sut.deleteBoard(board.getId());
 
         // Check endpoint
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -161,12 +177,12 @@ public class BoardControllerTest {
         );
 
         // Check repository
-        assertNull(repo.getById(board.getId()));
+        assertTrue(repo.findAll().contains(board));
     }
 
     @Test
     void failedDeleteTest() {
-        ResponseEntity<String> response = sut.delete(2001);
+        ResponseEntity<String> response = sut.deleteBoard(2001);
 
         // Check endpoint
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -177,71 +193,11 @@ public class BoardControllerTest {
     }
 
     @Test
-    void linkBoardToTaskList() {
-        Board board = new Board("Test Board");
-        long boardId = repo.save(board).getId();
-
-        TaskList taskList = new TaskList("Test List");
-        long taskListId = listRepo.save(taskList).getId();
-
-        var res = sut.linkBoardToTaskList(boardId, taskListId);
-
-        // Check response
-        assertEquals(HttpStatus.OK, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertTrue(updatedBoard.getTaskLists().contains(taskList));
-    }
-
-    @Test
-    void failAddChildTaskList() {
-        Board board = new Board("Test Board");
-        long boardId = repo.save(board).getId();
-
-        var res = sut.linkBoardToTaskList(boardId, 100);
-
-        // Check response
-        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertTrue(updatedBoard.getTaskLists().isEmpty());
-    }
-
-    @Test
-    void unlinkBoardToTaskList() {
-        Board board = new Board("Test Board");
-        TaskList taskList = new TaskList("Test List");
-        board.addTaskList(taskList);
-        long taskListId = listRepo.save(taskList).getId();
-        long boardId = repo.save(board).getId();
-
-        var res = sut.unlinkBoardFromTaskList(taskListId);
-
-        // Check response
-        assertEquals(HttpStatus.OK, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertFalse(updatedBoard.getTaskLists().contains(taskList));
-    }
-
-    @Test
-    void failUnlinkBoardToTaskList() {
-        Board board = new Board("Test Board");
-        TaskList taskList = new TaskList("Test List");
-        long taskListId = listRepo.save(taskList).getId();
-        long boardId = repo.save(board).getId();
-
-        var res = sut.unlinkBoardFromTaskList(taskListId);
-
-        // Check response
-        assertEquals(HttpStatus.BAD_REQUEST, res.getStatusCode());
-
-        // Check repository
-        Board updatedBoard = repo.findById(boardId).get();
-        assertFalse(updatedBoard.getTaskLists().contains(taskList));
+    void getByCode() {
+        Board b = new Board();
+        b.setCode("aaaa");
+        repo.save(b);
+        assertEquals(b, sut.getByCode("aaaa").getBody());
     }
 
     @Test

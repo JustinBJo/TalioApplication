@@ -10,6 +10,7 @@ import server.database.SubtaskRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -51,12 +52,14 @@ public class TestSubtaskRepository implements SubtaskRepository {
 
     @Override
     public void deleteById(Long aLong) {
-
+        call("deleteById");
+        delete(getById(aLong));
     }
 
     @Override
     public void delete(Subtask entity) {
-
+        call("delete");
+        subtasks.remove(entity);
     }
 
     @Override
@@ -135,7 +138,7 @@ public class TestSubtaskRepository implements SubtaskRepository {
     @Override
     public Subtask getById(Long aLong) {
         for (Subtask k : subtasks) {
-            if (k.getId() == aLong)
+            if (Objects.equals(k.getId(), aLong))
                 return k;
         }
         return null;

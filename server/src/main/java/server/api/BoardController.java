@@ -2,12 +2,16 @@ package server.api;
 
 import commons.Board;
 import commons.TaskList;
+import commons.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.BoardRepository;
-import server.database.TaskListRepository;
+import server.database.UserRepository;
 import server.service.DefaultBoardService;
-
 import java.util.List;
 
 @RestController
@@ -15,24 +19,23 @@ import java.util.List;
 public class BoardController {
 
     private final BoardRepository repo;
-    private final TaskListRepository taskListRepo;
-    private final DefaultBoardService service;
+    private final DefaultBoardService defaultBoardService;
+    private final UserRepository userRepository;
 
     private static final long DEFAULT_ID = 1030;
 
     /**
      * Constructor
-     * @param repo BoardRepository
-     * @param taskListRepo TaskListRepository
+     *
+     * @param repo           BoardRepository
      */
     public BoardController(
             BoardRepository repo,
-            TaskListRepository taskListRepo,
-            DefaultBoardService service
-    ) {
+            DefaultBoardService defaultBoardService,
+            UserRepository userRepository) {
         this.repo = repo;
-        this.taskListRepo = taskListRepo;
-        this.service = service;
+        this.defaultBoardService = defaultBoardService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -63,7 +66,22 @@ public class BoardController {
      */
     @GetMapping("defaultId")
     public long getDefaultId() {
-        return this.service.getDefaultId();
+        return this.defaultBoardService.getDefaultId();
+    }
+
+    /**
+     * searches for a board based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    @GetMapping("/code/{code}")
+    public ResponseEntity<Board> getByCode(@PathVariable("code") String code) {
+        List<Board> boards = repo.findAll();
+        for (Board k :  boards) {
+            if (k.getCode().equals(code))
+                return ResponseEntity.ok(k);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -80,6 +98,30 @@ public class BoardController {
 
         Board saved = repo.save(board);
         return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * Updates the board name using websocket messages
+     * @param id id of updated board
+     * @param newName board's new name
+     * @return updated board
+     */
+    @MessageMapping("/board/update/{id}/{newName}")
+    @SendTo("/topic/board/update/{id}")
+    public Board messageUpdate(@DestinationVariable String id,
+                               @DestinationVariable String newName) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return null;
+        }
+
+        var res = updateName(lID, newName);
+        if (res.getStatusCode() != HttpStatus.OK) {
+            return null;
+        }
+        return res.getBody();
     }
 
     /**
@@ -100,61 +142,22 @@ public class BoardController {
     }
 
     /**
-     * Links a task list to a board in the repository
-     * @param boardId ID of the board
-     * @param taskListId ID of the task list to be linked
+     * Removes an entity using websocket messages
+     * @param id entity id
+     * @return removed entity
      */
-    @PutMapping("addTaskList/{boardId}/{taskListId}")
-    public ResponseEntity<String> linkBoardToTaskList(
-            @PathVariable("boardId") long boardId,
-            @PathVariable("taskListId") long taskListId
-    ) {
-        if (boardId < 0 || !repo.existsById(boardId)
-                || taskListId < 0 || !taskListRepo.existsById(taskListId)) {
-            return ResponseEntity.badRequest().build();
+    @MessageMapping("/board/delete/{id}")
+    @SendTo("/topic/board/delete/{id}")
+    public int messageDelete(@DestinationVariable String id) {
+        long lID;
+        try {
+            lID = Long.parseLong(id);
+        } catch (Exception e) {
+            return HttpStatus.BAD_REQUEST.value();
         }
 
-        Board board = repo.getById(boardId);
-        TaskList taskList = taskListRepo.getById(taskListId);
-
-        boolean success = board.addTaskList(taskList);
-
-        if (!success) return ResponseEntity.badRequest().build();
-
-        repo.save(board);
-        return ResponseEntity.ok(
-                "Added Task List " + taskListId + " to Board " + boardId
-        );
-    }
-
-    /**
-     * Unlinks a task list from a board in the repository
-     * @param taskListId ID of the task list to be unlinked
-     */
-    @PutMapping("removeTaskList/{taskListId}")
-    public ResponseEntity<Board> unlinkBoardFromTaskList(
-            @PathVariable("taskListId") long taskListId
-    ) {
-        if (taskListId < 0 || !taskListRepo.existsById(taskListId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        TaskList taskList = taskListRepo.getById(taskListId);
-        for (Board board : repo.findAll()) {
-            if (!board.getTaskLists().contains(taskList)) {
-                continue;
-            }
-            // If this is reached, board is the board containing taskList
-
-            boolean success = board.removeTaskList(taskList);
-            if (!success) return ResponseEntity.badRequest().build();
-
-            repo.save(board);
-
-            return ResponseEntity.ok(board);
-        }
-        // List doesn't belong to any board
-        return ResponseEntity.badRequest().build();
+        var res = deleteBoard(lID);
+        return res.getStatusCode().value();
     }
 
     /**
@@ -163,18 +166,49 @@ public class BoardController {
      * @return the deleted board
      */
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteBoard(@PathVariable("id") long id) {
         if (id < 0) {
             return ResponseEntity.badRequest().body("Invalid id!");
         }
         if  (!repo.existsById(id)) {
             return ResponseEntity.badRequest().body("Board does not exist.");
         }
-        Board board = repo.findById(id).get();
-        repo.delete(board);
+
+        Board board = null;
+        User parent = null;
+
+        for (User user : userRepository.findAll()) {
+            for (Board b : user.getBoards()) {
+                if (b.getId().equals(id)) {
+                    board = b;
+                    parent = user;
+                    break;
+                }
+            }
+            if (parent != null) {
+                break;
+            }
+        }
+
+        if (parent != null) {
+            boolean unlinkSuccess = parent.removeBoard(board);
+            if (!unlinkSuccess) {
+                return ResponseEntity.badRequest().build();
+            }
+            userRepository.save(parent);
+        }
+
+        repo.deleteById(id);
+
         return ResponseEntity.ok("Board " + id + " is removed.");
     }
 
+    /**
+     * checks whether string s is null or empty
+     * @param s the string to be checked
+     * @return true if condition is met,
+     * false otherwise
+     */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }
