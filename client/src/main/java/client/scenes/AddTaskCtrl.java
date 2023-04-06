@@ -104,7 +104,6 @@ public class AddTaskCtrl {
      */
     public void confirm() {
         try {
-            service.getServer().addTask(getTask(), service.getParentTaskList());
             websocket.addTask(getTask(), parentTaskList);
         } catch (WebApplicationException e) {
             alertUtils.alertError(e.getMessage());
