@@ -285,7 +285,8 @@ public class ServerUtils {
                 .target(server).path("user/ip")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(String.class);
+                .get(new GenericType<String>() {
+                });
 
         List<User> users = ClientBuilder.newClient(new ClientConfig())
                 .target(server).path("user")

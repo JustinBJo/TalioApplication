@@ -204,5 +204,25 @@ public class ServerUtilsTest {
 //        assertEquals(testTask, result);
 //    }
 
+    @Test
+    void checkUserTest() {
+        String testIp = "127.0.0.1";
+        User test = new User("127.0.0.1");
+
+        when(builder.get((GenericType<String>) any())).thenReturn(testIp);
+
+        User result = serverUtils.checkUser();
+        assertEquals(test.getIp(), result.getIp());
+    }
+
+    @Test
+    void getAllUsersTest() {
+        List<User> test = new ArrayList<>();
+        when(builder.get((GenericType<List<User>>) any())).thenReturn(test);
+
+        List<User> result = serverUtils.getAllUsers();
+        assertEquals(test, result);
+    }
+
 }
 
