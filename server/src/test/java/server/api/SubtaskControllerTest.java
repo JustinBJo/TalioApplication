@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.api.testRepository.TestSubtaskRepository;
+import server.api.testRepository.TestTaskRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,6 +72,7 @@ class SubtaskControllerTest {
         assertTrue(repo.findById(k1.getId()).get().isCompleted());
     }
 
+    @Test
     void delete() {
         assertFalse(repo.findAll().contains(k1));
         Long id = repo.save(k1).getId();
