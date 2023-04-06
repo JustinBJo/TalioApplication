@@ -3,7 +3,9 @@ package client.utils;
 import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
 import commons.TaskList;
+import org.jvnet.hk2.annotations.Service;
 
+@Service
 public class AddTaskService {
     private ServerUtils server;
     private MainCtrlTalio mainCtrl;
