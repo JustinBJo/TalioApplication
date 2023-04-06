@@ -39,20 +39,18 @@ public class ServerUtils {
     private String server = "http://localhost:8080/";
 
     /**
+     * Method that creates a new instance of ClientBuilder
+     * @return
+     */
+    protected Client createClient() {
+        return ClientBuilder.newClient(new ClientConfig());
+    }
+
+    /**
      * @param websockets WebsocketUtils instance used in application
      */
     public void setWebsockets(WebsocketUtils websockets) {
         this.websockets = websockets;
-    }
-
-    /**
-     * Stops the thread that's doing long polling from running
-     */
-    public void stopPollingThread() {
-        if (runnable != null && !runnable.isCancelled()) {
-            runnable.cancel(true);
-            EXEC.shutdownNow();
-        }
     }
 
     /**
@@ -122,6 +120,15 @@ public class ServerUtils {
         });
     }
 
+    /**
+     * Stops the thread that's doing long polling from running
+     */
+    public void stopPollingThread() {
+        if (runnable != null && !runnable.isCancelled()) {
+            runnable.cancel(true);
+            EXEC.shutdownNow();
+        }
+    }
 
     // methods for boards ------------------------------------------------------
 
@@ -130,7 +137,7 @@ public class ServerUtils {
      * @return default board
      */
     public Board getDefaultBoard() {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("board/default")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -143,7 +150,7 @@ public class ServerUtils {
      * @return the id of the default board
      */
     public long getDefaultId() {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("board/defaultId")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -157,7 +164,7 @@ public class ServerUtils {
      * @return the tasklists of the board
      */
     public List<TaskList> getBoardData(long boardId) {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("board/" + boardId + "/tasklist")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -171,7 +178,7 @@ public class ServerUtils {
      * @return the board
      */
     public Board getBoardByCode(String code) {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("board/code/" + code)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -185,7 +192,7 @@ public class ServerUtils {
      * @return added board
      */
     public Board addBoard(Board board) {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("board")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -198,7 +205,7 @@ public class ServerUtils {
      * @return the board
      */
     public Board getBoardById(long id) {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("board/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -214,7 +221,7 @@ public class ServerUtils {
      * @return list of tasks belonging to task list
      */
     public List<Task> getTaskListData(TaskList taskList) {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("tasklist/getTasks/" + taskList.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Task>>() {});
@@ -229,7 +236,7 @@ public class ServerUtils {
      * @return list of subtasks belonging to task
      */
     public List<Subtask> getTaskData(Task task) {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("tasks/getSubtasks/" + task.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Subtask>>() {});
@@ -241,7 +248,7 @@ public class ServerUtils {
      * @return a List of all the tasks in the database
      */
     public List<Task> getTasks() {
-        return ClientBuilder.newClient(new ClientConfig()) //
+        return createClient() //
                 .target(server).path("tasks") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
@@ -306,7 +313,7 @@ public class ServerUtils {
      * @return the list of users in the database
      */
     public List<User> getAllUsers() {
-        return ClientBuilder.newClient(new ClientConfig())
+        return createClient()
                 .target(server).path("user")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
