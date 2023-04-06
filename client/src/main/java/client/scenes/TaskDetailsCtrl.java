@@ -1,11 +1,8 @@
 package client.scenes;
 
-import client.utils.ChildrenManager;
-import client.utils.ErrorUtils;
-import client.utils.ServerUtils;
+
 import client.utils.TaskDetailsUtils;
 import com.google.inject.Inject;
-import commons.Subtask;
 import commons.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -13,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
 
 
 public class TaskDetailsCtrl {

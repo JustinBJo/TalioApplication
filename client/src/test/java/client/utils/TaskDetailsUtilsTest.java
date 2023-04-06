@@ -8,7 +8,6 @@ import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -65,8 +64,10 @@ public class TaskDetailsUtilsTest {
         sut.initialize(v);
 
         assertEquals(sut.getSubtaskChildrenManager().getChildrenContainer(), v);
-        assertEquals(sut.getSubtaskChildrenManager().getChildFxmlFileName(), "Subtask.fxml");
-        assertEquals(sut.getSubtaskChildrenManager().getChildSceneCtrl(), SubtaskCtrl.class);
+        assertEquals(sut.getSubtaskChildrenManager().getChildFxmlFileName(),
+                "Subtask.fxml");
+        assertEquals(sut.getSubtaskChildrenManager().getChildSceneCtrl(),
+                SubtaskCtrl.class);
 
     }
 
@@ -77,7 +78,8 @@ public class TaskDetailsUtilsTest {
         sut.setTask(null);
         sut.setSubtaskChildrenManager(childrenManager);
         sut.refresh();
-        assertEquals(sut.getSubtaskChildrenManager().getChildrenCtrls(), new ArrayList<>());
+        assertEquals(sut.getSubtaskChildrenManager()
+                .getChildrenCtrls(), new ArrayList<>());
 
     }
 
@@ -92,8 +94,10 @@ public class TaskDetailsUtilsTest {
         st.add(new Subtask("s", true));
 
         sut.refresh();
-        Mockito.verify(childrenManager, times(1)).updateChildren(server.getTaskData(any()));
-        Mockito.verify(subtaskCtrl, times(childrenManager.getChildrenCtrls().size())).setParentTask(any());
+        Mockito.verify(childrenManager, times(1))
+                .updateChildren(server.getTaskData(any()));
+        Mockito.verify(subtaskCtrl, times(childrenManager
+                .getChildrenCtrls().size())).setParentTask(any());
     }
 
     @Test

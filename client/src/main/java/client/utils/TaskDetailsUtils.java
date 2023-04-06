@@ -28,6 +28,10 @@ public class TaskDetailsUtils {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * used to initialize the scene
+     * @param subtaskContainer the Container for children
+     */
     public void initialize(VBox subtaskContainer) {
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
@@ -37,6 +41,9 @@ public class TaskDetailsUtils {
                 );
     }
 
+    /**
+     * logic for refreshing the scene
+     */
     public void refresh() {
         if (task == null) {
             // no children if there's no task list
@@ -51,16 +58,26 @@ public class TaskDetailsUtils {
         }
     }
 
+    /**
+     * sets the current task
+     * @param task task to be set
+     */
     public void setTask(Task task) {
         if (task == null) return;
 
         this.task = task;
     }
 
+    /**
+     * logic for the exit method
+     */
     public void exit() {
         mainCtrl.showMain();
     }
 
+    /**
+     * logic for the edit Task method
+     */
     public void editTask() {
         if (task == null) {
             ErrorUtils.alertError("No task to edit!");
@@ -69,6 +86,9 @@ public class TaskDetailsUtils {
         mainCtrl.showEditTask(task);
     }
 
+    /**
+     * deletes the current task
+     */
     public void deleteTask() {
         if (task == null) {
             ErrorUtils.alertError("No task to delete!");
@@ -84,6 +104,9 @@ public class TaskDetailsUtils {
         }
     }
 
+    /**
+     * logic for adding a new subtask
+     */
     public void addSubtask() {
         if (task == null) {
             ErrorUtils.alertError("No task to add subtask to!");
@@ -92,15 +115,28 @@ public class TaskDetailsUtils {
         mainCtrl.showAddSubtask(task);
     }
 
+    /**
+     * getter for the Children manager of the subtask list
+     * @return
+     */
     public ChildrenManager<Subtask, SubtaskCtrl> getSubtaskChildrenManager() {
         return subtaskChildrenManager;
     }
 
+    /**
+     * getter for the current task
+     * @return the current task
+     */
     public Task getTask() {
         return task;
     }
 
-    public void setSubtaskChildrenManager(ChildrenManager<Subtask, SubtaskCtrl> subtaskChildrenManager) {
+    /**
+     * setter for the ChildrenManager of the subtask
+     * @param subtaskChildrenManager the ChildrenManager to be set
+     */
+    public void setSubtaskChildrenManager(ChildrenManager<Subtask,
+            SubtaskCtrl> subtaskChildrenManager) {
         this.subtaskChildrenManager = subtaskChildrenManager;
     }
 }
