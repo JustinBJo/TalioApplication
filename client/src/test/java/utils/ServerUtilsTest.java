@@ -86,18 +86,21 @@ public class ServerUtilsTest {
 
         when(builder.get()).thenReturn(null);
 
-        assertDoesNotThrow(() -> serverUtils.setServer("http://localhost:8080/"));
+        assertDoesNotThrow(() ->
+                serverUtils.setServer("http://localhost:8080/"));
     }
 
     @Test
     void setServerFailTest() {
         when(builder.get()).thenThrow(ProcessingException.class);
 
-        assertThrows(ProcessingException.class, () -> serverUtils.setServer("http://localhost:9999/"));
+        assertThrows(ProcessingException.class, () ->
+                serverUtils.setServer("http://localhost:9999/"));
     }
 
     @Test
-    void listenForUpdateTaskParentTest() throws NoSuchFieldException, IllegalAccessException {
+    void listenForUpdateTaskParentTest() throws NoSuchFieldException,
+                                                IllegalAccessException {
         Consumer<TaskTransfer> consumer = new Consumer<TaskTransfer>() {
             @Override
             public void accept(TaskTransfer taskTransfer) {
@@ -108,7 +111,8 @@ public class ServerUtilsTest {
 
         Field field = ServerUtils.class.getDeclaredField("pollingConsumer");
         field.setAccessible(true);
-        Consumer<TaskTransfer> set = (Consumer<TaskTransfer>) field.get(serverUtils);
+        Consumer<TaskTransfer> set =
+                (Consumer<TaskTransfer>) field.get(serverUtils);
 
         assertEquals(consumer, set);
     }
@@ -208,7 +212,8 @@ public class ServerUtilsTest {
         Task testTask = new Task("Test task");
         testTask.setId(2001L);
         TaskList test = new TaskList("test taskList");
-        when(builder.put(Entity.entity(test, APPLICATION_JSON), Task.class)).thenReturn(testTask);
+        when(builder.put(Entity.entity(test, APPLICATION_JSON), Task.class))
+                .thenReturn(testTask);
 
         Task result = serverUtils.updateTaskParent(testTask.getId(), test);
         assertEquals(testTask, result);
@@ -227,10 +232,12 @@ public class ServerUtilsTest {
 
             if (type.getType().equals(String.class)) {
                 return testIp;
-            } else if (type.getType().equals(new GenericType<List<User>>() {}.getType())) {
+            } else if (type.getType().equals(
+                    new GenericType<List<User>>() {}.getType())) {
                 return users;
             } else {
-                throw new IllegalArgumentException("Unexpected type: " + type.getType());
+                throw new IllegalArgumentException(
+                        "Unexpected type: " + type.getType());
             }
         });
 

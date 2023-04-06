@@ -84,7 +84,7 @@ public class ServerUtils {
         startPollingThread();
     }
 
-    // methods for long polling ------------------------------------------------------
+    // methods for long polling ------------------------------------------------
 
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
@@ -215,7 +215,7 @@ public class ServerUtils {
     }
 
 
-    // methods for tasklists ------------------------------------------------------
+    // methods for tasklists -------------------------------------------------
 
     /**
      * Gets all tasks belonging to a certain task list
