@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.AddTaskService;
-import client.utils.ServerUtils;
 import client.utils.AlertUtils;
 import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
@@ -12,13 +11,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 public class AddTaskCtrl {
-
     private final AddTaskService service;
     private final WebsocketUtils websocket;
     private final AlertUtils alertUtils;
-
     private TaskList parentTaskList;
-
     @FXML
     private TextField title;
     @FXML
@@ -67,22 +63,6 @@ public class AddTaskCtrl {
     private void clearFields() {
         title.clear();
         description.clear();
-    }
-
-    /**
-     * setter for the server utils
-     * @param server the server utils
-     */
-    public void setServer(ServerUtils server) {
-        service.setServer(server);
-    }
-
-    /**
-     * getter for the server utils
-     * @return the server utils
-     */
-    public ServerUtils getServer() {
-        return service.getServer();
     }
 
     /**
