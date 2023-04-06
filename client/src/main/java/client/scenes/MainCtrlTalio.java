@@ -1,5 +1,8 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
+import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import commons.Board;
 import commons.Subtask;
 import commons.Task;
@@ -14,6 +17,10 @@ import javafx.util.Pair;
 
 
 public class MainCtrlTalio {
+
+    private AlertUtils alertUtils;
+    private ServerUtils server;
+    private WebsocketUtils websocket;
 
     private Stage primaryStage;
 
@@ -34,7 +41,6 @@ public class MainCtrlTalio {
     private TaskDetailsCtrl taskDetailsCtrl;
     private Scene viewTaskScene;
 
-    private String serverAddress;
 
     private JoinBoardCtrl joinBoardCtrl;
     private Scene joinBoardScene;
@@ -55,6 +61,9 @@ public class MainCtrlTalio {
      * @param addTitledEntity the "add titled entity" screen
      */
     public void initialize(Stage primaryStage,
+                           ServerUtils server,
+                           AlertUtils alertUtils,
+                           WebsocketUtils websocket,
                            Pair<ConnectScreenCtrl, Parent> connect,
                            Pair<MainSceneCtrl, Parent> mainScene,
                            Pair<AddTitledEntityCtrl, Parent> addTitledEntity,
@@ -64,6 +73,10 @@ public class MainCtrlTalio {
                            Pair<JoinBoardCtrl, Parent> joinBoard,
                            Pair<AdminCtrl, Parent> admin) {
         this.primaryStage = primaryStage;
+
+        this.alertUtils = alertUtils;
+        this.server = server;
+        this.websocket = websocket;
 
         this.connect = new Scene(connect.getValue());
 
@@ -94,6 +107,15 @@ public class MainCtrlTalio {
     }
 
     /**
+     * Sets a new server address for the application
+     * @param newAddress new server's address
+     */
+    public void changeServer(String newAddress) {
+        setServerAddress(newAddress);
+        mainSceneCtrl.changeServer();
+    }
+
+    /**
      * show the connect screen
      */
     public void showConnect() {
@@ -114,15 +136,7 @@ public class MainCtrlTalio {
      */
     public void showMain() {
         primaryStage.setTitle("Talio");
-        mainSceneCtrl.refresh();
         primaryStage.setScene(mainScene);
-    }
-
-    /**
-     * Refreshes the active board
-     */
-    public void refreshBoard() {
-        mainSceneCtrl.refresh();
     }
 
     /**
@@ -158,7 +172,7 @@ public class MainCtrlTalio {
      */
     public void setActiveBoard(Board board) {
         if (board == null) return;
-        mainSceneCtrl.setActiveBoard(board);
+        mainSceneCtrl.setEntity(board);
     }
 
     /**
@@ -214,11 +228,9 @@ public class MainCtrlTalio {
      */
     public void showTaskDetails(Task task) {
         primaryStage.setTitle("Task Details");
-        taskDetailsCtrl.setTask(task);
-        //mainSceneCtrl.setCurrentTask(task);
-        taskDetailsCtrl.refresh();
+        taskDetailsCtrl.setEntity(task);
         primaryStage.setScene(viewTaskScene);
-        }
+    }
 
 
     /**
@@ -272,8 +284,6 @@ public class MainCtrlTalio {
         addTitledEntityCtrl.initialize(AddTitledEntityCtrl.Type.RenameSubtask);
     }
 
-
-
     /**
      * sets the current admin status
      * @param admin true if user is admin, false otherwise
@@ -287,6 +297,20 @@ public class MainCtrlTalio {
      * @param b the board to be deleted
      */
     public void deleteBoard(Board b) {
-        mainSceneCtrl.deleteBoard(b);
+        if (b.getId() == server.getDefaultId()) {
+            alertUtils.alertError("You cannot delete the default board!");
+            return;
+        }
+        boolean confirmation = alertUtils.confirmDeletion("Board");
+
+        if (confirmation) {
+            for (User u : server.getAllUsers()) {
+                if (u.getBoards().contains(b)) {
+                    u.getBoards().remove(b);
+                    websocket.saveUser(u);
+                }
+            }
+            websocket.deleteBoard(b);
+        }
     }
 }

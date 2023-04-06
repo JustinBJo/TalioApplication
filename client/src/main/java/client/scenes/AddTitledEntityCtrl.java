@@ -1,7 +1,8 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.Subtask;
@@ -28,6 +29,8 @@ public class AddTitledEntityCtrl {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
 
     private Type type;
     private TaskList taskListToEdit;
@@ -51,9 +54,14 @@ public class AddTitledEntityCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public AddTitledEntityCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public AddTitledEntityCtrl(ServerUtils server,
+                               MainCtrlTalio mainCtrl,
+                               AlertUtils alertUtils,
+                               WebsocketUtils websocket) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
     /**
@@ -153,7 +161,7 @@ public class AddTitledEntityCtrl {
                     break;
                 case RenameTaskList:
                     if (taskListToEdit == null) {
-                        ErrorUtils.alertError("No task list to edit!");
+                        alertUtils.alertError("No task list to edit!");
                         break;
                     }
                     editTaskList(title);
@@ -176,7 +184,7 @@ public class AddTitledEntityCtrl {
 
                 // Error handling (very unlikely, as it is an enum)
                 default:
-                    ErrorUtils.alertError(
+                    alertUtils.alertError(
                         "Something went wrong, please try again!"
                     );
                     pressCancel();
@@ -184,7 +192,7 @@ public class AddTitledEntityCtrl {
             }
 
         } catch (WebApplicationException e) {
-            ErrorUtils.alertError(e.getMessage());
+            alertUtils.alertError(e.getMessage());
             return;
         }
 
@@ -202,13 +210,12 @@ public class AddTitledEntityCtrl {
 
         if (parentBoard == null) {
             // Error handling
-            ErrorUtils.alertError("Lists must be created within boards!");
+            alertUtils.alertError("Lists must be created within boards!");
             pressCancel();
             return;
         }
 
-        server.addTaskList(taskList, parentBoard);
-        mainCtrl.refreshBoard();
+        websocket.addTaskList(taskList, parentBoard);
     }
 
     /**
@@ -221,26 +228,23 @@ public class AddTitledEntityCtrl {
         board = server.addBoard(board);
         mainCtrl.setActiveBoard(board);
         mainCtrl.getUser().addBoard(board);
-        System.out.println(mainCtrl.getUser().getBoards());
-        server.saveUser(mainCtrl.getUser());
+        websocket.saveUser(mainCtrl.getUser());
     }
 
     private void editTaskList(String title) {
-       server.updateTaskList(taskListToEdit, title);
+       websocket.updateTaskList(taskListToEdit, title);
     }
 
     private void editBoard(String title) {
-        Board updatedBoard =
-           server.updateBoard(
-                mainCtrl.getActiveBoard(),
-                title
-            );
+       websocket.updateBoard(
+            mainCtrl.getActiveBoard(),
+            title
+        );
+
         int index = mainCtrl.getUser().getBoards()
                 .indexOf(mainCtrl.getActiveBoard());
         mainCtrl.getUser().getBoards().get(index).setTitle(title);
-        server.saveUser(mainCtrl.getUser());
-        mainCtrl.setActiveBoard(updatedBoard);
-        mainCtrl.refreshBoard();
+        websocket.saveUser(mainCtrl.getUser());
     }
 
     /**
@@ -249,7 +253,7 @@ public class AddTitledEntityCtrl {
      */
     private void addNewSubtask(String title) {
         Subtask subtask = new Subtask(title, false);
-        server.addSubtask(subtask, currentTask);
+        websocket.addSubtask(subtask, currentTask);
         List<Task> allTasks = server.getTasks();
         Task newCurrentTask = null;
         for (Task t : allTasks) {
@@ -263,6 +267,6 @@ public class AddTitledEntityCtrl {
     }
 
     private void editSubtask(String title) {
-        server.updateSubtask(subtaskToEdit, title);
+        websocket.updateSubtask(subtaskToEdit, title);
     }
 }

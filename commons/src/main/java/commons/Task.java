@@ -17,9 +17,9 @@ public class Task implements IEntity {
 
     private String title;
     private String description;
-    @OneToMany(cascade =  CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Subtask> subtasks;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Tag> tags;
 
     /**
@@ -170,11 +170,7 @@ public class Task implements IEntity {
         return (getId() == null && other.getId() == null
                 ||  getId().equals(other.getId()))
                 && (getTitle() == null && other.getTitle() == null
-                || getTitle().equals(other.getTitle()))
-                && (getSubtasks() == null && other.getSubtasks() == null
-                || getSubtasks().equals(other.getSubtasks()))
-                && (getTags() == null && other.getTags() == null
-                || getTags().equals(other.getTags()));
+                || getTitle().equals(other.getTitle()));
     }
 
     @Override

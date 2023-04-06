@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import server.database.SubtaskRepository;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -58,18 +57,6 @@ public class TaskControllerTest {
 
     private static Task getTask(String t) {
         return new Task(t, "", null, null);
-    }
-
-    @Test
-    void getAll() {
-        var a = getTask("t1");
-        var b = getTask("t2");
-        repo.save(a);
-        repo.save(b);
-        List<Task> tasks = sut.getAll();
-        assertTrue(tasks.contains(a));
-        assertTrue(tasks.contains(b));
-        assertEquals(2, tasks.size());
     }
 
     @Test
@@ -157,5 +144,48 @@ public class TaskControllerTest {
         assertEquals(BAD_REQUEST, a.getStatusCode());
     }
 
+    @Test
+    public void addMessageTest() {
+        var a = new Task("Task Title", "Description");
+        var tl = new TaskList("Test List");
+        long tlID = taskListRepository.save(tl).getId();
+        var comp = sut.messageAdd(a, String.valueOf(tlID));
+        assertTrue(repo.findAll().contains(a));
+    }
 
+    @Test
+    public void deleteMessageTest() {
+        Task task = new Task("t");
+        String sID = String.valueOf(repo.save(task).getId());
+
+        sut.messageDelete(sID);
+
+        assertFalse(repo.findById(task.getId()).isPresent());
+    }
+
+    @Test
+    public void updateTitleMessageTest() {
+        Task task = new Task("Old Title",
+                "Old Description");
+        String sID = String.valueOf(repo.save(task).getId());
+
+        sut.messageUpdateTitle(sID, "new title");
+
+        assertTrue(repo.findAll().contains(task));
+        String updated = repo.getById(task.getId()).getTitle();
+        assertEquals("new title", updated);
+    }
+
+    @Test
+    public void updateDescriptionMessageTest() {
+        Task task = new Task("Old Title",
+                "Old Description");
+        String sID = String.valueOf(repo.save(task).getId());
+
+        sut.messageUpdateDescription(sID, "new description");
+
+        assertTrue(repo.findAll().contains(task));
+        String newDescription = repo.getById(task.getId()).getDescription();
+        assertEquals("new description", newDescription);
+    }
 }

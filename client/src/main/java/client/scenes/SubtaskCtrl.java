@@ -1,9 +1,11 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
-import client.utils.ServerUtils;
+import client.utils.AlertUtils;
+import client.utils.EntityWebsocketManager;
+import client.utils.WebsocketUtils;
 import commons.Task;
 import commons.Subtask;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -13,16 +15,20 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.List;
 
 public class SubtaskCtrl
         implements IEntityRepresentation<Subtask> {
 
-    private final ServerUtils server;
+    private final WebsocketUtils websocket;
+    private final AlertUtils alertUtils;
     private final MainCtrlTalio mainCtrl;
 
     private Subtask subtask;
     private Task parentTask;
+
+    private final EntityWebsocketManager<Subtask> entityWebsocket;
 
     @FXML
     AnchorPane root;
@@ -48,14 +54,23 @@ public class SubtaskCtrl
 
     /**
      * Main constructor for SubtaskCtrl
-     * @param server the server of the application
+     *
      * @param mainCtrlTalio main controller of the application
      */
     @Inject
-    public SubtaskCtrl(ServerUtils server,
+    public SubtaskCtrl(WebsocketUtils websocket,
+                       AlertUtils alertUtils,
                        MainCtrlTalio mainCtrlTalio) {
-        this.server = server;
+        this.websocket = websocket;
+        this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrlTalio;
+
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "subtask",
+                Subtask.class,
+                this::setEntity
+        );
     }
 
     /**
@@ -67,20 +82,14 @@ public class SubtaskCtrl
         if (subtask.getTitle() == null) {
             subtask.setTitle("Untitled");
         }
-        title.setText(subtask.getTitle());
-        if (subtask.isCompleted()) {
-            completed.setSelected(true);
-        }
-        else {
-            completed.setSelected(false);
-        }
-    }
 
-    /**
-     * @param task task that holds this subtask
-     */
-    public void setParentTask(Task task) {
-        this.parentTask = task;
+        Platform.runLater(() -> {
+            title.setText(subtask.getTitle());
+            completed.setSelected(subtask.isCompleted());
+        });
+
+        entityWebsocket.register(subtask.getId(), "update");
+        entityWebsocket.register(subtask.getId(), "updateCompleteness");
     }
 
     /**
@@ -88,20 +97,28 @@ public class SubtaskCtrl
      * after FXML components are initialized.
      */
     public void initialize() {
-        Image editIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/editicon.png"));
+        Image editIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/editicon.png")));
         this.editIcon.setImage(editIcon);
 
-        Image deleteIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/deleteicon.png"));
+        Image deleteIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/deleteicon.png")));
         this.deleteIcon.setImage(deleteIcon);
 
-        Image upIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/arrowUp.png"));
-        Image downIcon = new Image(getClass()
-                .getResourceAsStream("/client/images/arrowDown.png"));
+        Image upIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/arrowUp.png")));
+        Image downIcon = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/arrowDown.png")));
+
         this.upIcon.setImage(upIcon);
         this.downIcon.setImage(downIcon);
+    }
+
+    /**
+     * @param task task that holds this subtask
+     */
+    public void setParent(Task task) {
+        this.parentTask = task;
     }
 
 
@@ -109,10 +126,10 @@ public class SubtaskCtrl
      * Used to delete a task from a list
      */
     public void deleteSubtask() {
-        boolean confirmation = server.confirmDeletion("subtask");
+        boolean confirmation = alertUtils.confirmDeletion("subtask");
 
         if (confirmation) {
-            server.deleteSubtask(subtask);
+            websocket.deleteSubtask(subtask);
             parentTask.removeSubtask(subtask);
             mainCtrl.showTaskDetails(parentTask);
         }
@@ -123,7 +140,6 @@ public class SubtaskCtrl
      */
     public void edit() {
         mainCtrl.showRenameSubtask(subtask);
-        mainCtrl.refreshBoard();
     }
 
     /**
@@ -136,17 +152,13 @@ public class SubtaskCtrl
         int taskIndex = currentSubtasks.indexOf(subtask);
         taskIndex--;
         if (taskIndex < 0 || taskIndex >= currentSubtasks.size()) {
-            ErrorUtils.alertError("You cannot move the subtask higher.");
+            alertUtils.alertError("You cannot move the subtask higher.");
             return;
         }
         currentSubtasks.remove(subtask);
         currentSubtasks.add(taskIndex, subtask);
-        currentTask.setSubtasks(currentSubtasks);
 
-        Task task = server.updateSubtasksInTask(currentTask, currentSubtasks);
-        this.parentTask = task;
-
-        mainCtrl.showTaskDetails(parentTask);
+        websocket.updateSubtasksInTask(currentTask, currentSubtasks);
     }
 
     /**
@@ -159,16 +171,13 @@ public class SubtaskCtrl
         int taskIndex = currentSubtasks.indexOf(subtask);
         taskIndex++;
         if (taskIndex < 0 || taskIndex >= currentSubtasks.size()) {
-            ErrorUtils.alertError("You cannot move the subtask lower.");
+            alertUtils.alertError("You cannot move the subtask lower.");
             return;
         }
         currentSubtasks.remove(subtask);
         currentSubtasks.add(taskIndex, subtask);
-        currentTask.setSubtasks(currentSubtasks);
 
-        server.updateSubtasksInTask(currentTask, currentSubtasks);
-
-        mainCtrl.showTaskDetails(parentTask);
+        websocket.updateSubtasksInTask(currentTask, currentSubtasks);
     }
 
     /**
@@ -177,7 +186,6 @@ public class SubtaskCtrl
     public void completeness() {
         boolean newValue = completed.isSelected();
         subtask.setCompleted(newValue);
-        server.updateSubtaskCompleteness(subtask, newValue);
+        websocket.updateSubtaskCompleteness(subtask, newValue);
     }
-
 }

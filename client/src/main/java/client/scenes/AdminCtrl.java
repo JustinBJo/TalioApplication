@@ -1,7 +1,6 @@
 package client.scenes;
 
-import client.utils.ErrorUtils;
-import client.utils.ServerUtils;
+import client.utils.AlertUtils;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,9 +9,9 @@ import javafx.scene.control.TextField;
 
 public class AdminCtrl {
 
-    private final ServerUtils server;
+    private final AlertUtils alertUtils;
     private final MainCtrlTalio mainCtrl;
-    private final String pass = "admin1234";
+    private final String PWD = "admin1234";
 
     @FXML
     Button confirm;
@@ -23,13 +22,13 @@ public class AdminCtrl {
 
     /**
      * Injector constructor for this class
-     * @param server injected server instance
-     * @param mainCtrl injected main controller
+     *
+     * @param mainCtrl   injected main controller
      */
     @Inject
-    public AdminCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public AdminCtrl(AlertUtils alertUtils, MainCtrlTalio mainCtrl) {
+        this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
-        this.server = server;
     }
 
     /**
@@ -45,16 +44,12 @@ public class AdminCtrl {
      */
     public void confirm() {
         String p = password.getText();
-        if (p.equals(pass)) {
+        if (p.equals(PWD)) {
             mainCtrl.setAdmin(true);
             password.setText("");
             mainCtrl.showMain();
         }
         else
-            ErrorUtils.alertError("Wrong password!");
+            alertUtils.alertError("Wrong password!");
     }
-
-
-
-
 }
