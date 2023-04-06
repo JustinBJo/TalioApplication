@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import commons.*;
 
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -42,6 +43,16 @@ public class ServerUtils {
      */
     public void setWebsockets(WebsocketUtils websockets) {
         this.websockets = websockets;
+    }
+
+    /**
+     * Stops the thread that's doing long polling from running
+     */
+    public void stopPollingThread() {
+        if (runnable != null && !runnable.isCancelled()) {
+            runnable.cancel(true);
+            EXEC.shutdownNow();
+        }
     }
 
     /**
@@ -74,6 +85,45 @@ public class ServerUtils {
         websockets.updateServer(server.substring(7));
         startPollingThread();
     }
+
+    // methods for long polling ------------------------------------------------------
+
+    private static final ExecutorService EXEC =
+            Executors.newSingleThreadExecutor();
+
+    private Future<?> runnable;
+    private Consumer<TaskTransfer> pollingConsumer;
+
+    /**
+     * Start listening for an update in task parent
+     * @param consumer action taken when task parent is updated
+     */
+    public void listenForUpdateTaskParent(Consumer<TaskTransfer> consumer) {
+        pollingConsumer = consumer;
+    }
+
+    private void startPollingThread() {
+        runnable = EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("tasks/listen/updateParent/")
+                        .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                        .get();
+                if (res.getStatus() == 204) { // No content
+                    continue;
+                }
+
+                var taskTransfer = res.readEntity(TaskTransfer.class);
+
+                if (pollingConsumer != null) {
+                    pollingConsumer.accept(taskTransfer);
+                }
+            }
+        });
+    }
+
+
+    // methods for boards ------------------------------------------------------
 
     /**
      * gets the default board from the repository
@@ -116,6 +166,49 @@ public class ServerUtils {
     }
 
     /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+    /**
+     * Uses board endpoint to ask server to add a new board
+     *
+     * @param board board to be added
+     * @return added board
+     */
+    public Board addBoard(Board board) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(board, APPLICATION_JSON), Board.class);
+    }
+
+    /**
+     * returns a board based on its ID
+     * @param id the id of the board
+     * @return the board
+     */
+    public Board getBoardById(long id) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+
+    // methods for tasklists ------------------------------------------------------
+
+    /**
      * Gets all tasks belonging to a certain task list
      * @param taskList parent of desired tasks
      * @return list of tasks belonging to task list
@@ -126,6 +219,9 @@ public class ServerUtils {
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Task>>() {});
     }
+
+
+    // methods for tasks ------------------------------------------------------
 
     /**
      * Gets all subtasks belonging to a certain task
@@ -154,45 +250,19 @@ public class ServerUtils {
     }
 
     /**
-     * return board from database based on its code
-     * @param code the code of the board
-     * @return the board
-     */
-    public Board getBoardByCode(String code) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/code/" + code)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(Board.class);
-    }
-
-    /**
-     * Uses board endpoint to ask server to add a new board
+     * Sets a new task list to hold a given task
      *
-     * @param board board to be added
-     * @return added board
+     * @param taskId    id of the changed task
+     * @param newParent list that now holds the task
      */
-    public Board addBoard(Board board) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(board, APPLICATION_JSON), Board.class);
+    public void updateTaskParent(long taskId, TaskList newParent) {
+        ClientBuilder.newClient(new ClientConfig()).target(server)
+                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
     }
 
-
-    /**
-     * returns a board based on its ID
-     * @param id the id of the board
-     * @return the board
-     */
-    public Board getBoardById(long id) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(Board.class);
-    }
+    // methods for users ------------------------------------------------------
 
     /**
      * checks whether the user has already been
@@ -244,62 +314,4 @@ public class ServerUtils {
     }
 
 
-    /**
-     * Sets a new task list to hold a given task
-     *
-     * @param taskId    id of the changed task
-     * @param newParent list that now holds the task
-     */
-    public void updateTaskParent(long taskId, TaskList newParent) {
-        ClientBuilder.newClient(new ClientConfig()).target(server)
-                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
-    }
-
-    // long polling
-
-    private static final ExecutorService EXEC =
-            Executors.newSingleThreadExecutor();
-
-    private Future<?> runnable;
-    private Consumer<TaskTransfer> pollingConsumer;
-
-    /**
-     * Start listening for an update in task parent
-     * @param consumer action taken when task parent is updated
-     */
-    public void listenForUpdateTaskParent(Consumer<TaskTransfer> consumer) {
-        pollingConsumer = consumer;
-    }
-
-    private void startPollingThread() {
-        runnable = EXEC.submit(() -> {
-            while (!Thread.interrupted()) {
-                var res = ClientBuilder.newClient(new ClientConfig())
-                        .target(server).path("tasks/listen/updateParent/")
-                        .request(APPLICATION_JSON).accept(APPLICATION_JSON)
-                        .get();
-                if (res.getStatus() == 204) { // No content
-                    continue;
-                }
-
-                var taskTransfer = res.readEntity(TaskTransfer.class);
-
-                if (pollingConsumer != null) {
-                    pollingConsumer.accept(taskTransfer);
-                }
-            }
-        });
-    }
-
-    /**
-     * Stops the thread that's doing long polling from running
-     */
-    public void stopPollingThread() {
-        if (runnable != null && !runnable.isCancelled()) {
-            runnable.cancel(true);
-            EXEC.shutdownNow();
-        }
-    }
 }
