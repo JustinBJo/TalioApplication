@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import server.api.testRepository.TestBoardRepository;
+import server.api.testRepository.TestTaskListRepository;
 import server.database.BoardRepository;
 import server.database.UserRepository;
 import server.service.DefaultBoardService;
