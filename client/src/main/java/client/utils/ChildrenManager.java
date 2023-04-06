@@ -83,6 +83,14 @@ public class ChildrenManager
     }
 
     /**
+     * Removes all children
+     */
+    public void clear() {
+        childUIMap.clear();
+        childrenContainer.getChildren().clear();
+    }
+
+    /**
      * Adds or removes children's scenes based on new list of children
      * @param children list of updated children
      */

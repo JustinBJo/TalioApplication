@@ -113,6 +113,7 @@ public class TaskDetailsCtrl {
         });
 
         var subtasks = server.getTaskData(task);
+        subtaskChildrenManager.clear();
         subtaskChildrenManager.updateChildren(subtasks);
         for (SubtaskCtrl subtaskCtrl :
                 subtaskChildrenManager.getChildrenCtrls()) {
