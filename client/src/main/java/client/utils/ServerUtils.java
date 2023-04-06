@@ -68,7 +68,7 @@ public class ServerUtils {
     public void setServer(String url)
             throws IllegalArgumentException {
         try {
-            ClientBuilder.newClient(new ClientConfig()) //
+            createClient() //
                     .target(url) //
                     .request(APPLICATION_JSON) //
                     .accept(APPLICATION_JSON) //
@@ -182,7 +182,8 @@ public class ServerUtils {
                 .target(server).path("board/code/" + code)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(Board.class);
+                .get(new GenericType<Board>(){
+                });
     }
 
     /**
@@ -209,7 +210,8 @@ public class ServerUtils {
                 .target(server).path("board/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(Board.class);
+                .get(new GenericType<Board>(){
+                });
     }
 
 
