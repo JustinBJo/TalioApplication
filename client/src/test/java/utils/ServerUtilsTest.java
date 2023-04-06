@@ -2,10 +2,7 @@ package utils;
 
 import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;
-import commons.Board;
-import commons.Task;
-import commons.TaskList;
-import commons.TaskTransfer;
+import commons.*;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
@@ -166,6 +163,46 @@ public class ServerUtilsTest {
         Board result = serverUtils.getBoardById(1030);
         assertEquals(test, result);
     }
+
+    @Test
+    void getTaskListDataTest() {
+        TaskList testTL = new TaskList("test taskList");
+        List<Task> test = new ArrayList<>();
+        when(builder.get((GenericType<Object>) any())).thenReturn(test);
+
+        List<Task> result = serverUtils.getTaskListData(testTL);
+        assertEquals(test, result);
+    }
+
+    @Test
+    void getTaskDataTest() {
+        Task testTask = new Task("test task");
+        List<Subtask> test = new ArrayList<>();
+        when(builder.get((GenericType<Object>) any())).thenReturn(test);
+
+        List<Subtask> result = serverUtils.getTaskData(testTask);
+        assertEquals(test, result);
+    }
+
+    @Test
+    void getTasksTest() {
+        List<Task> test = new ArrayList<>();
+        when(builder.get((GenericType<Object>) any())).thenReturn(test);
+
+        List<Task> result = serverUtils.getTasks();
+        assertEquals(test, result);
+    }
+
+//    @Test
+//    void updateTaskParentTest() {
+//        Task testTask = new Task("Test task");
+//        testTask.setId(2001L);
+//        TaskList test = new TaskList("test taskList");
+//        when(builder.put(Entity.entity(test, APPLICATION_JSON), Task.class)).thenReturn(testTask);
+//
+//        Task result = serverUtils.updateTaskParent(testTask.getId(), test);
+//        assertEquals(testTask, result);
+//    }
 
 }
 

@@ -264,11 +264,12 @@ public class ServerUtils {
      * @param taskId    id of the changed task
      * @param newParent list that now holds the task
      */
-    public void updateTaskParent(long taskId, TaskList newParent) {
-        ClientBuilder.newClient(new ClientConfig()).target(server)
+    public Task updateTaskParent(long taskId, TaskList newParent) {
+        return ClientBuilder.newClient(new ClientConfig()).target(server)
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+
     }
 
     // methods for users ------------------------------------------------------
