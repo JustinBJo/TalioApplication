@@ -117,12 +117,6 @@ public class ServerUtilsTest {
         assertEquals(consumer, set);
     }
 
-//    @Test
-//    void startPollingThreadTest()
-
-//    @Test
-//    void stopPollingThreadTest()
-
     @Test
     void getDefaultBoardTest() {
         Board def = new Board("Test default board");
