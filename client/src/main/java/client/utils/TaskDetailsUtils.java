@@ -192,4 +192,24 @@ public class TaskDetailsUtils {
             SubtaskCtrl> subtaskChildrenManager) {
         this.subtaskChildrenManager = subtaskChildrenManager;
     }
+
+    public ParentWebsocketManager<Subtask, SubtaskCtrl> getParentWebsocket() {
+        return parentWebsocket;
+    }
+
+    public EntityWebsocketManager<Task> getEntityWebsocket() {
+        return entityWebsocket;
+    }
+
+    public void setParentWebsocket(ParentWebsocketManager<Subtask, SubtaskCtrl> parentWebsocket) {
+        this.parentWebsocket = parentWebsocket;
+    }
+
+    public void setEntityWebsocket(EntityWebsocketManager<Task> entityWebsocket) {
+        this.entityWebsocket = entityWebsocket;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
 }

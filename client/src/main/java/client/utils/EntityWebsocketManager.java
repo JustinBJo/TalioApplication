@@ -51,4 +51,20 @@ public class EntityWebsocketManager<T extends IEntity> {
                 );
         subscriptionMap.put(topicName, sub);
     }
+
+    public WebsocketUtils getWebsocket() {
+        return websocket;
+    }
+
+    public Consumer<T> getSetEntity() {
+        return setEntity;
+    }
+
+    public Class<T> getEntityClass() {
+        return entityClass;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
 }
