@@ -154,6 +154,18 @@ public class ServerUtils {
     }
 
     /**
+     * returns a list of all boards in the system
+      * @return the list of boards
+     */
+    public List<Board> getBoards() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() { } );
+    }
+
+    /**
      * return board from database based on its code
      * @param code the code of the board
      * @return the board

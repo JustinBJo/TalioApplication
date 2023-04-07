@@ -80,6 +80,7 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
         }
 
         mainCtrl.deleteBoard(board);
+        mainCtrl.showAdminBoards();
         board = null;
     }
 
