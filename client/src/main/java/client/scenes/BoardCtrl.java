@@ -2,6 +2,7 @@ package client.scenes;
 
 
 import client.utils.AlertUtils;
+import client.utils.BoardUtils;
 import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
@@ -14,11 +15,7 @@ import javafx.scene.layout.AnchorPane;
 
 public class BoardCtrl implements IEntityRepresentation<Board> {
 
-    private final MainCtrlTalio mainCtrl;
-    private final ServerUtils server;
-    private final WebsocketUtils websocket;
-    private final AlertUtils alertUtils;
-    private Board board;
+   private final BoardUtils utils;
 
 
     /**
@@ -28,14 +25,8 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * @param server    inject the server used
      */
     @Inject
-    public BoardCtrl(MainCtrlTalio mainCtrl,
-                     ServerUtils server,
-                     WebsocketUtils websocket,
-                     AlertUtils alertUtils) {
-        this.websocket = websocket;
-        this.alertUtils = alertUtils;
-        this.mainCtrl = mainCtrl;
-        this.server = server;
+    public BoardCtrl(BoardUtils utils) {
+        this.utils = utils;
     }
 
     @FXML
@@ -55,10 +46,7 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * @param board the board object corresponding to the fxml
      */
     public void setEntity(Board board) {
-        this.board = board;
-        if (board.getTitle() == null) {
-            board.setTitle("Untitled");
-        }
+        utils.setEntity(board);
         boardName.setText(board.getTitle());
     }
 
@@ -67,27 +55,13 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      * Allows the user to leave a board
      */
     public void leave() {
-        if (board.getId() == server.getDefaultId()) {
-            alertUtils.alertError("You cannot leave the default board!");
-            return;
-        }
-
-        if (!mainCtrl.isAdmin()) {
-            mainCtrl.getUser().removeBoard(board);
-            websocket.saveUser(mainCtrl.getUser());
-            board = null;
-            mainCtrl.setActiveBoard(server.getDefaultBoard());
-            return;
-        }
-
-        mainCtrl.deleteBoard(board);
-        board = null;
+       utils.leave();
     }
 
     /**
      * accesses the chosen board
      */
     public void access() {
-        mainCtrl.setActiveBoard(board);
+        utils.access();
     }
 }
