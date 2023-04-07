@@ -2,7 +2,6 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
-import commons.Subtask;
 import commons.Task;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -10,23 +9,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.List;
 
 
 public class TaskDetailsCtrl {
-//    private final MainCtrlTalio mainCtrl;
-//    private final WebsocketUtils websocket;
-//    private final AlertUtils alertUtils;
-//    private final ServerUtils server;
-//
-//    private ChildrenManager<Subtask, SubtaskCtrl> subtaskChildrenManager;
-//    private ParentWebsocketManager<Subtask, SubtaskCtrl> parentWebsocket;
-//    private EntityWebsocketManager<Task> entityWebsocket;
-//
-//    private Task task;
 
     private final TaskDetailsUtils utils;
     @FXML
@@ -40,6 +26,10 @@ public class TaskDetailsCtrl {
     @FXML
     VBox subtaskContainer;
 
+    /**
+     * injector constructor
+     * @param utils the service used for logic
+     */
     @Inject
     public TaskDetailsCtrl(TaskDetailsUtils utils) {
         this.utils = utils;

@@ -62,9 +62,11 @@ public class JoinBoardUtilsTest {
 
     @Test
     void testJoinException() {
-        when(server.getBoardByCode("1234")).thenThrow(new WebApplicationException());
+        when(server.getBoardByCode("1234"))
+                .thenThrow(new WebApplicationException());
         sut.join("1234");
-        verify(alertUtils, times(1)).alertError("There is no board with this code!");
+        verify(alertUtils, times(1))
+                .alertError("There is no board with this code!");
 
     }
 
@@ -95,7 +97,8 @@ public class JoinBoardUtilsTest {
 
         sut.join("1234");
 
-        verify(alertUtils, times(1)).alertError("There is no board with this code!");
+        verify(alertUtils, times(1))
+                .alertError("There is no board with this code!");
     }
 
     @Test

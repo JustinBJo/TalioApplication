@@ -67,7 +67,8 @@ public class BoardUtilsTest {
         when(server.getDefaultId()).thenReturn(b.getId());
         sut.setBoard(b);
         sut.leave();
-        verify(alertUtils, times(1)).alertError("You cannot leave the default board!");
+        verify(alertUtils, times(1)).
+                alertError("You cannot leave the default board!");
     }
 
     @Test

@@ -9,13 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,8 +87,10 @@ public class TaskDetailsUtilsTest {
 
         assertEquals(sut.getParentWebsocket().getWebsocket(), websocket);
         assertEquals(sut.getParentWebsocket().getChildEntityName(), "subtask");
-        assertEquals(sut.getParentWebsocket().getChildEntityClass(), Subtask.class);
-        assertEquals(sut.getParentWebsocket().getChildrenManager(), sut.getSubtaskChildrenManager());
+        assertEquals(sut.getParentWebsocket().getChildEntityClass(),
+                Subtask.class);
+        assertEquals(sut.getParentWebsocket().getChildrenManager(),
+                sut.getSubtaskChildrenManager());
 
         assertEquals(sut.getEntityWebsocket().getWebsocket(), websocket);
         assertEquals(sut.getEntityWebsocket().getEntityName(), "task");
@@ -116,14 +115,19 @@ public class TaskDetailsUtilsTest {
         verify(childrenManager, times(1)).getChildrenCtrls();
 
         verify(parentWebsocket, times(1)).register(task.getId());
-        verify(entityWebsocket, times(1)).register(task.getId(), "updateTitle");
-        verify(entityWebsocket, times(1)).register(task.getId(), "updateDescription");
+        verify(entityWebsocket, times(1))
+                .register(task.getId(), "updateTitle");
+        verify(entityWebsocket, times(1))
+                .register(task.getId(), "updateDescription");
 
-        verify(websocket, times(1)).registerForMessages(eq("/topic/task/updateChildren/" + task.getId()),
+        verify(websocket, times(1))
+                .registerForMessages(eq("/topic/task/updateChildren/" +
+                                task.getId()),
                 eq(Task.class),
                 any());
 
-        verify(websocket, times(1)).registerForMessages( eq("/topic/task/delete"),
+        verify(websocket, times(1))
+                .registerForMessages( eq("/topic/task/delete"),
                 eq(Task.class),
                 any());
 
@@ -142,7 +146,8 @@ public class TaskDetailsUtilsTest {
         sut.initialize(v);
         sut.setTask(new Task("t"));
         sut.editTask();
-        verify(mainCtrl, times(1)).showEditTask(any());
+        verify(mainCtrl, times(1))
+                .showEditTask(any());
     }
 
     @Test
@@ -152,7 +157,8 @@ public class TaskDetailsUtilsTest {
         sut.setTask(null);
         sut.editTask();
 
-        verify(alertUtils, times(1)).alertError("No task to edit!");
+        verify(alertUtils, times(1))
+                .alertError("No task to edit!");
     }
 
     @Test
@@ -162,14 +168,17 @@ public class TaskDetailsUtilsTest {
         sut.setTask(task);
         sut.deleteTask();
 
-        verify(alertUtils, times(1)).confirmDeletion("task");
+        verify(alertUtils, times(1))
+                .confirmDeletion("task");
 
         int k = task.getSubtasks().size();
         verify(websocket, times(k)).deleteSubtask(any());
-        verify(websocket, times(1)).deleteTask(task);
+        verify(websocket, times(1))
+                .deleteTask(task);
 
 
-        verify(mainCtrl, times(1)).showMain();
+        verify(mainCtrl, times(1))
+                .showMain();
 
     }
 
@@ -179,7 +188,8 @@ public class TaskDetailsUtilsTest {
         sut.initialize(v);
         sut.setTask(new Task("t"));
         sut.addSubtask();
-        verify(mainCtrl, times(1)).showAddSubtask(any());
+        verify(mainCtrl, times(1))
+                .showAddSubtask(any());
     }
 
     @Test
@@ -188,7 +198,8 @@ public class TaskDetailsUtilsTest {
         sut.initialize(v);
         sut.setTask(null);
         sut.addSubtask();
-        verify(alertUtils, times(1)).alertError("No task to add subtask to!");
+        verify(alertUtils, times(1))
+                .alertError("No task to add subtask to!");
     }
 
     @Test

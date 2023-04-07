@@ -12,6 +12,13 @@ public class JoinBoardUtils {
     private final ServerUtils server;
     private final AlertUtils alertUtils;
 
+    /**
+     * Constructor for the JoinBoard service
+     * @param mainCtrl the mainCtrl to be injected
+     * @param websocket the websocket to be injected
+     * @param server the server to be injected
+     * @param alertUtils the alertUtils to be injected
+     */
     @Inject
     public JoinBoardUtils(MainCtrlTalio mainCtrl,
                           WebsocketUtils websocket,
@@ -23,10 +30,18 @@ public class JoinBoardUtils {
         this.alertUtils = alertUtils;
     }
 
+    /**
+     * logic for the cancel button
+     */
     public void cancel() {
         mainCtrl.showMain();
     }
 
+    /**
+     * adds the given board to the user's boardlist or switches
+     * to it if it has already been joined
+     * @param boardCode the code of the board to be joined
+     */
     public void join(String boardCode) {
         boolean added;
 
@@ -53,6 +68,11 @@ public class JoinBoardUtils {
         }
     }
 
+    /**
+     * adds the board to the database if does not yet exist
+     * @param board the board to be added
+     * @return whether it has been added or not
+     */
     public boolean addBoard(Board board) {
         boolean added = false;
         long id = board.getId();
@@ -64,18 +84,34 @@ public class JoinBoardUtils {
         return added;
     }
 
+    /**
+     * getter for the mainCtrl
+     * @return the mainCtrl
+     */
     public MainCtrlTalio getMainCtrl() {
         return mainCtrl;
     }
 
+    /**
+     * getter for the websocket
+     * @return the websocket
+     */
     public WebsocketUtils getWebsocket() {
         return websocket;
     }
 
+    /**
+     * getter for the Server
+     * @return the server
+     */
     public ServerUtils getServer() {
         return server;
     }
 
+    /**
+     * getter for the AlertUtils
+     * @return the alertUtils
+     */
     public AlertUtils getAlertUtils() {
         return alertUtils;
     }

@@ -23,9 +23,11 @@ public class TaskDetailsUtils {
     private Task task;
 
     /**
-     * Constructor for the task details
-     *
-     * @param mainCtrl injects a mainCtrl object
+     * Constructor for the TaskDetails service
+     * @param websocket the websocket used
+     * @param mainCtrl mainCtrl used
+     * @param alertUtils alertUtils used
+     * @param server server used
      */
     @Inject
     public TaskDetailsUtils(WebsocketUtils websocket,
@@ -71,9 +73,10 @@ public class TaskDetailsUtils {
     }
 
 
-
-
-
+    /**
+     * Sets the current task entity
+     * @param task the task to be set
+     */
     public void setEntity(Task task) {
         if (task == null) return;
 
@@ -105,6 +108,9 @@ public class TaskDetailsUtils {
 
     }
 
+    /**
+     * exits the task details if the task is deleted
+     */
     private void setupCloseOnDelete() {
         websocket.registerForMessages(
                 "/topic/task/delete",
@@ -193,22 +199,45 @@ public class TaskDetailsUtils {
         this.subtaskChildrenManager = subtaskChildrenManager;
     }
 
+    /**
+     * getter for the Parent Websocket
+     * @return the ParentWebsocketManager used
+     */
     public ParentWebsocketManager<Subtask, SubtaskCtrl> getParentWebsocket() {
         return parentWebsocket;
     }
 
+    /**
+     * getter for the websocket of the entity used
+     * @return the EntityWebsocketManager
+     */
     public EntityWebsocketManager<Task> getEntityWebsocket() {
         return entityWebsocket;
     }
 
-    public void setParentWebsocket(ParentWebsocketManager<Subtask, SubtaskCtrl> parentWebsocket) {
+    /**
+     * sets the current ParentWebsocket
+     * @param parentWebsocket the ParentWebsocket to be set
+     */
+    public void setParentWebsocket(ParentWebsocketManager
+                                           <Subtask, SubtaskCtrl>
+                                           parentWebsocket) {
         this.parentWebsocket = parentWebsocket;
     }
 
-    public void setEntityWebsocket(EntityWebsocketManager<Task> entityWebsocket) {
+    /**
+     * sets the current Entity Websocket
+     * @param entityWebsocket the websocket to be set
+     */
+    public void setEntityWebsocket(EntityWebsocketManager<Task>
+                                           entityWebsocket) {
         this.entityWebsocket = entityWebsocket;
     }
 
+    /**
+     * sets the current task
+     * @param task the task to be set
+     */
     public void setTask(Task task) {
         this.task = task;
     }

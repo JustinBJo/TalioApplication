@@ -1,12 +1,8 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
 import client.utils.JoinBoardUtils;
-import client.utils.ServerUtils;
-import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
-import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
@@ -14,20 +10,17 @@ import javafx.scene.control.TextField;
 public class JoinBoardCtrl {
 
     private final JoinBoardUtils utils;
+    @FXML
+    TextField code;
 
     /**
      * Injector constructor
-     *
-     * @param mainCtrl  the main controller
-     * @param server    the server used
+     * @param utils the service used for logic
      */
     @Inject
     public JoinBoardCtrl(JoinBoardUtils utils) {
        this.utils = utils;
     }
-
-    @FXML
-    TextField code;
 
     /**
      * Resets the fields and returns to the main scene
