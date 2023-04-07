@@ -12,27 +12,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ChildrenManager
         <T extends IEntity, C extends IEntityRepresentation<T>> {
     private final Pane childrenContainer;
     private final Map<T, Pair<C, Parent>> childUIMap;
-    private final Class<C> childSceneCtrl;
-    private final String childFxmlFileName;
+    private final Supplier<Pair<C, Parent>> instantiate;
     private Consumer<C> updatedChildConsumer;
 
     /**
      * @param childrenContainer JavaFX pane which contains the children
-     * @param childSceneCtrl Class of child's scene controller
-     * @param childFxmlFileName Name of FXML file which defines child's scene
+     * @param instantiate supplier that instantiates child's FXML
+     *                    (usually BuildUtils.loadFXML())
      */
     public ChildrenManager(
             Pane childrenContainer,
-            Class<C> childSceneCtrl,
-            String childFxmlFileName) {
+            Supplier<Pair<C, Parent>> instantiate) {
         this.childrenContainer = childrenContainer;
-        this.childSceneCtrl = childSceneCtrl;
-        this.childFxmlFileName = childFxmlFileName;
+        this.instantiate = instantiate;
         this.childUIMap = new HashMap<>();
     }
 
@@ -119,8 +117,7 @@ public class ChildrenManager
             }
 
             // Instantiate child UI element
-            var loadedChild =
-                    BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
+            var loadedChild = instantiate.get();
 
             // Add it to its container
             if (insertAtIndex < 0) {

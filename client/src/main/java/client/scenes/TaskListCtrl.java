@@ -76,8 +76,10 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         // Set up tasks manager
         taskChildrenManager = new ChildrenManager<>(
                 taskContainer,
-                CardCtrl.class,
-                "Card.fxml"
+                () -> BuildUtils.loadFXML(
+                    CardCtrl.class,
+                    "Card.fxml"
+                )
         );
         taskChildrenManager.setUpdatedChildConsumer(
                 cardCtrl -> cardCtrl.setParentList(taskList)

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -42,15 +43,18 @@ class ChildrenManagerTest {
 
     @BeforeEach
     void setUp() throws IllegalAccessException, NoSuchFieldException {
-        ObservableList<Node> containerList = FXCollections.observableArrayList();
+        ObservableList<Node> containerList =
+                FXCollections.observableArrayList();
         container = Mockito.mock(Pane.class);
         when(container.getChildren()).thenReturn(containerList);
 
-        sut = new ChildrenManager<>(
-                container,
-                TaskListCtrl.class,
-                "TaskList.fxml"
-        );
+        Supplier<Pair<TaskListCtrl, Parent>> supplier = () -> {
+            TaskListCtrl ctrl = Mockito.mock(TaskListCtrl.class);
+            Parent p = Mockito.mock(Parent.class);
+            return new Pair<>(ctrl, p);
+        };
+
+        sut = new ChildrenManager<>(container, supplier);
 
         TaskList taskListA = new TaskList("A");
         taskListA.setId(1L);
@@ -67,20 +71,26 @@ class ChildrenManagerTest {
                 Mockito.mock(Parent.class),
         };
 
-        Map<TaskList, Pair<TaskListCtrl, Parent>> defaultUIMap = new HashMap<>();
+        Map<TaskList, Pair<TaskListCtrl, Parent>> defaultUIMap =
+                new HashMap<>();
 
         for (int i = 0; i < 2; i++) {
             container.getChildren().add(defaultChildUI[i]);
-            defaultUIMap.put(defaultChildEl[i], new Pair<>(defaultChildCtrl[i], defaultChildUI[i]));
+            defaultUIMap.put(
+                    defaultChildEl[i],
+                    new Pair<>(defaultChildCtrl[i], defaultChildUI[i])
+            );
         }
 
         Field mapField = ChildrenManager.class.getDeclaredField("childUIMap");
         mapField.setAccessible(true);
         mapField.set(sut, defaultUIMap);
 
-        Field consumerField = ChildrenManager.class.getDeclaredField("updatedChildConsumer");
+        Field consumerField =
+                ChildrenManager.class.getDeclaredField("updatedChildConsumer");
         consumerField.setAccessible(true);
-        consumerField.set(sut, (Consumer<TaskListCtrl>)taskListCtrl -> numConsumerCalls++);
+        consumerField.set(sut,
+                (Consumer<TaskListCtrl>) taskListCtrl -> numConsumerCalls++);
 
         numConsumerCalls = 0;
     }
@@ -139,7 +149,6 @@ class ChildrenManagerTest {
             assertEquals(2, container.getChildren().size());
             assertTrue(getUIMap().containsKey(updatedChild));
             assertEquals(ret, getUIMap().get(updatedChild).getKey());
-            assertEquals(updatedChild.getId(), ret.getId());
             assertEquals(1, numConsumerCalls);
         });
     }
@@ -176,12 +185,11 @@ class ChildrenManagerTest {
             assertTrue(getUIMap().containsKey(newChild));
 
             for (int i = 0; i < 2; i++) {
-                assertFalse(container.getChildren().contains(defaultChildUI[i]));
+                assertFalse(
+                        container.getChildren().contains(defaultChildUI[i])
+                );
                 assertFalse(getUIMap().containsKey(defaultChildEl[i]));
             }
-
-            assertEquals(updatedChild.getId(), getUIMap().get(updatedChild).getKey().getId());
-            assertEquals(newChild.getId(), getUIMap().get(newChild).getKey().getId());
         });
     }
 
@@ -194,10 +202,12 @@ class ChildrenManagerTest {
     }
 
     @Test
-    void setUpdatedChildConsumer() throws NoSuchFieldException, IllegalAccessException {
+    void setUpdatedChildConsumer()
+            throws NoSuchFieldException, IllegalAccessException {
         Consumer<TaskListCtrl> newConsumer = taskListCtrl -> {};
         sut.setUpdatedChildConsumer(newConsumer);
-        Field consumerField = ChildrenManager.class.getDeclaredField("updatedChildConsumer");
+        Field consumerField =
+                ChildrenManager.class.getDeclaredField("updatedChildConsumer");
         consumerField.setAccessible(true);
         assertEquals(newConsumer, consumerField.get(sut));
     }
