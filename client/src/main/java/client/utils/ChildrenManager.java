@@ -2,6 +2,7 @@ package client.utils;
 
 import client.scenes.IEntityRepresentation;
 import commons.IEntity;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ChildrenManager
         <T extends IEntity, C extends IEntityRepresentation<T>> {
@@ -17,6 +19,7 @@ public class ChildrenManager
     private final Map<T, Pair<C, Parent>> childUIMap;
     private final Class<C> childSceneCtrl;
     private final String childFxmlFileName;
+    private Consumer<C> updatedChildConsumer;
 
     /**
      * @param childrenContainer JavaFX pane which contains the children
@@ -31,6 +34,60 @@ public class ChildrenManager
         this.childSceneCtrl = childSceneCtrl;
         this.childFxmlFileName = childFxmlFileName;
         this.childUIMap = new HashMap<>();
+    }
+
+    /**
+     * Removes a single child scene
+     * @param child to be removed
+     */
+    public void removeChild(T child) {
+        List<T> children = new ArrayList<>(childUIMap.keySet());
+        T forRemoval = null;
+        for (T current : children) {
+            if (current.getId().equals(child.getId())) {
+                forRemoval = current;
+                break;
+            }
+        }
+
+        if (children.remove(forRemoval)) {
+            updateChildren(children);
+        }
+    }
+
+    /**
+     * Adds or updates a single child scene
+     * @param child to be added or updated
+     * @return the child's scene controller
+     */
+    public C addOrUpdateChild(T child) {
+        List<T> children = new ArrayList<>(childUIMap.keySet());
+
+        boolean updated = false;
+
+        for (T currentChild : childUIMap.keySet()) {
+            if (child.getId().equals(currentChild.getId())) {
+                children.remove(currentChild);
+                children.add(child);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            children.add(child);
+        }
+
+        updateChildren(children);
+        return childUIMap.get(child).getKey();
+    }
+
+    /**
+     * Removes all children
+     */
+    public void clear() {
+        childUIMap.clear();
+        childrenContainer.getChildren().clear();
     }
 
     /**
@@ -64,16 +121,26 @@ public class ChildrenManager
             // Instantiate child UI element
             var loadedChild =
                     BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
+
             // Add it to its container
             if (insertAtIndex < 0) {
-                childrenContainer.getChildren()
-                    .add(loadedChild.getValue());
+                Platform.runLater(() -> {
+                    childrenContainer.getChildren()
+                            .add(loadedChild.getValue());
+                });
             } else {
-                childrenContainer.getChildren()
-                    .set(insertAtIndex, loadedChild.getValue());
+                int finalInsertAtIndex = insertAtIndex;
+                Platform.runLater(() -> {
+                    childrenContainer.getChildren()
+                        .set(finalInsertAtIndex, loadedChild.getValue());
+                });
             }
             // Initialize its controller with this task list
             loadedChild.getKey().setEntity(child);
+            // Do any additional actions
+            if (updatedChildConsumer != null) {
+                updatedChildConsumer.accept(loadedChild.getKey());
+            }
             // Add its reference to the map
             childUIMap.put(child, loadedChild);
         }
@@ -83,7 +150,9 @@ public class ChildrenManager
             // Remove UI element from its container
             // and child from map at the same time
             var uiElement = childUIMap.remove(child).getValue();
-            childrenContainer.getChildren().remove(uiElement);
+            Platform.runLater(() -> {
+                childrenContainer.getChildren().remove(uiElement);
+            });
         }
     }
 
@@ -96,6 +165,14 @@ public class ChildrenManager
             ctrlList.add(ctrlAndParent.getKey());
         }
         return ctrlList;
+    }
+
+    /**
+     * Defines a consumer that will be called for every updated child
+     * @param updatedChildConsumer consumer
+     */
+    public void setUpdatedChildConsumer(Consumer<C> updatedChildConsumer) {
+        this.updatedChildConsumer = updatedChildConsumer;
     }
 
     /**

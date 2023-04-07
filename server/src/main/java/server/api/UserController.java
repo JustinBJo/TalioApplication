@@ -2,8 +2,11 @@ package server.api;
 
 import javax.servlet.http.HttpServletRequest;
 
-import commons.Board;
 import commons.User;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.database.UserRepository;
 
@@ -40,8 +43,7 @@ public class UserController {
      */
     @GetMapping("/ip")
     public String getCurrentIp(HttpServletRequest request) {
-        String ipAddress = request.getRemoteAddr();
-        return ipAddress;
+        return request.getRemoteAddr();
     }
 
     /**
@@ -56,11 +58,26 @@ public class UserController {
     /**
      * updates the user's state
      * @param user the user to be updated
-     * @return the current list of joined boards
+     * @return updated user
      */
     @PutMapping("/save")
-    public List<Board> update(@RequestBody User user) {
+    public User update(@RequestBody User user) {
         repo.save(user);
-        return user.getBoards();
+        return user;
+    }
+
+    /**
+     * updates the user's state using websocket messages
+     * @param user the user to be updated
+     * @param id id of the user to be updated
+     * @return updated user
+     */
+    @MessageMapping("/user/save/{id}")
+    @SendTo("/topic/user/save/{id}")
+    public User messageUpdate(
+            @Payload User user,
+            @DestinationVariable String id // This is here to be used in @SendTo
+    ) {
+        return update(user);
     }
 }

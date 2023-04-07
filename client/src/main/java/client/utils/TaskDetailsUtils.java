@@ -8,24 +8,34 @@ import commons.Task;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskDetailsUtils {
     private final MainCtrlTalio mainCtrl;
+    private final WebsocketUtils websocket;
+    private final AlertUtils alertUtils;
     private final ServerUtils server;
 
     private ChildrenManager<Subtask, SubtaskCtrl> subtaskChildrenManager;
+    private ParentWebsocketManager<Subtask, SubtaskCtrl> parentWebsocket;
+    private EntityWebsocketManager<Task> entityWebsocket;
 
     private Task task;
 
     /**
      * Constructor for the task details
-     * @param server injects a server object
+     *
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public TaskDetailsUtils(ServerUtils server, MainCtrlTalio mainCtrl) {
-        this.server = server;
+    public TaskDetailsUtils(WebsocketUtils websocket,
+                           MainCtrlTalio mainCtrl,
+                           AlertUtils alertUtils,
+                           ServerUtils server) {
+        this.alertUtils = alertUtils;
+        this.websocket = websocket;
         this.mainCtrl = mainCtrl;
+        this.server = server;
     }
 
     /**
@@ -33,40 +43,80 @@ public class TaskDetailsUtils {
      * @param subtaskContainer the Container for children
      */
     public void initialize(VBox subtaskContainer) {
+        // Set up children manager
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
                         subtaskContainer,
                         SubtaskCtrl.class,
                         "Subtask.fxml"
                 );
+        subtaskChildrenManager.setUpdatedChildConsumer(
+                subtaskCtrl -> subtaskCtrl.setParent(task)
+        );
+
+        // Set up websockets
+        this.parentWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "subtask",
+                Subtask.class,
+                subtaskChildrenManager
+        );
+
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "task",
+                Task.class,
+                this::setEntity
+        );
     }
 
-    /**
-     * logic for refreshing the scene
-     */
-    public void refresh() {
-        if (task == null) {
-            // no children if there's no task list
-            subtaskChildrenManager.updateChildren(new ArrayList<>());
-        }
-        var subtasks = server.getTaskData(task);
-        subtaskChildrenManager.updateChildren(subtasks);
 
-        for (SubtaskCtrl subtaskCtrl :
-                subtaskChildrenManager.getChildrenCtrls()) {
-            subtaskCtrl.setParentTask(task);
-        }
-    }
 
-    /**
-     * sets the current task
-     * @param task task to be set
-     */
-    public void setTask(Task task) {
+
+
+    public void setEntity(Task task) {
         if (task == null) return;
 
         this.task = task;
+        if (task.getTitle() == null) {
+            task.setTitle("Untitled");
+        }
+
+        var subtasks = server.getTaskData(task);
+        subtaskChildrenManager.clear();
+        subtaskChildrenManager.updateChildren(subtasks);
+        for (SubtaskCtrl subtaskCtrl :
+                subtaskChildrenManager.getChildrenCtrls()) {
+            subtaskCtrl.setParent(task);
+        }
+
+        parentWebsocket.register(task.getId());
+        entityWebsocket.register(task.getId(), "updateTitle");
+        entityWebsocket.register(task.getId(), "updateDescription");
+        websocket.registerForMessages(
+                "/topic/task/updateChildren/" + task.getId(),
+                Task.class,
+                (t) -> {
+                    subtaskChildrenManager.updateChildren(new ArrayList<>());
+                    subtaskChildrenManager.updateChildren(t.getSubtasks());
+                }
+        );
+        setupCloseOnDelete();
+
     }
+
+    private void setupCloseOnDelete() {
+        websocket.registerForMessages(
+                "/topic/task/delete",
+                Task.class,
+                t -> {
+                    if (t.getId().equals(task.getId())) {
+                        exit();
+                    }
+                }
+        );
+    }
+
 
     /**
      * logic for the exit method
@@ -80,7 +130,7 @@ public class TaskDetailsUtils {
      */
     public void editTask() {
         if (task == null) {
-            ErrorUtils.alertError("No task to edit!");
+            alertUtils.alertError("No task to edit!");
             exit();
         }
         mainCtrl.showEditTask(task);
@@ -91,15 +141,18 @@ public class TaskDetailsUtils {
      */
     public void deleteTask() {
         if (task == null) {
-            ErrorUtils.alertError("No task to delete!");
+            alertUtils.alertError("No task to delete!");
             exit();
         }
 
-        boolean confirmation = server.confirmDeletion("task");
+        boolean confirmation = alertUtils.confirmDeletion("task");
 
         // Check the user's response and perform the desired action
         if (confirmation) {
-            server.deleteTask(task);
+            List<Subtask> subtasks = task.getSubtasks();
+            for (Subtask subtask : subtasks)
+                websocket.deleteSubtask(subtask);
+            websocket.deleteTask(task);
             exit();
         }
     }
@@ -109,7 +162,7 @@ public class TaskDetailsUtils {
      */
     public void addSubtask() {
         if (task == null) {
-            ErrorUtils.alertError("No task to add subtask to!");
+            alertUtils.alertError("No task to add subtask to!");
             return;
         }
         mainCtrl.showAddSubtask(task);

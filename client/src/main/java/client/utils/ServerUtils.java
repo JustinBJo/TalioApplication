@@ -18,18 +18,14 @@ package client.utils;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
-import commons.Board;
-import commons.Subtask;
-import commons.Task;
-import commons.TaskList;
+import commons.*;
 
-import commons.User;
 import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.core.Response;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -38,83 +34,29 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
-    private static String SERVER = "http://localhost:8080/";
-
-
-    /**
-     * gets the default board from the repository
-     * @return default board
-     */
-    public Board getDefaultBoard() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/default")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Board>() {
-                });
-    }
+    private WebsocketUtils websockets;
+    private String server = "http://localhost:8080/";
 
     /**
-     * gets the id of the default board in the system
-     * @return the id of the default board
+     * @param websockets WebsocketUtils instance used in application
      */
-    public long getDefaultId() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/defaultId")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Long>() {
-                });
-    }
-
-    /**
-     * Gets all task lists in repository
-     *
-     * @return a list containing all task lists
-     */
-    public List<TaskList> getAllTaskLists() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasklist") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<TaskList>>() {
-                });
-    }
-
-    /**
-     * get task list of the give board
-     * @param boardId the board to fetch the tasklists
-     * @return the tasklists of the board
-     */
-    public List<TaskList> getBoardData(long boardId) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/" + boardId + "/tasklist")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<TaskList>>(){
-                });
-    }
-
-    /**
-     * get the tasklist of the default board using only the api
-     * @return the task list of the default board
-     */
-    public List<TaskList> getDefaultBoardData() {
-        return getBoardData(getDefaultId());
+    public void setWebsockets(WebsocketUtils websockets) {
+        this.websockets = websockets;
     }
 
     /**
      * get the server url to empty string
      */
-    public static void resetServer() {
-        SERVER = "";
+    public void resetServer() {
+        stopPollingThread();
+        server = "";
     }
 
     /**
      * set the server url by the client's input
      * @param url the input url
      */
-    public static void setServer(String url)
+    public void setServer(String url)
             throws IllegalArgumentException {
         try {
             ClientBuilder.newClient(new ClientConfig()) //
@@ -127,52 +69,50 @@ public class ServerUtils {
         } catch (ProcessingException e) {
             throw new ProcessingException("Server not found");
         }
-        SERVER = url;
+        stopPollingThread();
+        server = url.endsWith("/") ? url : url + "/";
+        websockets.updateServer(server.substring(7));
+        startPollingThread();
     }
 
+    /**
+     * gets the default board from the repository
+     * @return default board
+     */
+    public Board getDefaultBoard() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board/default")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>() {
+                });
+    }
 
     /**
-     * add a task list to the server
-     * @param taskList  the task list
-     * @param board     the board that the task list belongs to
-     * @return          the added task list, null if failed to add
+     * gets the id of the default board in the system
+     * @return the id of the default board
      */
-    public TaskList addTaskList(TaskList taskList, Board board) {
+    public long getDefaultId() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board/defaultId")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Long>() {
+                });
+    }
 
-        // Add task list to repository
-        Response addListResponse =
-                ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("tasklist") //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .post(Entity.entity(taskList, APPLICATION_JSON));
-
-        // If failed to add list, exit now
-        if (addListResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-            addListResponse.close();
-            return null;
-        }
-
-        // Get added list
-        TaskList addedList = addListResponse.readEntity(TaskList.class);
-
-        addListResponse.close();
-
-        // Link task list to board
-        Response linkBoardResponse =
-                linkTaskListToBoard(board, addedList.getId());
-
-        int linkStatus = linkBoardResponse.getStatus();
-        linkBoardResponse.close();
-
-        // If succeeded to link list, wrap up and exit
-        if (linkStatus == Response.Status.OK.getStatusCode()) {
-            return addedList;
-        }
-
-        // If failed to link list,
-        // remove it from repository to avoid lists with no parents
-        removeTaskList(addedList.getId()).close();
-        return null;
+    /**
+     * get task list of the give board
+     * @param boardId the board to fetch the tasklists
+     * @return the tasklists of the board
+     */
+    public List<TaskList> getBoardData(long boardId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board/" + boardId + "/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TaskList>>(){
+                });
     }
 
     /**
@@ -182,7 +122,7 @@ public class ServerUtils {
      */
     public List<Task> getTaskListData(TaskList taskList) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasklist/getTasks/" + taskList.getId())
+                .target(server).path("tasklist/getTasks/" + taskList.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Task>>() {});
     }
@@ -194,23 +134,9 @@ public class ServerUtils {
      */
     public List<Subtask> getTaskData(Task task) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasks/getSubtasks/" + task.getId())
+                .target(server).path("tasks/getSubtasks/" + task.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                 .get(new GenericType<List<Subtask>>() {});
-    }
-
-    /**
-     * Link task list that is already in repository to a board that is also
-     * already in repository
-     * @param board board that will be linked to the task list
-     * @param taskListId if of the task list that wll be linked to the board
-     * @return the endpoint's Response
-     */
-    private Response linkTaskListToBoard(Board board, long taskListId) {
-            return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("board/addTaskList/" + board.getId() + "/" + taskListId)
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
-                .put(Entity.json(board));
     }
 
     /**
@@ -220,127 +146,11 @@ public class ServerUtils {
      */
     public List<Task> getTasks() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks") //
+                .target(server).path("tasks") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Task>>() {
                 });
-    }
-
-    /**
-     * Method used to insert a task into the database
-     *
-     * @param task the task to be added to the database
-     * @param parentTaskList task list that will hold this task
-     * @return the added task, in order for future operations
-     * with it to be possible
-     */
-    public Task addTask(Task task, TaskList parentTaskList) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("tasks/" + parentTaskList.getId()) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(task, APPLICATION_JSON), Task.class);
-    }
-
-    /**
-     * Displays an alert which asks for the confirmation of deletion
-     * @param type the string which contains
-     *             the type of the entity that the user is trying to delete
-     * @return true if confirm is clicked, false otherwise
-     */
-    public boolean confirmDeletion(String type) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete " + type + "?");
-        alert.setHeaderText("Delete " + type);
-        alert.setContentText("Are you sure you want to delete this "
-                + type + "?");
-
-        ButtonType confirmButton = new ButtonType("Confirm");
-        ButtonType cancelButton = new ButtonType("Cancel");
-
-        // Remove the default buttons and add Confirm and Cancel buttons
-        alert.getButtonTypes().setAll(confirmButton, cancelButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent() && result.get() == confirmButton) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * Deletes a tasklist from the server
-     *
-     * @param taskList the tasklist to be deleted
-     * @return the tasklist which was deleted
-     */
-    public String deleteTaskList(TaskList taskList) {
-
-        // Unlink task list from board
-        Response unlinkResponse =
-                ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("board/removeTaskList/" + taskList.getId()) //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .put(Entity.entity(taskList, APPLICATION_JSON));
-
-        // If failed to unlink list, exit now
-        if (unlinkResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-            unlinkResponse.close();
-            return "Failed to unlink task list from board";
-        }
-
-        Board unlinkedBoard = unlinkResponse.readEntity(Board.class);
-        unlinkResponse.close();
-
-        // Remove task list from repository
-        Response removeListResponse = removeTaskList(taskList.getId());
-
-        int removeStatus = removeListResponse.getStatus();
-        String removeValue = removeListResponse.readEntity(String.class);
-        removeListResponse.close();
-
-        // If succeeded to link list, wrap up and exit
-        if (removeStatus == Response.Status.OK.getStatusCode()) {
-            return removeValue;
-        }
-
-        // If failed to remove list, link it back to board
-        // to avoid lists with no parents
-        linkTaskListToBoard(unlinkedBoard, taskList.getId()).close();
-        return null;
-
-    }
-
-
-    /**
-     * Remove task list from repository without unlinking it from board
-     * @param taskListId id of task list to be removed
-     */
-    private Response removeTaskList(long taskListId) {
-        return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("tasklist/delete/" + taskListId) //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .delete();
-    }
-
-    /**
-     * Updates the name of the selected TaskList in the database
-     *
-     * @param taskList the TaskList to be renamed
-     * @param newName  the name it should be renamed to
-     * @return a TaskList entity
-     */
-    public TaskList updateTaskList(TaskList taskList, String newName) {
-        long id = taskList.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasklist/update/" + id + "/" + newName)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(taskList, APPLICATION_JSON), TaskList.class);
     }
 
     /**
@@ -350,11 +160,10 @@ public class ServerUtils {
      */
     public Board getBoardByCode(String code) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/code/" + code)
+                .target(server).path("board/code/" + code)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Board.class);
-
     }
 
     /**
@@ -365,43 +174,10 @@ public class ServerUtils {
      */
     public Board addBoard(Board board) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board")
+                .target(server).path("board")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(board, APPLICATION_JSON), Board.class);
-    }
-
-    /**
-     * Update the title of the given board using the board/update endpoint
-     *
-     * @param board   the board that is being updated
-     * @param newName the new name of the board
-     * @return the updated board
-     */
-    public Board updateBoard(Board board, String newName) {
-        long id = board.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/update/" + id + "/" + newName)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(board, APPLICATION_JSON), Board.class);
-    }
-
-    /**
-     * Delete an existing board using the board/delete endpoint
-     *
-     * @param board the board that is being removed
-     * @return the removed board
-     */
-    public String deleteBoard(Board board) {
-        long id = board.getId();
-        System.out.println(id);
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(String.class);
-
     }
 
 
@@ -412,7 +188,7 @@ public class ServerUtils {
      */
     public Board getBoardById(long id) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("board/" + id)
+                .target(server).path("board/" + id)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Board.class);
@@ -426,13 +202,13 @@ public class ServerUtils {
      */
     public User checkUser() {
         String ip = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("user/ip")
+                .target(server).path("user/ip")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(String.class);
 
         List<User> users = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("user")
+                .target(server).path("user")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<User>>() { });
@@ -447,7 +223,7 @@ public class ServerUtils {
         }
         if (!exists) {
             ClientBuilder.newClient(new ClientConfig())
-                    .target(SERVER).path("user/add")
+                    .target(server).path("user/add")
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(user, APPLICATION_JSON));
@@ -456,155 +232,74 @@ public class ServerUtils {
     }
 
     /**
-     * saves the current state of the user in the database
-     * @param user the user to be saved
+     * gets all users in the database
+     * @return the list of users in the database
      */
-    public void saveUser(User user) {
-     //   System.out.println(user.getBoards());
-        //System.out.println(user.getBoards());
-        List<Board> boards =  ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("user/save")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(user, APPLICATION_JSON),
-                        new GenericType<List<Board>>() {});
-        System.out.println(boards);
-    }
-
-
-
-    /**
-     * Update the title of the given task using the tasks/updateTitle endpoint
-     *
-     * @param task   the task that is being updated
-     * @param newTitle the new title of the task
-     * @return the updated task
-     */
-    public Task updateTaskTitle(Task task, String newTitle) {
-        long id = task.getId();
+    public List<User> getAllUsers() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("tasks/updateTitle/" + id + "/" + newTitle)
+                .target(server).path("user")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
+                .get(new GenericType<List<User>>() { } );
     }
 
-    /**
-     * Update the description of the given task,
-     * using the tasks/updateDescription endpoint
-     *
-     * @param task   the task that is being updated
-     * @param newDescription the new description of the task
-     * @return the updated task
-     */
-    public Task updateTaskDescription(Task task, String newDescription) {
-        long id = task.getId();
-        if (newDescription.length() == 0)
-            return ClientBuilder.newClient(new ClientConfig())
-                    .target(SERVER).
-                    path("tasks/updateDescription/" + id + "/HARDCODED-EMPTY" +
-                            "-DESCRIPTION-METHOD-FOR-EDITING-TASKS")
-                    .request(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON)
-                    .put(Entity.entity(task, APPLICATION_JSON), Task.class);
-        else
-            return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).
-                path("tasks/updateDescription/" + id + "/" + newDescription)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(task, APPLICATION_JSON), Task.class);
-    }
 
     /**
      * Sets a new task list to hold a given task
-     * @param taskId id of the changed task
+     *
+     * @param taskId    id of the changed task
      * @param newParent list that now holds the task
-     * @return updated task
      */
-    public Task updateTaskParent(long taskId, TaskList newParent) {
-        return  ClientBuilder.newClient(new ClientConfig()).target(SERVER)
+    public void updateTaskParent(long taskId, TaskList newParent) {
+        ClientBuilder.newClient(new ClientConfig()).target(server)
                 .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
     }
 
-    /**
-     * Deletes a task from the server
-     * @param task the task to be deleted
-     * @return the removed task
-     */
-    public Task deleteTask(Task task) {
-        long id = task.getId();
-        Task result = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
-                .path("tasks/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(Task.class);
+    // long polling
 
-        return result;
+    private static final ExecutorService EXEC =
+            Executors.newSingleThreadExecutor();
+
+    private Future<?> runnable;
+    private Consumer<TaskTransfer> pollingConsumer;
+
+    /**
+     * Start listening for an update in task parent
+     * @param consumer action taken when task parent is updated
+     */
+    public void listenForUpdateTaskParent(Consumer<TaskTransfer> consumer) {
+        pollingConsumer = consumer;
+    }
+
+    private void startPollingThread() {
+        runnable = EXEC.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("tasks/listen/updateParent/")
+                        .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                        .get();
+                if (res.getStatus() == 204) { // No content
+                    continue;
+                }
+
+                var taskTransfer = res.readEntity(TaskTransfer.class);
+
+                if (pollingConsumer != null) {
+                    pollingConsumer.accept(taskTransfer);
+                }
+            }
+        });
     }
 
     /**
-     * Method used to insert a subtask into the database
-     *
-     * @param subtask the subtask to be added to the database
-     * @param parentTask task that will hold this subtask
-     * @return the added subtask, in order for future operations
-     * with it to be possible
+     * Stops the thread that's doing long polling from running
      */
-    public Subtask addSubtask(Subtask subtask, Task parentTask) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("subtask/" + parentTask.getId()) //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
-    }
-
-
-    /**
-     * Remove subtask from repository without unlinking it from parent task
-     * @param subtaskId of task list to be removed
-     */
-    private Response removeSubtask(long subtaskId) {
-        return ClientBuilder.newClient(new ClientConfig()).target(SERVER)
-                .path("subtask/delete/" + subtaskId) //
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .delete();
-    }
-
-    /**
-     * Deletes a subtask from the server
-     * @param subtask the subtask to be deleted
-     * @return the removed subtask
-     */
-    public String deleteSubtask(Subtask subtask) {
-        long id = subtask.getId();
-        String result = ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER)
-                .path("subtask/delete/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(String.class);
-
-        System.out.println(result);
-        return result;
-    }
-
-    /**
-     * Updates the title of the subtask in the database
-     * @param subtask the subtask to be edited
-     * @param newTitle the new title of the subtask
-     * @return the edited subtask
-     */
-    public Subtask updateSubtask(Subtask subtask, String newTitle) {
-        long id = subtask.getId();
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("subtask/update/" + id + "/" + newTitle)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(subtask, APPLICATION_JSON), Subtask.class);
+    public void stopPollingThread() {
+        if (runnable != null && !runnable.isCancelled()) {
+            runnable.cancel(true);
+            EXEC.shutdownNow();
+        }
     }
 }

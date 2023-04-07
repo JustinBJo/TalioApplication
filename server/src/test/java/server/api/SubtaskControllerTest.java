@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
+import server.api.testRepository.TestSubtaskRepository;
+import server.api.testRepository.TestTaskRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,18 +31,6 @@ class SubtaskControllerTest {
         k2 = new Subtask("test2", false);
         t1 = new Task("test");
         sut = new SubtaskController(repo, taskRepo);
-    }
-
-    @Test
-    void getAll() {
-        repo.save(k1);
-        repo.save(k2);
-        List<Subtask> res = sut.getAll();
-
-        assertTrue(res.contains(k1));
-        assertTrue(res.contains((k2)));
-
-
     }
 
     @Test
@@ -76,10 +64,21 @@ class SubtaskControllerTest {
     }
 
     @Test
+    void updateCompletenessTest() {
+        repo.save(k1);
+        sut.updateCompleteness(k1.getId(), true);
+
+        assertTrue(repo.findAll().contains(k1));
+        assertTrue(repo.findById(k1.getId()).get().isCompleted());
+    }
+
+    @Test
     void delete() {
         assertFalse(repo.findAll().contains(k1));
         Long id = repo.save(k1).getId();
         assertTrue(repo.findAll().contains(k1));
+
+        System.out.println("HELLO");
 
         sut.delete(id);
 
@@ -90,6 +89,6 @@ class SubtaskControllerTest {
     void failDelete() {
         assertFalse(repo.findAll().contains(k1));
         var res = sut.delete(k1.getId());
-        assertFalse(res.getStatusCode() == HttpStatus.OK);
+        assertNotSame(res.getStatusCode(), HttpStatus.OK);
     }
 }

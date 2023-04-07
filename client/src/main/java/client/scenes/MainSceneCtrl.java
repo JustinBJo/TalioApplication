@@ -1,13 +1,12 @@
 package client.scenes;
 
-import client.utils.ChildrenManager;
-import client.utils.ErrorUtils;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.TaskList;
 import commons.User;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -22,14 +21,21 @@ import javafx.scene.layout.VBox;
 
 import java.util.*;
 
-public class MainSceneCtrl {
+public class MainSceneCtrl implements IEntityRepresentation<Board>  {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
+
     private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
     private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
 
-    private final long defaultBoardID;
+    private EntityWebsocketManager<User> joinedBoardsWebsocket;
+    private ParentWebsocketManager<TaskList, TaskListCtrl> taskListsWebsocket;
+    private EntityWebsocketManager<Board> entityWebsocket;
+
+    private long defaultBoardID;
 
     private Board activeBoard;
 
@@ -69,11 +75,14 @@ public class MainSceneCtrl {
      * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public MainSceneCtrl(ServerUtils server,
+                         MainCtrlTalio mainCtrl,
+                         AlertUtils alertUtils,
+                         WebsocketUtils websocket) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
-
-        this.defaultBoardID = server.getDefaultId();
+        this.websocket = websocket;
     }
 
 
@@ -83,13 +92,6 @@ public class MainSceneCtrl {
      */
     public void initialize() {
         // Create children manager (needs FXML container)
-        validateUser();
-        Board defaultBoard = server.getBoardById(defaultBoardID);
-        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
-            mainCtrl.getUser().getBoards().add(defaultBoard);
-            server.saveUser(mainCtrl.getUser());
-        }
-
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
                 TaskListCtrl.class,
@@ -102,22 +104,59 @@ public class MainSceneCtrl {
                 "Board.fxml"
         );
 
-        Image menu = new Image(getClass()
-                .getResourceAsStream("/client/images/menuicon.png"));
+        // Long polling for drag and drop
+        startLongPolling();
+
+        // Create websocket managers
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "board",
+                Board.class,
+                this::setEntity
+        );
+        this.taskListsWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "taskList",
+                TaskList.class,
+                taskListChildrenManager
+        );
+        this.joinedBoardsWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "user",
+                User.class,
+                this::updateJoinedBoards
+        );
+
+        // Set button icons
+        Image menu = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/menuicon.png")));
         menuIcon.setImage(menu);
 
-        Image admin = new Image(getClass()
-                .getResourceAsStream("/client/images/adminicon.png"));
+        Image admin = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/adminicon.png")));
         adminIcon.setImage(admin);
 
-        Image copy = new Image(getClass()
-                .getResourceAsStream("/client/images/copyicon.png"));
+        Image copy = new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/client/images/copyicon.png")));
         copyIcon.setImage(copy);
+    }
 
+    /**
+     * Handles a server change
+     */
+    public void changeServer() {
+        this.defaultBoardID = server.getDefaultId();
 
+        validateUser();
+        Board defaultBoard = server.getBoardById(defaultBoardID);
+        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
+            mainCtrl.getUser().getBoards().add(defaultBoard);
+            websocket.saveUser(mainCtrl.getUser());
+        }
 
-        // Set default board as current board (needs FXML title)
-        setActiveBoard(server.getDefaultBoard());
+        // Reset user and board
+        setEntity(server.getDefaultBoard());
+        updateJoinedBoards(mainCtrl.getUser());
     }
 
     /**
@@ -131,12 +170,47 @@ public class MainSceneCtrl {
      * Sets current active board and updates the main scene accordingly
      * @param activeBoard new active board
      */
-    public void setActiveBoard(Board activeBoard) {
+    public void setEntity(Board activeBoard) {
         this.activeBoard = activeBoard;
-        sceneTitle.setText(activeBoard.getTitle());
-        boardCode.setText(activeBoard.getCode());
 
-        refresh();
+        Platform.runLater(() -> {
+            sceneTitle.setText(activeBoard.getTitle());
+            boardCode.setText(activeBoard.getCode());
+        });
+
+        taskListChildrenManager.updateChildren(
+                server.getBoardData(activeBoard.getId())
+        );
+
+        entityWebsocket.register(activeBoard.getId(), "update");
+        taskListsWebsocket.register(activeBoard.getId());
+
+        // Go to default board if this board is deleted somewhere else
+        websocket.registerForMessages(
+                "/topic/board/delete/" + activeBoard.getId(),
+                Integer.class,
+                (status) -> {
+                    if (status == 200) { // Delete successful
+                        setEntity(server.getDefaultBoard());
+                    }
+                }
+        );
+    }
+
+    private void startLongPolling() {
+        server.listenForUpdateTaskParent(t -> {
+            taskListChildrenManager.getChildrenCtrls().forEach(taskListCtrl -> {
+                if (taskListCtrl.getId().equals(t.oldParentId)) {
+                    taskListCtrl.getTaskChildrenManager()
+                            .removeChild(t.oldTask);
+                }
+
+                if (taskListCtrl.getId().equals(t.newParentId)) {
+                    taskListCtrl.getTaskChildrenManager()
+                            .addOrUpdateChild(t.newTask);
+                }
+            });
+        });
     }
 
     /**
@@ -145,24 +219,16 @@ public class MainSceneCtrl {
      * since the user want to connect to a different server
      */
     public void back() {
-        ServerUtils.resetServer();
+        server.resetServer();
         mainCtrl.showConnect();
     }
 
     /**
      * Refresh the view, showing all task lists
      */
-    public void refresh() {
-        List<TaskList> taskLists = server.getBoardData(activeBoard.getId());
-        taskListChildrenManager.updateChildren(taskLists);
-        for (TaskListCtrl taskListCtrl :
-                taskListChildrenManager.getChildrenCtrls()) {
-            taskListCtrl.refresh();
-        }
-
-        List<Board> joinedBoards = new ArrayList<>();
-        boardListChildrenManager.updateChildren(joinedBoards);
-        joinedBoards = mainCtrl.getUser().getBoards();
+    public void updateJoinedBoards(User user) {
+        boardListChildrenManager.updateChildren(new ArrayList<>());
+        List<Board> joinedBoards = user.getBoards();
         boardListChildrenManager.updateChildren(joinedBoards);
     }
 
@@ -178,7 +244,7 @@ public class MainSceneCtrl {
      */
     public void renameBoard() {
         if (activeBoard.getId() == defaultBoardID) {
-            ErrorUtils.alertError("You cannot rename the default board!");
+            alertUtils.alertError("You cannot rename the default board!");
             return;
         }
         mainCtrl.showRenameBoard();
@@ -190,21 +256,7 @@ public class MainSceneCtrl {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        if (activeBoard.getId() == defaultBoardID) {
-            ErrorUtils.alertError("You cannot delete the default board!");
-            return;
-        }
-
-        boolean confirmation = server.confirmDeletion("board");
-
-        // Check the user's response and perform the desired action
-        if (confirmation) {
-            Board b = activeBoard;
-            mainCtrl.getUser().getBoards().remove(b);
-            server.saveUser(mainCtrl.getUser());
-            setActiveBoard(server.getDefaultBoard());
-            System.out.println(server.deleteBoard(b));
-        }
+        mainCtrl.deleteBoard(activeBoard);
     }
 
     /**
@@ -247,12 +299,30 @@ public class MainSceneCtrl {
     }
 
     /**
-     * checks whether this user has already been registered
+     * Handles setting the current user
      */
     public void validateUser() {
         User u = server.checkUser();
         mainCtrl.setUser(u);
+        joinedBoardsWebsocket.register(u.getId(), "save");
     }
 
+    /**
+     * functionality for the "admin" icon button
+     */
+    public void adminPassword() {
+        if (!mainCtrl.isAdmin()) {
+            mainCtrl.showAdmin();
+        }
+        else {
+            boolean accept = alertUtils.confirmRevertAdmin();
+
+            if (accept) {
+                mainCtrl.setAdmin(false);
+                mainCtrl.setUser(server.checkUser());
+                mainCtrl.showMain();
+            }
+        }
+    }
 }
 

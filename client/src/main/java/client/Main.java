@@ -19,8 +19,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
+import client.utils.AlertUtils;
 import client.utils.BuildUtils;
 
+import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -39,6 +42,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+
+        var server = BuildUtils.getInstance(ServerUtils.class);
+        var websocket = BuildUtils.getInstance(WebsocketUtils.class);
+        server.setWebsockets(websocket);
+
+        primaryStage.setOnCloseRequest(e -> server.stopPollingThread());
 
         var connect = BuildUtils.loadFXML(
                 ConnectScreenCtrl.class,
@@ -76,17 +85,26 @@ public class Main extends Application {
                 "JoinBoard.fxml"
         );
 
+        var admin = BuildUtils.loadFXML(
+                AdminCtrl.class,
+                "Admin.fxml"
+        );
+
 
 
         var mainCtrl = BuildUtils.getInstance(MainCtrlTalio.class);
         mainCtrl.initialize(
                 primaryStage,
+                server,
+                BuildUtils.getInstance(AlertUtils.class),
+                websocket,
                 connect,
                 mainScene,
                 addTitledEntity,
                 addTask,
                 editTask,
                 viewTask,
-                joinBoard);
+                joinBoard,
+                admin);
     }
 }

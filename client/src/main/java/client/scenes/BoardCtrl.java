@@ -1,8 +1,9 @@
 package client.scenes;
 
 
-import client.utils.ErrorUtils;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Board;
 import javafx.fxml.FXML;
@@ -15,16 +16,24 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
 
     private final MainCtrlTalio mainCtrl;
     private final ServerUtils server;
+    private final WebsocketUtils websocket;
+    private final AlertUtils alertUtils;
     private Board board;
 
 
     /**
      * Main constructor for the board class
-     * @param mainCtrl inject the main controller used
-     * @param server inject the server used
+     *
+     * @param mainCtrl  inject the main controller used
+     * @param server    inject the server used
      */
     @Inject
-    public BoardCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
+    public BoardCtrl(MainCtrlTalio mainCtrl,
+                     ServerUtils server,
+                     WebsocketUtils websocket,
+                     AlertUtils alertUtils) {
+        this.websocket = websocket;
+        this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
@@ -53,20 +62,25 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
         boardName.setText(board.getTitle());
     }
 
-
-
     /**
      * Leave method associated to the "X" button in the FXML view of the board
      * Allows the user to leave a board
      */
     public void leave() {
-        if (board.getId() != server.getDefaultId()) {
-        mainCtrl.getUser().removeBoard(board);
-        server.saveUser(mainCtrl.getUser());
+        if (board.getId() == server.getDefaultId()) {
+            alertUtils.alertError("You cannot leave the default board!");
+            return;
+        }
+
+        if (!mainCtrl.isAdmin()) {
+            mainCtrl.getUser().removeBoard(board);
+            websocket.saveUser(mainCtrl.getUser());
+            board = null;
+            return;
+        }
+
+        mainCtrl.deleteBoard(board);
         board = null;
-        mainCtrl.refreshBoard(); }
-        else
-            ErrorUtils.alertError("You cannot leave the default board!");
     }
 
     /**
@@ -74,6 +88,5 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
      */
     public void access() {
         mainCtrl.setActiveBoard(board);
-        mainCtrl.refreshBoard();
     }
 }

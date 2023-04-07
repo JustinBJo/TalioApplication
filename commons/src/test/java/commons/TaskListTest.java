@@ -17,6 +17,20 @@ public class TaskListTest {
     }
 
     @Test
+    void checkEmptyConstructor() {
+        TaskList taskList = new TaskList();
+        assertEquals(null, taskList.getTitle());
+        assertEquals(null, taskList.getTasks());
+    }
+
+    @Test
+    void checkSetId() {
+        TaskList taskList = new TaskList("t");
+        taskList.setId(100L);
+        assertEquals(100L, taskList.getId());
+    }
+
+    @Test
     public void equalsTestNormal() {
         TaskList taskList = new TaskList("Test List");
         TaskList other1 = taskList;
@@ -50,13 +64,16 @@ public class TaskListTest {
     public void tasksTest() {
         TaskList a = new TaskList("Test List");
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task("task1", "example task 1", new ArrayList<>(),
-                new ArrayList<>()));
+        Task t1 = new Task("task1", "example task 1", new ArrayList<>(),
+                new ArrayList<>());
+        tasks.add(t1);
         tasks.add(new Task("task2", "example task 2", new ArrayList<>(),
                 new ArrayList<>()));
         a.setTasks(tasks);
         assertEquals(a.getTasks(), tasks);
         assertTrue(a.getTasks().size() == 2);
+        a.removeTask(t1);
+        assertTrue(a.getTasks().size() == 1);
     }
 
     @Test

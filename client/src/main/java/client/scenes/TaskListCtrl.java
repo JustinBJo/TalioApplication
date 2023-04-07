@@ -1,11 +1,10 @@
 package client.scenes;
 
-import client.utils.ChildrenManager;
-import client.utils.ErrorUtils;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Task;
 import commons.TaskList;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,7 +17,6 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.List;
 
 public class TaskListCtrl implements IEntityRepresentation<TaskList> {
     @FXML
@@ -47,7 +45,13 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
+    private final AlertUtils alertUtils;
+    private final WebsocketUtils websocket;
+
+    private EntityWebsocketManager<TaskList> entityWebsocket;
+    private ParentWebsocketManager<Task, CardCtrl> parentWebsocket;
     private ChildrenManager<Task, CardCtrl> taskChildrenManager;
+
     private TaskList taskList;
 
     /**
@@ -55,9 +59,13 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     @Inject
     public TaskListCtrl(ServerUtils server,
-                        MainCtrlTalio mainCtrl) {
+                        MainCtrlTalio mainCtrl,
+                        AlertUtils alertUtils,
+                        WebsocketUtils websocket) {
+        this.alertUtils = alertUtils;
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.websocket = websocket;
     }
 
 
@@ -66,12 +74,14 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void initialize() {
         // Set up tasks manager
-        this.taskChildrenManager =
-                new ChildrenManager<>(
-                    taskContainer,
-                    CardCtrl.class,
-                    "Card.fxml"
-                );
+        taskChildrenManager = new ChildrenManager<>(
+                taskContainer,
+                CardCtrl.class,
+                "Card.fxml"
+        );
+        taskChildrenManager.setUpdatedChildConsumer(
+                cardCtrl -> cardCtrl.setParentList(taskList)
+        );
 
         // Set up button icon
         Image editIcon = new Image(Objects.requireNonNull(getClass()
@@ -80,6 +90,35 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
         // Set up drag and drop
         setupDropTarget();
+
+        // Set up websockets
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                websocket,
+                "taskList",
+                TaskList.class,
+                this::setEntity
+        );
+        this.parentWebsocket = new ParentWebsocketManager<>(
+                websocket,
+                "task",
+                Task.class,
+                taskChildrenManager
+        );
+    }
+
+    /**
+     * @return id of tasklist represented by this scene
+     */
+    public Long getId() {
+        if (taskList == null) return -1L;
+        return taskList.getId();
+    }
+
+    /**
+     * @return children manager that handles this list's tasks
+     */
+    public ChildrenManager<Task, CardCtrl> getTaskChildrenManager() {
+        return taskChildrenManager;
     }
 
     private void setupDropTarget() {
@@ -134,36 +173,37 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
         if (taskList.getTitle() == null) {
             taskList.setTitle("Untitled");
         }
-        title.setText(taskList.getTitle());
+        Platform.runLater(() -> {
+            title.setText(taskList.getTitle());
+        });
 
-        refresh();
-    }
+        taskChildrenManager.updateChildren(server.getTaskListData(taskList));
 
-    /**
-     * Updates this list's tasks
-     */
-    public void refresh() {
-        if (taskList == null) {
-            // no children if there's no task list
-            taskChildrenManager.updateChildren(new ArrayList<>());
+        for (CardCtrl cardCtrl : taskChildrenManager.getChildrenCtrls()) {
+            cardCtrl.setParentList(taskList);
         }
-        var tasks = server.getTaskListData(taskList);
-        taskChildrenManager.updateChildren(tasks);
+
+        entityWebsocket.register(taskList.getId(), "update");
+        parentWebsocket.register(taskList.getId());
+        websocket.registerForMessages(
+                "/topic/taskList/updateChildren/" + taskList.getId(),
+                TaskList.class,
+                (tl) -> {
+                   taskChildrenManager.updateChildren(new ArrayList<>());
+                   taskChildrenManager.updateChildren(tl.getTasks());
+                }
+        );
     }
 
     /**
      * Deletes this task list
      */
     public void delete() {
-        boolean confirmation = server.confirmDeletion("list");
+        boolean confirmation = alertUtils.confirmDeletion("list");
 
         if (confirmation) {
-            List<Task> tasks = taskList.getTasks();
-            for (Task task : tasks)
-                server.deleteTask(task);
-            server.deleteTaskList(taskList);
+            websocket.deleteTaskList(taskList);
             taskList = null;
-            mainCtrl.refreshBoard();
         }
     }
 
@@ -172,7 +212,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void rename() {
         mainCtrl.showRenameList(taskList);
-        mainCtrl.refreshBoard();
     }
 
 
@@ -181,7 +220,7 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      */
     public void addTask() {
         if (taskList == null) {
-            ErrorUtils.alertError("No list to add task to!");
+            alertUtils.alertError("No list to add task to!");
             return;
         }
         mainCtrl.showAddTask(taskList);
