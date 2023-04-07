@@ -75,6 +75,21 @@ public class TaskListUtils {
     }
 
     /**
+     * @return gets the tasklist represented by this scene
+     */
+    public TaskList getTaskList() {
+        return this.taskList;
+    }
+
+    /**
+     * Sets the child manager of the scene
+     * @param manager - new child manager
+     */
+    public void setChildrenManager(ChildrenManager<Task, CardCtrl> manager) {
+        this.taskChildrenManager = manager;
+    }
+
+    /**
      * @return children manager that handles this list's tasks
      */
     public ChildrenManager<Task, CardCtrl> getTaskChildrenManager() {
@@ -90,11 +105,19 @@ public class TaskListUtils {
     }
 
     /**
+     * sets the tasklist represented by this scene
+     * @param taskList
+     */
+    public void setTaskList(TaskList taskList) {
+        this.taskList = taskList;
+    }
+
+    /**
      * Set the TaskList instance that this Scene holds
      * @param taskList the TaskList instance to be set
      */
-    public String setEntity(TaskList taskList) {
-        this.taskList = taskList;
+    public void setEntity(TaskList taskList) {
+        this.setTaskList(taskList);
         if (taskList.getTitle() == null) {
             taskList.setTitle("Untitled");
         }
@@ -115,8 +138,6 @@ public class TaskListUtils {
                     taskChildrenManager.updateChildren(tl.getTasks());
                 }
         );
-
-        return taskList.getTitle();
     }
 
     /**
@@ -137,7 +158,6 @@ public class TaskListUtils {
     public void rename() {
         mainCtrl.showRenameList(taskList);
     }
-
 
     /**
      * add a task to the list

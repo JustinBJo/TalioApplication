@@ -180,7 +180,8 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 //                   taskChildrenManager.updateChildren(tl.getTasks());
 //                }
 //        );
-        String titleText = utils.setEntity(taskList);
+        utils.setEntity(taskList);
+        String titleText = utils.getTaskList().getTitle();
         Platform.runLater(() -> {
             title.setText(titleText);
         });

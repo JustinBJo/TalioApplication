@@ -174,4 +174,20 @@ public class ChildrenManager
     public void setUpdatedChildConsumer(Consumer<C> updatedChildConsumer) {
         this.updatedChildConsumer = updatedChildConsumer;
     }
+
+    /**
+     * getter for the child container
+     * @return the child container
+     */
+    public Pane getChildrenContainer() {
+        return childrenContainer;
+    }
+
+    /**
+     * getter for the child Controller
+     * @return the child scene controller
+     */
+    public Class<C> getChildSceneCtrl() {
+        return childSceneCtrl;
+    }
 }
