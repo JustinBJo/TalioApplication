@@ -76,6 +76,7 @@ public class BoardCtrl implements IEntityRepresentation<Board> {
             mainCtrl.getUser().removeBoard(board);
             websocket.saveUser(mainCtrl.getUser());
             board = null;
+            mainCtrl.setActiveBoard(server.getDefaultBoard());
             return;
         }
 
