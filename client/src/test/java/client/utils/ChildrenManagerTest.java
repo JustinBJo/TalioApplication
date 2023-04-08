@@ -9,11 +9,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.testfx.framework.junit5.ApplicationTest;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-class ChildrenManagerTest {
+class ChildrenManagerTest extends ApplicationTest {
 
     private ChildrenManager<TaskList, TaskListCtrl> sut;
     private Pane container;
@@ -35,11 +34,6 @@ class ChildrenManagerTest {
     private TaskList[] defaultChildEl;
     private TaskListCtrl[] defaultChildCtrl;
     private Parent[] defaultChildUI;
-
-    @BeforeAll
-    static void initJfxRuntime() {
-        Platform.startup(() -> {});
-    }
 
     @BeforeEach
     void setUp() throws IllegalAccessException, NoSuchFieldException {
@@ -105,10 +99,6 @@ class ChildrenManagerTest {
             throw new RuntimeException(e);
         }
         return map;
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 
     @Test
