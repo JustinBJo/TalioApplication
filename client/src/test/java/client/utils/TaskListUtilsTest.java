@@ -77,6 +77,18 @@ class TaskListUtilsTest {
     }
 
     @Test
+    void getSetEntityWebsocket() {
+        sut.setEntityWebsocket(entityWebsocket);
+        assertEquals(entityWebsocket, sut.getEntityWebsocket());
+    }
+
+    @Test
+    void getSetParentWebsocket() {
+        sut.setParentWebsocket(parentWebsocket);
+        assertEquals(parentWebsocket, sut.getParentWebsocket());
+    }
+
+    @Test
     void getAndSetTaskListTest() {
         sut.setTaskList(taskList);
         assertEquals(taskList, sut.getTaskList());
@@ -95,29 +107,33 @@ class TaskListUtilsTest {
         doNothing().when(server).updateTaskParent(anyLong(), any());
         sut.setupDropTarget(100L);
         verify(server, times(1)).
-                updateTaskParent(anyLong(), any());
+                updateTaskParent(100L, taskList);
     }
 
     @Test
     void setEntity() {
-//        sut.initialize(box);
-//
-//        doNothing().when(childrenManager).clear();
-//        doNothing().when(childrenManager).updateChildren(any());
-//        doNothing().when(entityWebsocket).register(anyLong(), anyString());
-//        doNothing().when(parentWebsocket).register(anyLong());
-//        when(websocket.registerForMessages(anyString(), any(), any()))
-//                  .thenReturn(null);
-//
-//        sut.setEntity(taskList);
-//
-//        verify(childrenManager, times(1)).clear();
-//        verify(childrenManager, times(1)).updateChildren(any());
-//        verify(entityWebsocket, times(1)).register(anyLong(), anyString());
-//        verify(parentWebsocket, times(1)).register(anyLong());
-//        verify(websocket, times(1))
-//              .registerForMessages(anyString(), any(), any());
-//        assertEquals(taskList, sut.getTaskList());
+        sut.initialize(box);
+        sut.setTaskChildrenManager(childrenManager);
+        sut.setEntityWebsocket(entityWebsocket);
+        sut.setParentWebsocket(parentWebsocket);
+        taskList.setId(100L);
+
+        sut.setEntity(taskList);
+
+        assertEquals(sut.getTaskList(), taskList);
+        verify(childrenManager, times(1)).clear();
+        verify(childrenManager, times(1)).updateChildren(any());
+        verify(childrenManager, times(1)).getChildrenCtrls();
+
+        verify(parentWebsocket, times(1)).register(taskList.getId());
+        verify(entityWebsocket, times(1))
+                .register(taskList.getId(), "update");
+
+        verify(websocket, times(1))
+                .registerForMessages(eq("/topic/taskList/updateChildren/" +
+                                taskList.getId()),
+                        eq(TaskList.class),
+                        any());
     }
 
     @Test
@@ -125,7 +141,8 @@ class TaskListUtilsTest {
         sut.setTaskList(taskList);
         doNothing().when(websocket).deleteTaskList(any());
         sut.delete();
-        verify(websocket, times(1)).deleteTaskList(any());
+        verify(websocket, times(1))
+                .deleteTaskList(taskList);
     }
 
     @Test
@@ -133,7 +150,8 @@ class TaskListUtilsTest {
         sut.setTaskList(taskList);
         doNothing().when(mainCtrl).showRenameList(any());
         sut.rename();
-        verify(mainCtrl, times(1)).showRenameList(any());
+        verify(mainCtrl, times(1))
+                .showRenameList(taskList);
     }
 
     @Test
@@ -141,7 +159,7 @@ class TaskListUtilsTest {
         sut.setTaskList(taskList);
         doNothing().when(mainCtrl).showAddTask(any());
         sut.addTask();
-        verify(mainCtrl, times(1)).showAddTask(any());
+        verify(mainCtrl, times(1)).showAddTask(taskList);
     }
 
     @Test
@@ -149,6 +167,7 @@ class TaskListUtilsTest {
         sut.setTaskList(null);
         doNothing().when(alertUtils).alertError(any());
         sut.addTask();
-        verify(alertUtils, times(1)).alertError(any());
+        verify(alertUtils, times(1))
+                .alertError("No list to add task to!");
     }
 }

@@ -97,6 +97,49 @@ public class TaskListUtils {
     }
 
     /**
+     * getter for entity websocket
+     * @return the entity websocket
+     */
+    public EntityWebsocketManager<TaskList> getEntityWebsocket() {
+        return entityWebsocket;
+    }
+
+    /**
+     * getter for parent websocket
+     * @return the parent websocket
+     */
+    public ParentWebsocketManager<Task, CardCtrl> getParentWebsocket() {
+        return parentWebsocket;
+    }
+
+    /**
+     * Sets the entity websocket of the scene
+     * @param entityWebsocket - new child manager
+     */
+    public void setEntityWebsocket(
+            EntityWebsocketManager<TaskList> entityWebsocket) {
+        this.entityWebsocket = entityWebsocket;
+    }
+
+    /**
+     * Sets the parent websocket of the scene
+     * @param parentWebsocket - new child manager
+     */
+    public void setParentWebsocket(
+            ParentWebsocketManager<Task, CardCtrl> parentWebsocket) {
+        this.parentWebsocket = parentWebsocket;
+    }
+
+    /**
+     * sets the children manager
+     * @param taskChildrenManager the new children manager
+     */
+    public void setTaskChildrenManager(
+            ChildrenManager<Task, CardCtrl> taskChildrenManager) {
+        this.taskChildrenManager = taskChildrenManager;
+    }
+
+    /**
      * Sets up this list for the drag and drop
      * @param taskId - the id of the dropped task
      */
