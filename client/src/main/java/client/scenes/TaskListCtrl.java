@@ -44,16 +44,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
     private final TaskListUtils utils;
 
-//    private final ServerUtils server;
-//    private final MainCtrlTalio mainCtrl;
-//    private final AlertUtils alertUtils;
-//    private final WebsocketUtils websocket;
-
-//    private EntityWebsocketManager<TaskList> entityWebsocket;
-//    private ParentWebsocketManager<Task, CardCtrl> parentWebsocket;
-//    private ChildrenManager<Task, CardCtrl> taskChildrenManager;
-
-//    private TaskList taskList;
 
     /**
      * Constructor with dependency injection
@@ -77,20 +67,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
         // Set up drag and drop
         setupDropTarget();
-
-//        // Set up websockets
-//        this.entityWebsocket = new EntityWebsocketManager<>(
-//                websocket,
-//                "taskList",
-//                TaskList.class,
-//                this::setEntity
-//        );
-//        this.parentWebsocket = new ParentWebsocketManager<>(
-//                websocket,
-//                "task",
-//                Task.class,
-//                taskChildrenManager
-//        );
     }
 
     /**
@@ -143,7 +119,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
 
             // Send update to server
             utils.setupDropTarget(taskId);
-//            server.updateTaskParent(taskId, taskList);
 
             // Tell source drop was successful
             event.setDropCompleted(true);
@@ -156,30 +131,6 @@ public class TaskListCtrl implements IEntityRepresentation<TaskList> {
      * @param taskList the TaskList instance to be set
      */
     public void setEntity(TaskList taskList) {
-//        this.taskList = taskList;
-//        if (taskList.getTitle() == null) {
-//            taskList.setTitle("Untitled");
-//        }
-//        Platform.runLater(() -> {
-//            title.setText(taskList.getTitle());
-//        });
-//
-//        taskChildrenManager.updateChildren(server.getTaskListData(taskList));
-//
-//        for (CardCtrl cardCtrl : taskChildrenManager.getChildrenCtrls()) {
-//            cardCtrl.setParentList(taskList);
-//        }
-//
-//        entityWebsocket.register(taskList.getId(), "update");
-//        parentWebsocket.register(taskList.getId());
-//        websocket.registerForMessages(
-//                "/topic/taskList/updateChildren/" + taskList.getId(),
-//                TaskList.class,
-//                (tl) -> {
-//                   taskChildrenManager.updateChildren(new ArrayList<>());
-//                   taskChildrenManager.updateChildren(tl.getTasks());
-//                }
-//        );
         utils.setEntity(taskList);
         String titleText = utils.getTaskList().getTitle();
         Platform.runLater(() -> {
