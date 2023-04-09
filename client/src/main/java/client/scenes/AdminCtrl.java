@@ -47,6 +47,7 @@ public class AdminCtrl {
         if (p.equals(PWD)) {
             mainCtrl.setAdmin(true);
             password.setText("");
+            mainCtrl.showAdminBoards();
             mainCtrl.showMain();
         }
         else

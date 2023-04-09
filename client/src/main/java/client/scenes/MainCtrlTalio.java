@@ -313,4 +313,11 @@ public class MainCtrlTalio {
             websocket.deleteBoard(b);
         }
     }
+
+    /**
+     * loads all boards in the system in the overview
+     */
+    public void showAdminBoards() {
+        mainSceneCtrl.adminBoards();
+    }
 }
