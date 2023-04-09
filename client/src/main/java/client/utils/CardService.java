@@ -4,14 +4,16 @@ import client.scenes.IEntityRepresentation;
 import client.scenes.MainCtrlTalio;
 import commons.Task;
 import commons.TaskList;
+import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import java.util.List;
 
+@Service
 public class CardService implements IEntityRepresentation<Task> {
-    private final WebsocketUtils websocket;
-    private final MainCtrlTalio mainCtrl;
-    private final AlertUtils alert;
-    private final ServerUtils server;
+    private WebsocketUtils websocket;
+    private MainCtrlTalio mainCtrl;
+    private AlertUtils alert;
+    private ServerUtils server;
     private Task task;
     private TaskList parentList;
     private final EntityWebsocketManager<Task> entityWebsocket;
@@ -56,6 +58,13 @@ public class CardService implements IEntityRepresentation<Task> {
      */
     public void setParentList(TaskList taskList) {
         this.parentList = taskList;
+    }
+
+    /**
+     * @return the parent list
+     */
+    public TaskList getParentList() {
+        return parentList;
     }
 
     /**
@@ -153,4 +162,51 @@ public class CardService implements IEntityRepresentation<Task> {
         return mainCtrl;
     }
 
+    /**
+     * Getter for the alert
+     * @return the alert
+     */
+    public AlertUtils getAlert() {
+        return alert;
+    }
+
+    /**
+     * Setter for the websocket
+     * @param websocket the websocket
+     */
+    public void setWebsocket(WebsocketUtils websocket) {
+        this.websocket = websocket;
+    }
+
+    /**
+     * Setter for the mainCtrl
+     * @param mainCtrl the mainCtrl
+     */
+    public void setMainCtrl(MainCtrlTalio mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Setter for the alert
+     * @param alert the alert
+     */
+    public void setAlert(AlertUtils alert) {
+        this.alert = alert;
+    }
+
+    /**
+     * Setter for the server
+     * @param server the server
+     */
+    public void setServer(ServerUtils server) {
+        this.server = server;
+    }
+
+    /**
+     * Setter for the task
+     * @param task the task
+     */
+    public void setTask(Task task) {
+        this.task = task;
+    }
 }
