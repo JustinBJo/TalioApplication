@@ -330,6 +330,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
                 mainCtrl.setAdmin(false);
                 mainCtrl.setUser(server.checkUser());
                 updateJoinedBoards(mainCtrl.getUser());
+                mainCtrl.setActiveBoard(server.getDefaultBoard());
                 mainCtrl.showMain();
             }
         }
