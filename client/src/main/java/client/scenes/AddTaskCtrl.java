@@ -14,7 +14,6 @@ public class AddTaskCtrl {
     private final AddTaskService service;
     private final WebsocketUtils websocket;
     private final AlertUtils alertUtils;
-    private TaskList parentTaskList;
     @FXML
     private TextField title;
     @FXML
@@ -38,13 +37,6 @@ public class AddTaskCtrl {
      */
     public void setParentTaskList(TaskList parentTaskList) {
         service.setParentTaskList(parentTaskList);
-    }
-
-    /**
-     * @return the parent task list
-     */
-    public TaskList getParentTaskList() {
-        return service.getParentTaskList();
     }
 
     /**
@@ -83,7 +75,7 @@ public class AddTaskCtrl {
      */
     public void confirm() {
         try {
-            websocket.addTask(getTask(), parentTaskList);
+            websocket.addTask(getTask(), service.getParentTaskList());
         } catch (WebApplicationException e) {
             alertUtils.alertError(e.getMessage());
             return;
