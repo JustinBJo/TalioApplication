@@ -1,5 +1,6 @@
 package client.utils;
 
+import client.scenes.AddTitledEntityCtrl;
 import client.scenes.MainCtrlTalio;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ class AddTitledEntityUtilsTest {
     @Mock
     private WebsocketUtils websocket;
 
-    private AddTitledEntityUtils.Type type;
+    private AddTitledEntityCtrl.Type type;
     private TaskList taskListToEdit;
 
     private Subtask subtaskToEdit;
@@ -86,7 +87,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmTaskList() {
-        type = AddTitledEntityUtils.Type.TaskList;
+        type = AddTitledEntityCtrl.Type.TaskList;
         sut.setType(type);
         when(mainCtrl.getActiveBoard()).thenReturn(activeBoard);
         doNothing().when(mainCtrl).showMain();
@@ -100,7 +101,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmTaskListNullBoard() {
-        type = AddTitledEntityUtils.Type.TaskList;
+        type = AddTitledEntityCtrl.Type.TaskList;
         sut.setType(type);
         when(mainCtrl.getActiveBoard()).thenReturn(null);
         doNothing().when(mainCtrl).showMain();
@@ -115,7 +116,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmBoard() {
-        type = AddTitledEntityUtils.Type.Board;
+        type = AddTitledEntityCtrl.Type.Board;
         sut.setType(type);
         doNothing().when(mainCtrl).showMain();
         doNothing().when(mainCtrl).setActiveBoard(any());
@@ -132,7 +133,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmRenameTaskListNull() {
-        type = AddTitledEntityUtils.Type.RenameTaskList;
+        type = AddTitledEntityCtrl.Type.RenameTaskList;
         sut.setType(type);
         sut.setTaskListToEdit(null);
         doNothing().when(mainCtrl).showMain();
@@ -147,7 +148,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmRenameTaskList() {
-        type = AddTitledEntityUtils.Type.RenameTaskList;
+        type = AddTitledEntityCtrl.Type.RenameTaskList;
         sut.setType(type);
         sut.setTaskListToEdit(taskListToEdit);
         doNothing().when(websocket).updateTaskList(any(), anyString());
@@ -159,7 +160,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmRenameBoard() {
-        type = AddTitledEntityUtils.Type.RenameBoard;
+        type = AddTitledEntityCtrl.Type.RenameBoard;
         sut.setType(type);
         doNothing().when(websocket).updateBoard(any(), anyString());
         List<Board> boards;
@@ -178,7 +179,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmNewSubtask() {
-        type = AddTitledEntityUtils.Type.Subtask;
+        type = AddTitledEntityCtrl.Type.Subtask;
         sut.setType(type);
         sut.setCurrentTask(currentTask);
         doNothing().when(websocket).addSubtask(any(), any());
@@ -196,7 +197,7 @@ class AddTitledEntityUtilsTest {
 
     @Test
     void confirmRenameSubtask() {
-        type = AddTitledEntityUtils.Type.RenameSubtask;
+        type = AddTitledEntityCtrl.Type.RenameSubtask;
         sut.setType(type);
         sut.setSubtaskToEdit(subtaskToEdit);
         sut.setCurrentTask(currentTask);

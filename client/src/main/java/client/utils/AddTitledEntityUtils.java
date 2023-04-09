@@ -1,5 +1,6 @@
 package client.utils;
 
+import client.scenes.AddTitledEntityCtrl;
 import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
 import commons.Board;
@@ -7,26 +8,18 @@ import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 import jakarta.ws.rs.WebApplicationException;
+import client.utils.*;
 
 import java.util.List;
 
 public class AddTitledEntityUtils {
-
-    enum Type {
-        TaskList,
-        Board,
-        RenameTaskList,
-        RenameBoard,
-        Subtask,
-        RenameSubtask
-    }
 
     private final ServerUtils server;
     private final MainCtrlTalio mainCtrl;
     private final AlertUtils alertUtils;
     private final WebsocketUtils websocket;
 
-    private Type type;
+    private AddTitledEntityCtrl.Type type;
     private TaskList taskListToEdit;
 
     private Subtask subtaskToEdit;
@@ -52,7 +45,7 @@ public class AddTitledEntityUtils {
     /**
      * setter for the type of entity that will be edited/added
      */
-    public void setType(Type type) {
+    public void setType(AddTitledEntityCtrl.Type type) {
         this.type = type;
     }
 
