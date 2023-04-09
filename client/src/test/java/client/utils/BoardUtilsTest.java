@@ -82,6 +82,7 @@ public class BoardUtilsTest {
         when(mainCtrl.isAdmin()).thenReturn(false);
         when(mainCtrl.getUser()).thenReturn(user);
         when(server.getDefaultBoard()).thenReturn(b);
+        when(mainCtrl.getActiveBoard()).thenReturn(b);
 
         sut.leave();
 

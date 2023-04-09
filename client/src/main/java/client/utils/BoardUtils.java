@@ -56,12 +56,14 @@ public class BoardUtils {
         if (!mainCtrl.isAdmin()) {
             mainCtrl.getUser().removeBoard(board);
             websocket.saveUser(mainCtrl.getUser());
+            if (board.equals(mainCtrl.getActiveBoard()))
+                mainCtrl.setActiveBoard(server.getDefaultBoard());
             board = null;
-            mainCtrl.setActiveBoard(server.getDefaultBoard());
             return;
         }
 
         mainCtrl.deleteBoard(board);
+        mainCtrl.showAdminBoards();
         board = null;
     }
 
