@@ -57,4 +57,36 @@ public class ParentWebsocketManager
                     childrenManager::removeChild
                 );
     }
+
+    /**
+     * getter for the current websocket
+     * @return the websocket
+     */
+    public WebsocketUtils getWebsocket() {
+        return websocket;
+    }
+
+    /**
+     * getter for the childrenManager
+     * @return the childrenManager
+     */
+    public ChildrenManager<T, C> getChildrenManager() {
+        return childrenManager;
+    }
+
+    /**
+     * getter for the entity name of the child
+     * @return the String entity name
+     */
+    public String getChildEntityName() {
+        return childEntityName;
+    }
+
+    /**
+     * getter for the class of the child
+     * @return the Child class
+     */
+    public Class<T> getChildEntityClass() {
+        return childEntityClass;
+    }
 }

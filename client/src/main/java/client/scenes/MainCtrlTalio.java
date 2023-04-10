@@ -111,7 +111,7 @@ public class MainCtrlTalio {
      * @param newAddress new server's address
      */
     public void changeServer(String newAddress) {
-        setServerAddress(newAddress);
+        mainSceneCtrl.setServerAddr(newAddress);
         mainSceneCtrl.changeServer();
     }
 
@@ -121,14 +121,6 @@ public class MainCtrlTalio {
     public void showConnect() {
         primaryStage.setTitle("Connect to a server");
         primaryStage.setScene(connect);
-    }
-
-    /**
-     * display the server address on main scene
-     * @param server the server address
-     */
-    public void setServerAddress(String server) {
-        mainSceneCtrl.setServerAddr(server);
     }
 
     /**
@@ -297,7 +289,7 @@ public class MainCtrlTalio {
      * @param b the board to be deleted
      */
     public void deleteBoard(Board b) {
-        if (b.getId() == server.getDefaultId()) {
+        if (b.getId().equals(server.getDefaultId())) {
             alertUtils.alertError("You cannot delete the default board!");
             return;
         }
@@ -312,5 +304,12 @@ public class MainCtrlTalio {
             }
             websocket.deleteBoard(b);
         }
+    }
+
+    /**
+     * loads all boards in the system in the overview
+     */
+    public void showAdminBoards() {
+        mainSceneCtrl.adminBoards();
     }
 }
