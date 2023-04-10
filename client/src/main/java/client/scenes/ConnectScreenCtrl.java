@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
+import client.utils.ConnectScreenUtils;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -8,8 +8,7 @@ import javafx.scene.control.TextField;
 
 public class ConnectScreenCtrl {
 
-    private final MainCtrlTalio mainCtrl;
-    private final ServerUtils server;
+   private final ConnectScreenUtils utils;
 
     @FXML
     private TextField address;
@@ -17,13 +16,12 @@ public class ConnectScreenCtrl {
     private Label notification;
 
     /**
-     * constructor
-     * @param mainCtrl the main controller
+     * Constructor for the ConnectScreen controller
+     * @param utils the service for logic used
      */
     @Inject
-    public ConnectScreenCtrl(MainCtrlTalio mainCtrl, ServerUtils server) {
-        this.mainCtrl = mainCtrl;
-        this.server = server;
+    public ConnectScreenCtrl(ConnectScreenUtils utils) {
+        this.utils = utils;
     }
 
     /**
@@ -31,20 +29,15 @@ public class ConnectScreenCtrl {
      */
     public void click() {
         try {
-            server.setServer(address.getText());
+            utils.setServer(address.getText());
         }
         catch (Exception e) {
             notification.setText(e.getMessage());
             return;
         }
         notification.setText("");
+        utils.changeServer(address.getText(7, address.getText().length()));
 
-        mainCtrl.changeServer(
-                // get the address after "http://"
-                address.getText(7, address.getText().length())
-        );
-
-        mainCtrl.showMain();
         address.setText("");
 
     }

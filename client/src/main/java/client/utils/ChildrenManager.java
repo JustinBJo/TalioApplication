@@ -190,4 +190,20 @@ public class ChildrenManager
     public Class<C> getChildSceneCtrl() {
         return childSceneCtrl;
     }
+
+    /**
+     * getter for the FXML name
+     * @return the FXML name as string
+     */
+    public String getChildFxmlFileName() {
+        return childFxmlFileName;
+    }
+
+    /**
+     * getter for the child UI map
+     * @return the Map of ChildUI
+     */
+    public Map<T, Pair<C, Parent>> getChildUIMap() {
+        return childUIMap;
+    }
 }
