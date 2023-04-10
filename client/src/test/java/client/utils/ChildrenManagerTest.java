@@ -190,4 +190,9 @@ class ChildrenManagerTest {
         consumerField.setAccessible(true);
         assertEquals(newConsumer, consumerField.get(sut));
     }
+
+    @Test
+    void getChildrenContainer() {
+        assertEquals(this.container, sut.getChildrenContainer());
+    }
 }

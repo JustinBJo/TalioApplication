@@ -49,8 +49,10 @@ public class TaskDetailsUtils {
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
                         subtaskContainer,
-                        SubtaskCtrl.class,
-                        "Subtask.fxml"
+                        () -> BuildUtils.loadFXML(
+                                SubtaskCtrl.class,
+                                "Subtask.fxml"
+                        )
                 );
         subtaskChildrenManager.setUpdatedChildConsumer(
                 subtaskCtrl -> subtaskCtrl.setParent(task)
