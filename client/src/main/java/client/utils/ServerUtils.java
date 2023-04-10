@@ -159,6 +159,18 @@ public class ServerUtils {
     }
 
     /**
+     * returns a list of all boards in the system
+     * @return the list of boards
+     */
+    public List<Board> getBoards() {
+        return createClient()
+                .target(server).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() { } );
+    }
+
+    /**
      * get task list of the give board
      * @param boardId the board to fetch the tasklists
      * @return the tasklists of the board
@@ -256,31 +268,6 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Task>>() {
                 });
-    }
-
-    /**
-     * returns a list of all boards in the system
-      * @return the list of boards
-     */
-    public List<Board> getBoards() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<Board>>() { } );
-    }
-
-    /**
-     * return board from database based on its code
-     * @param code the code of the board
-     * @return the board
-     */
-    public Board getBoardByCode(String code) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/code/" + code)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(Board.class);
     }
 
     /**
