@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import commons.*;
 
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -36,6 +37,14 @@ public class ServerUtils {
 
     private WebsocketUtils websockets;
     private String server = "http://localhost:8080/";
+
+    /**
+     * Method that creates a new instance of ClientBuilder
+     * @return
+     */
+    protected Client createClient() {
+        return ClientBuilder.newClient(new ClientConfig());
+    }
 
     /**
      * @param websockets WebsocketUtils instance used in application
@@ -59,7 +68,7 @@ public class ServerUtils {
     public void setServer(String url)
             throws IllegalArgumentException {
         try {
-            ClientBuilder.newClient(new ClientConfig()) //
+            createClient() //
                     .target(url) //
                     .request(APPLICATION_JSON) //
                     .accept(APPLICATION_JSON) //
@@ -75,201 +84,7 @@ public class ServerUtils {
         startPollingThread();
     }
 
-    /**
-     * gets the default board from the repository
-     * @return default board
-     */
-    public Board getDefaultBoard() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/default")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Board>() {
-                });
-    }
-
-    /**
-     * gets the id of the default board in the system
-     * @return the id of the default board
-     */
-    public long getDefaultId() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/defaultId")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Long>() {
-                });
-    }
-
-    /**
-     * get task list of the give board
-     * @param boardId the board to fetch the tasklists
-     * @return the tasklists of the board
-     */
-    public List<TaskList> getBoardData(long boardId) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/" + boardId + "/tasklist")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<TaskList>>(){
-                });
-    }
-
-    /**
-     * Gets all tasks belonging to a certain task list
-     * @param taskList parent of desired tasks
-     * @return list of tasks belonging to task list
-     */
-    public List<Task> getTaskListData(TaskList taskList) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("tasklist/getTasks/" + taskList.getId())
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
-                .get(new GenericType<List<Task>>() {});
-    }
-
-    /**
-     * Gets all subtasks belonging to a certain task
-     * @param task parent of desired subtasks
-     * @return list of subtasks belonging to task
-     */
-    public List<Subtask> getTaskData(Task task) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("tasks/getSubtasks/" + task.getId())
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
-                .get(new GenericType<List<Subtask>>() {});
-    }
-
-    /**
-     * Method used to fetch the tasks from the database
-     *
-     * @return a List of all the tasks in the database
-     */
-    public List<Task> getTasks() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("tasks") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Task>>() {
-                });
-    }
-
-    /**
-     * returns a list of all boards in the system
-      * @return the list of boards
-     */
-    public List<Board> getBoards() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<Board>>() { } );
-    }
-
-    /**
-     * return board from database based on its code
-     * @param code the code of the board
-     * @return the board
-     */
-    public Board getBoardByCode(String code) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/code/" + code)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(Board.class);
-    }
-
-    /**
-     * Uses board endpoint to ask server to add a new board
-     *
-     * @param board board to be added
-     * @return added board
-     */
-    public Board addBoard(Board board) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(board, APPLICATION_JSON), Board.class);
-    }
-
-
-    /**
-     * returns a board based on its ID
-     * @param id the id of the board
-     * @return the board
-     */
-    public Board getBoardById(long id) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("board/" + id)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(Board.class);
-    }
-
-    /**
-     * checks whether the user has already been
-     * registered into the system
-     * @return the existent user or a new one if
-     * no existent one is found
-     */
-    public User checkUser() {
-        String ip = ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("user/ip")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(String.class);
-
-        List<User> users = ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("user")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<User>>() { });
-
-        boolean exists = false;
-        User user = new User(ip);
-        for (User k : users) {
-            if (k.getIp().equals(ip)) {
-                exists = true;
-                user = k;
-            }
-        }
-        if (!exists) {
-            ClientBuilder.newClient(new ClientConfig())
-                    .target(server).path("user/add")
-                    .request(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON)
-                    .post(Entity.entity(user, APPLICATION_JSON));
-        }
-        return user;
-    }
-
-    /**
-     * gets all users in the database
-     * @return the list of users in the database
-     */
-    public List<User> getAllUsers() {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("user")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<User>>() { } );
-    }
-
-
-    /**
-     * Sets a new task list to hold a given task
-     *
-     * @param taskId    id of the changed task
-     * @param newParent list that now holds the task
-     */
-    public void updateTaskParent(long taskId, TaskList newParent) {
-        ClientBuilder.newClient(new ClientConfig()).target(server)
-                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
-                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
-                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
-    }
-
-    // long polling
+    // methods for long polling ------------------------------------------------
 
     private static final ExecutorService EXEC =
             Executors.newSingleThreadExecutor();
@@ -288,7 +103,7 @@ public class ServerUtils {
     private void startPollingThread() {
         runnable = EXEC.submit(() -> {
             while (!Thread.interrupted()) {
-                var res = ClientBuilder.newClient(new ClientConfig())
+                var res = createClient()
                         .target(server).path("tasks/listen/updateParent/")
                         .request(APPLICATION_JSON).accept(APPLICATION_JSON)
                         .get();
@@ -314,4 +129,212 @@ public class ServerUtils {
             EXEC.shutdownNow();
         }
     }
+
+    // methods for boards ------------------------------------------------------
+
+    /**
+     * gets the default board from the repository
+     * @return default board
+     */
+    public Board getDefaultBoard() {
+        return createClient()
+                .target(server).path("board/default")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>() {
+                });
+    }
+
+    /**
+     * gets the id of the default board in the system
+     * @return the id of the default board
+     */
+    public long getDefaultId() {
+        return createClient()
+                .target(server).path("board/defaultId")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Long>() {
+                });
+    }
+
+    /**
+     * returns a list of all boards in the system
+     * @return the list of boards
+     */
+    public List<Board> getBoards() {
+        return createClient()
+                .target(server).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() { } );
+    }
+
+    /**
+     * get task list of the give board
+     * @param boardId the board to fetch the tasklists
+     * @return the tasklists of the board
+     */
+    public List<TaskList> getBoardData(long boardId) {
+        return createClient()
+                .target(server).path("board/" + boardId + "/tasklist")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<TaskList>>(){
+                });
+    }
+
+    /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return createClient()
+                .target(server).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>(){
+                });
+    }
+
+    /**
+     * Uses board endpoint to ask server to add a new board
+     *
+     * @param board board to be added
+     * @return added board
+     */
+    public Board addBoard(Board board) {
+        return createClient()
+                .target(server).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(board, APPLICATION_JSON), Board.class);
+    }
+
+    /**
+     * returns a board based on its ID
+     * @param id the id of the board
+     * @return the board
+     */
+    public Board getBoardById(long id) {
+        return createClient()
+                .target(server).path("board/" + id)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Board>(){
+                });
+    }
+
+
+    // methods for tasklists -------------------------------------------------
+
+    /**
+     * Gets all tasks belonging to a certain task list
+     * @param taskList parent of desired tasks
+     * @return list of tasks belonging to task list
+     */
+    public List<Task> getTaskListData(TaskList taskList) {
+        return createClient()
+                .target(server).path("tasklist/getTasks/" + taskList.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Task>>() {});
+    }
+
+
+    // methods for tasks ------------------------------------------------------
+
+    /**
+     * Gets all subtasks belonging to a certain task
+     * @param task parent of desired subtasks
+     * @return list of subtasks belonging to task
+     */
+    public List<Subtask> getTaskData(Task task) {
+        return createClient()
+                .target(server).path("tasks/getSubtasks/" + task.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON)
+                .get(new GenericType<List<Subtask>>() {});
+    }
+
+    /**
+     * Method used to fetch the tasks from the database
+     *
+     * @return a List of all the tasks in the database
+     */
+    public List<Task> getTasks() {
+        return createClient() //
+                .target(server).path("tasks") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Task>>() {
+                });
+    }
+
+    /**
+     * Uses board endpoint to ask server to add a new board
+     *
+     * @param taskId    id of the changed task
+     * @param newParent list that now holds the task
+     */
+    public Task updateTaskParent(long taskId, TaskList newParent) {
+        return createClient().target(server)
+                .path("tasks/updateParent/" + taskId + "/" + newParent.getId())
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
+
+    }
+
+    // methods for users ------------------------------------------------------
+
+    /**
+     * checks whether the user has already been
+     * registered into the system
+     * @return the existent user or a new one if
+     * no existent one is found
+     */
+    public User checkUser() {
+        String ip = createClient()
+                .target(server).path("user/ip")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<String>() {
+                });
+
+        List<User> users = createClient()
+                .target(server).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { });
+
+        boolean exists = false;
+        User user = new User(ip);
+        for (User k : users) {
+            if (k.getIp().equals(ip)) {
+                exists = true;
+                user = k;
+            }
+        }
+        if (!exists) {
+            createClient()
+                    .target(server).path("user/add")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(user, APPLICATION_JSON));
+        }
+        return user;
+    }
+
+    /**
+     * gets all users in the database
+     * @return the list of users in the database
+     */
+    public List<User> getAllUsers() {
+        return createClient()
+                .target(server).path("user")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<User>>() { } );
+    }
+
+
 }
