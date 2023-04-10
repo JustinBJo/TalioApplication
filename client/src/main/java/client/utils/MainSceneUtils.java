@@ -276,6 +276,15 @@ public class MainSceneUtils implements IEntityRepresentation<Board> {
     }
 
     /**
+     * fills the overview with all boards in the database
+     */
+    public void adminBoards() {
+        boardListChildrenManager.updateChildren(new ArrayList<>());
+        List<Board> joinedBoards = server.getBoards();
+        boardListChildrenManager.updateChildren(joinedBoards);
+    }
+
+    /**
      * add a board to the list
      */
     public void addBoard() {

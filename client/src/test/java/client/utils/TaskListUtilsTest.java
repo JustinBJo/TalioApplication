@@ -104,7 +104,6 @@ class TaskListUtilsTest {
     @Test
     void setupDropTarget() {
         sut.setTaskList(taskList);
-        doNothing().when(server).updateTaskParent(anyLong(), any());
         sut.setupDropTarget(100L);
         verify(server, times(1)).
                 updateTaskParent(100L, taskList);

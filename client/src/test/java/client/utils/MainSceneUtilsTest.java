@@ -239,4 +239,11 @@ class MainSceneUtilsTest {
         sut.adminPassword();
         verify(mainCtrl, times(1)).showAdmin();
     }
+
+    @Test
+    void adminBoards() {
+        doNothing().when(boardListChildrenManager).updateChildren(any());
+        sut.adminBoards();
+        verify(boardListChildrenManager, times(2)).updateChildren(any());
+    }
 }
