@@ -259,7 +259,32 @@ public class ServerUtils {
     }
 
     /**
-     * Sets a new task list to hold a given task
+     * returns a list of all boards in the system
+      * @return the list of boards
+     */
+    public List<Board> getBoards() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Board>>() { } );
+    }
+
+    /**
+     * return board from database based on its code
+     * @param code the code of the board
+     * @return the board
+     */
+    public Board getBoardByCode(String code) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("board/code/" + code)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Board.class);
+    }
+
+    /**
+     * Uses board endpoint to ask server to add a new board
      *
      * @param taskId    id of the changed task
      * @param newParent list that now holds the task
