@@ -15,6 +15,7 @@ import java.util.Objects;
 public class TaskDetailsCtrl {
 
     private final TaskDetailsUtils utils;
+    private final ServerUtils serverUtils;
     @FXML
     private Label title;
     @FXML
@@ -31,8 +32,9 @@ public class TaskDetailsCtrl {
      * @param utils the service used for logic
      */
     @Inject
-    public TaskDetailsCtrl(TaskDetailsUtils utils) {
+    public TaskDetailsCtrl(TaskDetailsUtils utils, ServerUtils serverUtils) {
         this.utils = utils;
+        this.serverUtils = serverUtils;
     }
 
     /**
@@ -49,8 +51,7 @@ public class TaskDetailsCtrl {
                 .getResourceAsStream("/client/images/deleteicon.png")));
         this.deleteIcon.setImage(deleteIcon);
 
-        utils.initialize(subtaskContainer);
-
+        utils.initialize(subtaskContainer, this::setEntity);
 
     }
 
@@ -59,6 +60,8 @@ public class TaskDetailsCtrl {
      * @param task task whose details are shown in the scene
      */
     public void setEntity(Task task) {
+
+        serverUtils.resetTask(task.getId());
 
         utils.setEntity(task);
 

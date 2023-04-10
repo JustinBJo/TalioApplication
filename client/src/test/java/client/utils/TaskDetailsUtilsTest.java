@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +77,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void testInitialize() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
 
 
         assertEquals(sut.getSubtaskChildrenManager().getChildrenContainer(), v);
@@ -143,7 +144,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void editTaskTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setTask(new Task("t"));
         sut.editTask();
         verify(mainCtrl, times(1))
@@ -153,7 +154,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void editTaskNullTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setTask(null);
         sut.editTask();
 
@@ -164,7 +165,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void deleteTaskTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setTask(task);
         sut.deleteTask();
 
@@ -185,7 +186,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void addSubtaskTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setTask(new Task("t"));
         sut.addSubtask();
         verify(mainCtrl, times(1))
@@ -195,7 +196,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void addSubtaskNullTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setTask(null);
         sut.addSubtask();
         verify(alertUtils, times(1))
@@ -205,7 +206,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void getSubtaskChildrenManagerTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setTask(new Task("t"));
         sut.setSubtaskChildrenManager(childrenManager);
         assertEquals(childrenManager, sut.getSubtaskChildrenManager());
@@ -214,7 +215,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void getTaskTask() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         Task t = new Task("t");
         sut.setTask(t);
         assertEquals(sut.getTask(), t);
@@ -223,7 +224,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void setSubtaskChildrenManager() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         Task t = new Task("t");
         sut.setTask(t);
         sut.setSubtaskChildrenManager(childrenManager);
@@ -233,7 +234,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void getSetParentWebsocketTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setParentWebsocket(parentWebsocket);
         assertEquals(sut.getParentWebsocket(), parentWebsocket);
     }
@@ -241,7 +242,7 @@ public class TaskDetailsUtilsTest {
     @Test
     public void getSetEntityWebsocketTest() {
         VBox v = new VBox();
-        sut.initialize(v);
+        sut.initialize(v, (Task) -> {});
         sut.setEntityWebsocket(entityWebsocket);
         assertEquals(sut.getEntityWebsocket(), entityWebsocket);
     }
