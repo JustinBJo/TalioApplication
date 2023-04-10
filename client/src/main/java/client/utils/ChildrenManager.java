@@ -21,6 +21,8 @@ public class ChildrenManager
     private final Supplier<Pair<C, Parent>> instantiate;
     private Consumer<C> updatedChildConsumer;
 
+    private boolean testing = false;
+
     /**
      * @param childrenContainer JavaFX pane which contains the children
      * @param instantiate supplier that instantiates child's FXML
@@ -121,13 +123,13 @@ public class ChildrenManager
 
             // Add it to its container
             if (insertAtIndex < 0) {
-                Platform.runLater(() -> {
+                runInFXThread(() -> {
                     childrenContainer.getChildren()
                             .add(loadedChild.getValue());
                 });
             } else {
                 int finalInsertAtIndex = insertAtIndex;
-                Platform.runLater(() -> {
+                runInFXThread(() -> {
                     childrenContainer.getChildren()
                         .set(finalInsertAtIndex, loadedChild.getValue());
                 });
@@ -147,7 +149,7 @@ public class ChildrenManager
             // Remove UI element from its container
             // and child from map at the same time
             var uiElement = childUIMap.remove(child).getValue();
-            Platform.runLater(() -> {
+            runInFXThread(() -> {
                 childrenContainer.getChildren().remove(uiElement);
             });
         }
@@ -170,5 +172,22 @@ public class ChildrenManager
      */
     public void setUpdatedChildConsumer(Consumer<C> updatedChildConsumer) {
         this.updatedChildConsumer = updatedChildConsumer;
+    }
+
+    /**
+     * Sets a flag to indicate that this instance is used for testing and
+     * as such should not use the JFX thread
+     */
+    public void setTesting(boolean val) {
+        testing = val;
+    }
+
+    private void runInFXThread(Runnable runnable) {
+        if (testing) {
+            // Don't use Platform.runLater when testing this class
+            runnable.run();
+            return;
+        }
+        Platform.runLater(runnable);
     }
 }

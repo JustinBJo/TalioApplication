@@ -1,31 +1,35 @@
 package client.utils;
 
 import client.scenes.TaskListCtrl;
+import com.sun.javafx.fxml.builder.JavaFXSceneBuilder;
 import commons.TaskList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.testfx.framework.junit5.ApplicationTest;
 
+import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-class ChildrenManagerTest extends ApplicationTest {
+class ChildrenManagerTest {
 
     private ChildrenManager<TaskList, TaskListCtrl> sut;
     private Pane container;
@@ -49,6 +53,7 @@ class ChildrenManagerTest extends ApplicationTest {
         };
 
         sut = new ChildrenManager<>(container, supplier);
+        sut.setTesting(true);
 
         TaskList taskListA = new TaskList("A");
         taskListA.setId(1L);
@@ -105,10 +110,8 @@ class ChildrenManagerTest extends ApplicationTest {
     void removeChild() {
         sut.removeChild(defaultChildEl[0]);
 
-        Platform.runLater(() -> {
-            assertFalse(container.getChildren().contains(defaultChildUI[0]));
-            assertTrue(container.getChildren().contains(defaultChildUI[1]));
-        });
+        assertFalse(container.getChildren().contains(defaultChildUI[0]));
+        assertTrue(container.getChildren().contains(defaultChildUI[1]));
     }
 
     @Test
@@ -117,14 +120,12 @@ class ChildrenManagerTest extends ApplicationTest {
         newChild.setId(3L);
         sut.addOrUpdateChild(newChild);
 
-        Platform.runLater(() -> {
-            for (int i = 0; i < 2; i++) {
-                assertTrue(container.getChildren().contains(defaultChildUI[i]));
-            }
-            assertEquals(3, container.getChildren().size());
-            assertTrue(getUIMap().containsKey(newChild));
-            assertEquals(1, numConsumerCalls);
-        });
+        for (int i = 0; i < 2; i++) {
+            assertTrue(container.getChildren().contains(defaultChildUI[i]));
+        }
+        assertEquals(3, container.getChildren().size());
+        assertTrue(getUIMap().containsKey(newChild));
+        assertEquals(1, numConsumerCalls);
     }
 
 
@@ -134,23 +135,19 @@ class ChildrenManagerTest extends ApplicationTest {
         updatedChild.setId(defaultChildEl[0].getId());
         TaskListCtrl ret = sut.addOrUpdateChild(updatedChild);
 
-        Platform.runLater(() -> {
-            assertTrue(container.getChildren().contains(defaultChildUI[1]));
-            assertEquals(2, container.getChildren().size());
-            assertTrue(getUIMap().containsKey(updatedChild));
-            assertEquals(ret, getUIMap().get(updatedChild).getKey());
-            assertEquals(1, numConsumerCalls);
-        });
+        assertTrue(container.getChildren().contains(defaultChildUI[1]));
+        assertEquals(2, container.getChildren().size());
+        assertTrue(getUIMap().containsKey(updatedChild));
+        assertEquals(ret, getUIMap().get(updatedChild).getKey());
+        assertEquals(1, numConsumerCalls);
     }
 
     @Test
     void clear() {
         sut.clear();
 
-        Platform.runLater(() -> {
-            assertEquals(0, container.getChildren().size());
-            assertTrue(getUIMap().isEmpty());
-        });
+        assertEquals(0, container.getChildren().size());
+        assertTrue(getUIMap().isEmpty());
     }
 
     @Test
@@ -167,20 +164,18 @@ class ChildrenManagerTest extends ApplicationTest {
 
         sut.updateChildren(updated);
 
-        Platform.runLater(() -> {
-            assertEquals(2, container.getChildren().size());
-            assertEquals(2, numConsumerCalls);
+        assertEquals(2, container.getChildren().size());
+        assertEquals(2, numConsumerCalls);
 
-            assertTrue(getUIMap().containsKey(updatedChild));
-            assertTrue(getUIMap().containsKey(newChild));
+        assertTrue(getUIMap().containsKey(updatedChild));
+        assertTrue(getUIMap().containsKey(newChild));
 
-            for (int i = 0; i < 2; i++) {
-                assertFalse(
-                        container.getChildren().contains(defaultChildUI[i])
-                );
-                assertFalse(getUIMap().containsKey(defaultChildEl[i]));
-            }
-        });
+        for (int i = 0; i < 2; i++) {
+            assertFalse(
+                    container.getChildren().contains(defaultChildUI[i])
+            );
+            assertFalse(getUIMap().containsKey(defaultChildEl[i]));
+        }
     }
 
     @Test

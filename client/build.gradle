@@ -28,7 +28,4 @@ dependencies {
 	
 	implementation 'org.openjfx:javafx-controls:17.0.2'
 	implementation 'org.openjfx:javafx-fxml:17.0.2'
-
-	testImplementation "org.testfx:testfx-core:4.0.16-alpha"
-	testImplementation "org.testfx:testfx-junit5:4.0.16-alpha"
 }
