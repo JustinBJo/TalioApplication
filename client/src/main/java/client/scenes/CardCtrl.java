@@ -1,12 +1,9 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.EntityWebsocketManager;
-import client.utils.WebsocketUtils;
+import client.utils.*;
 import commons.Task;
 import javafx.application.Platform;
 import javafx.event.Event;
-import client.utils.ServerUtils;
 import commons.Subtask;
 import commons.TaskList;
 import javafx.event.EventHandler;
@@ -23,16 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
-
-    private final WebsocketUtils websocket;
-    private final MainCtrlTalio mainCtrl;
-    private final AlertUtils alert;
-    private final ServerUtils server;
-
-    private Task task;
-    private TaskList parentList;
-
-    private final EntityWebsocketManager<Task> entityWebsocket;
+    private final CardService service;
 
     @FXML
     AnchorPane root;
@@ -60,24 +48,11 @@ public class CardCtrl implements IEntityRepresentation<Task> {
 
     /**
      * Main constructor for CardCtrl
-     *
-     * @param mainCtrlTalio main controller of the application
+     * @param service the card service
      */
     @Inject
-    public CardCtrl(MainCtrlTalio mainCtrlTalio,
-                    AlertUtils alert,
-                    WebsocketUtils websocket, ServerUtils server) {
-        this.mainCtrl = mainCtrlTalio;
-        this.alert = alert;
-        this.websocket = websocket;
-        this.server = server;
-
-        this.entityWebsocket = new EntityWebsocketManager<>(
-                websocket,
-                "task",
-                Task.class,
-                this::setEntity
-        );
+    public CardCtrl(CardService service) {
+        this.service = service;
     }
 
     /**
@@ -110,7 +85,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
             // Set content transferred on drag n drop
             Dragboard dragboard = root.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
-            content.putString(String.valueOf(task.getId()));
+            content.putString(String.valueOf(service.getTask().getId()));
             dragboard.setContent(content);
             // Wrap up event
             event.consume();
@@ -129,25 +104,17 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * @param task the task that is being saved to this controller
      */
     public void setEntity(Task task) {
-        this.task = task;
-        if (task.getTitle() == null) {
-            task.setTitle("Untitled");
-            return;
-        }
-
-        entityWebsocket.register(task.getId(), "updateTitle");
-        entityWebsocket.register(task.getId(), "updateDescription");
-        websocket.registerForMessages(
+        service.setEntity(task);
+        service.getWebsocket().registerForMessages(
                 "/topic/subtask/add/" + task.getId(),
                 Subtask.class,
                 ignored -> Platform.runLater(this::setProgress)
         );
-
         Platform.runLater(() -> {
-            title.setText(task.getTitle());
+            title.setText(service.getTask().getTitle());
 
-            if (task.getDescription() == null
-                    || task.getDescription().isEmpty()) {
+            if (service.getTask().getDescription() == null
+                    || service.getTask().getDescription().isEmpty()) {
                 descriptionIndicator.setImage(null);
             }
 
@@ -156,7 +123,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     }
 
     private void setProgress() {
-        List<Subtask> subtasks = server.getTaskData(task);
+        List<Subtask> subtasks = service.getServer()
+                .getTaskData(service.getTask());
         if (subtasks == null || subtasks.size() == 0) {
             progress.setText("");
             return;
@@ -172,39 +140,34 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * @param taskList list that holds this task
      */
     public void setParentList(TaskList taskList) {
-        this.parentList = taskList;
+        service.setParentList(taskList);
     }
 
     /**
      * Show edit task scene for this task
      */
     public void editTask() {
-        mainCtrl.showEditTask(this.task);
+        service.editTask();
     }
 
     /**
      * Used to delete a task from a list
      */
     public void deleteTask() {
-        boolean confirmation = alert.confirmDeletion("task");
-
-        // Check the user's response and perform the desired action
-        if (confirmation) {
-            websocket.deleteTask(task);
-        }
+        service.deleteTask();
     }
 
     /**
      * View the details of a task after clicking twice on the card
      */
     public void viewTask() {
-        Task currentTask = task;
+        Task currentTask = service.getTask();
         root.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                     if (mouseEvent.getClickCount() == 2) {
-                        mainCtrl.showTaskDetails(currentTask);
+                        service.getMainCtrl().showTaskDetails(currentTask);
                     }
                 }
             }
@@ -215,44 +178,14 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * Used to move a task up in the parent list
      */
     public void moveUp() {
-        TaskList currentTaskList = parentList;
-
-        List<Task> currentTasks = server.getTaskListData(currentTaskList);
-        int taskIndex = currentTasks.indexOf(task);
-        taskIndex--;
-        if (taskIndex < 0 || taskIndex >= currentTasks.size()) {
-            alert.alertError("You cannot move the task higher.");
-            return;
-        }
-        currentTasks.remove(task);
-        currentTasks.add(taskIndex, task);
-        currentTaskList.setTasks(currentTasks);
-
-        websocket.updateTaskListChildren(currentTaskList, currentTasks);
+        service.moveUp();
     }
 
     /**
      * Used to move a task down in the parent list
      */
     public void moveDown() {
-        TaskList currentTaskList = parentList;
-
-        if (currentTaskList == null) {
-            System.out.println("The task is not part of a list");
-            return;
-        }
-        List<Task> currentTasks = server.getTaskListData(currentTaskList);
-        int taskIndex = currentTasks.indexOf(task);
-        taskIndex++;
-        if (taskIndex >= currentTasks.size()) {
-            alert.alertError("You cannot move the task lower.");
-            return;
-        }
-        currentTasks.remove(task);
-        currentTasks.add(taskIndex, task);
-        currentTaskList.setTasks(currentTasks);
-
-        websocket.updateTaskListChildren(currentTaskList, currentTasks);
+        service.moveDown();
     }
 
 }
