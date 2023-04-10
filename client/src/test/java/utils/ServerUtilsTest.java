@@ -145,6 +145,15 @@ public class ServerUtilsTest {
     }
 
     @Test
+    void getBoardsTest() {
+        List<Board> boardList = new ArrayList<>();
+        when(builder.get((GenericType<Object>) any())).thenReturn(boardList);
+
+        List<Board> result = serverUtils.getBoards();
+        assertEquals(boardList, result);
+    }
+
+    @Test
     void getBoardByCodeTest() {
         Board test = new Board("Test");
         when(builder.get((GenericType<Object>) any())).thenReturn(test);
