@@ -268,4 +268,20 @@ public class BoardControllerTest {
         long defaultId = service.getDefaultId();
         assertEquals(res, defaultId);
     }
+
+    @Test
+    void messageDelete() {
+        Board board = new Board("1030", "oldName");
+        board.setId(2001);
+        repo.save(board);
+
+        int response = sut.messageDelete(board.getId().toString());
+
+        // Check endpoint
+        assertEquals(HttpStatus.OK.value(), response);
+
+        // Check repository
+        assertTrue(repo.findAll().contains(board));
+    }
+
 }
