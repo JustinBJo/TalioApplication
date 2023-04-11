@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
 import commons.Board;
 import jakarta.ws.rs.WebApplicationException;

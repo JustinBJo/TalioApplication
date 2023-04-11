@@ -1,7 +1,6 @@
 package client.utils;
 
 import client.scenes.AddTitledEntityCtrl;
-import client.scenes.MainCtrlTalio;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

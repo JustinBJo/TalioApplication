@@ -105,4 +105,26 @@ public class TaskListControllerTest {
         assertTrue(tasks.contains(taskA));
         assertTrue(tasks.contains(taskB));
     }
+
+    @Test
+    void messageAddTest() {
+        TaskList tl = new TaskList("test1");
+        Board b = new Board("test");
+        boardRepo.save(b);
+        taskListController.messageAdd(tl, b.getId().toString());
+        assertTrue(repo.findAll().contains(tl));
+    }
+
+    @Test
+    void messageUpdateTest() {
+        TaskList l = new TaskList("Old Title");
+        repo.save(l);
+
+        taskListController.messageUpdate(l.getId().toString(), "New Title");
+
+        assertTrue(repo.findAll().contains(l));
+        String newTitle = repo.getById(l.getId()).getTitle();
+        assertEquals("New Title", newTitle);
+    }
+
 }

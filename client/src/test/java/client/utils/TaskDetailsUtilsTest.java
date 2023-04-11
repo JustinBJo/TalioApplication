@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrlTalio;
 import client.scenes.SubtaskCtrl;
 import commons.Subtask;
 import commons.Task;

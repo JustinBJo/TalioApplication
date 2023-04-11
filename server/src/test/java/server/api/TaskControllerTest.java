@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Subtask;
 import commons.Task;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
@@ -191,4 +192,30 @@ public class TaskControllerTest {
         String newDescription = repo.getById(task.getId()).getDescription();
         assertEquals("new description", newDescription);
     }
+
+    @Test
+    public void getAll() {
+        Task t1 = new Task("t1");
+        Task t2 = new Task("t2");
+        repo.save(t1);
+
+        var ret = sut.getAll();
+        assertTrue(ret.contains(t1));
+        assertFalse(ret.contains(t2));
+    }
+
+    @Test
+    public void getChildSubtasks() {
+        Task t = new Task("t");
+        Subtask s = new Subtask();
+        Subtask n = new Subtask();
+        t.addSubtask(s);
+        Long id = repo.save(t).getId();
+
+        var ret = sut.getChildSubtasks(id);
+
+        assertTrue(ret.hasBody());
+        assertTrue(ret.getBody().contains(s));
+    }
+
 }

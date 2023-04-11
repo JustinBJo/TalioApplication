@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.AlertUtils;
+import client.utils.MainCtrlTalio;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

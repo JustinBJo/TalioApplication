@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
 
 public class EditTaskUtils {
@@ -8,7 +7,7 @@ public class EditTaskUtils {
     private ServerUtils server;
 
     /**
-     * Constructor for the EditTaskService
+     * Constructor for the EditTaskUtils
      * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */

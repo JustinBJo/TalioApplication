@@ -1,5 +1,6 @@
-package client.scenes;
+package client.utils;
 
+import client.scenes.*;
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;

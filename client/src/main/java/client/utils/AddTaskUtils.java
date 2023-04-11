@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
 import commons.TaskList;
 
@@ -10,7 +9,7 @@ public class AddTaskUtils {
     private TaskList parentTaskList;
 
     /**
-     * Constructor for the AddTaskService
+     * Constructor for the AddTaskUtils
      * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */

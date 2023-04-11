@@ -1,7 +1,6 @@
 package client.utils;
 
 import client.scenes.IEntityRepresentation;
-import client.scenes.MainCtrlTalio;
 import commons.Task;
 import commons.TaskList;
 import javax.inject.Inject;
@@ -16,7 +15,7 @@ public class CardUtils implements IEntityRepresentation<Task> {
     private TaskList parentList;
 
     /**
-     * Main constructor for CardCtrl
+     * Main constructor for CardUtils
      *
      * @param mainCtrlTalio main controller of the application
      */
