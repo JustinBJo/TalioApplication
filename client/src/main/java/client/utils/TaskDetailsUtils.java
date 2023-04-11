@@ -8,7 +8,6 @@ import commons.Task;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class TaskDetailsUtils {
@@ -45,7 +44,8 @@ public class TaskDetailsUtils {
      * used to initialize the scene
      * @param subtaskContainer the Container for children
      */
-    public void initialize(VBox subtaskContainer, Consumer<Task> ctrlSetEntity) {
+    public void initialize(VBox subtaskContainer,
+                           Consumer<Task> ctrlSetEntity) {
         // Set up children manager
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
