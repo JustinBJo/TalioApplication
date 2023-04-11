@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.EditTaskService;
+import client.utils.EditTaskUtils;
 import client.utils.ServerUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,12 +9,12 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 
-class EditTaskServiceTest {
-    private EditTaskService service;
+class EditTaskUtilsTest {
+    private EditTaskUtils service;
 
     @BeforeEach
     void setup() {
-        service = new EditTaskService(null, null);
+        service = new EditTaskUtils(null, null);
         ServerUtils server = Mockito.mock(ServerUtils.class);
         MainCtrlTalio mainCtrl = Mockito.mock(MainCtrlTalio.class);
         service.setServer(server);

@@ -134,7 +134,7 @@ public class ChildrenManager
                 int finalInsertAtIndex = insertAtIndex;
                 runInFXThread(() -> {
                     childrenContainer.getChildren()
-                        .set(finalInsertAtIndex, loadedChild.getValue());
+                            .set(finalInsertAtIndex, loadedChild.getValue());
                 });
             }
             // Initialize its controller with this task list

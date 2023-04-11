@@ -95,39 +95,6 @@ public class TaskDetailsUtilsTest {
     }
 
 
-
-//    @Test
-//    public void testSetEntity() {
-//        sut.setSubtaskChildrenManager(childrenManager);
-//        sut.setEntityWebsocket(entityWebsocket);
-//        sut.setParentWebsocket(parentWebsocket);
-//        sut.setTask(task);
-//
-//        sut.setEntity(task);
-//
-//        assertEquals(sut.getTask(), task);
-//        verify(childrenManager, times(0)).clear();
-//        verify(childrenManager, times(0)).updateChildren(any());
-//        verify(childrenManager, times(0)).getChildrenCtrls();
-//
-//        verify(parentWebsocket, times(1)).register(task.getId());
-//        verify(entityWebsocket, times(1))
-//                .register(task.getId(), "updateTitle");
-//        verify(entityWebsocket, times(1))
-//                .register(task.getId(), "updateDescription");
-//
-//        verify(websocket, times(1))
-//                .registerForMessages(eq("/topic/task/updateChildren/" +
-//                                task.getId()),
-//                eq(Task.class),
-//                any());
-//
-//        verify(websocket, times(1))
-//                .registerForMessages( eq("/topic/task/delete"),
-//                eq(Task.class),
-//                any());
-//    }
-
     @Test
     public void testExit() {
         Task task = new Task("", "", null, null);

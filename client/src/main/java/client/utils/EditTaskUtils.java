@@ -2,10 +2,8 @@ package client.utils;
 
 import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
 
-@Service
-public class EditTaskService {
+public class EditTaskUtils {
     private MainCtrlTalio mainCtrl;
     private ServerUtils server;
 
@@ -15,7 +13,7 @@ public class EditTaskService {
      * @param mainCtrl injects a mainCtrl object
      */
     @Inject
-    public EditTaskService(ServerUtils server, MainCtrlTalio mainCtrl) {
+    public EditTaskUtils(ServerUtils server, MainCtrlTalio mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
