@@ -191,5 +191,6 @@ public class SubtaskCtrl
         subtask.setCompleted(newValue);
         websocket.updateSubtaskCompleteness(subtask, newValue);
         server.resetTask(parentTask.getId());
+        mainCtrl.showMain();
     }
 }
