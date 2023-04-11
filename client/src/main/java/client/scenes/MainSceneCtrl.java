@@ -94,14 +94,18 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         // Create children manager (needs FXML container)
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
-                TaskListCtrl.class,
-                "TaskList.fxml"
+                () -> BuildUtils.loadFXML(
+                    TaskListCtrl.class,
+                    "TaskList.fxml"
+                )
         );
 
         this.boardListChildrenManager = new ChildrenManager<>(
                 boardsContainer,
-                BoardCtrl.class,
-                "Board.fxml"
+                () -> BuildUtils.loadFXML(
+                    BoardCtrl.class,
+                    "Board.fxml"
+                )
         );
 
         // Long polling for drag and drop
@@ -233,6 +237,15 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
     }
 
     /**
+     * fills the overview with all boards in the database
+     */
+    public void adminBoards() {
+        boardListChildrenManager.updateChildren(new ArrayList<>());
+        List<Board> joinedBoards = server.getBoards();
+        boardListChildrenManager.updateChildren(joinedBoards);
+    }
+
+    /**
      * add a board to the list
      */
     public void addBoard() {
@@ -320,9 +333,13 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
             if (accept) {
                 mainCtrl.setAdmin(false);
                 mainCtrl.setUser(server.checkUser());
+                updateJoinedBoards(mainCtrl.getUser());
+                mainCtrl.setActiveBoard(server.getDefaultBoard());
                 mainCtrl.showMain();
             }
         }
     }
+
+
 }
 

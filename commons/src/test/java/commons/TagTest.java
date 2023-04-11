@@ -7,6 +7,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class TagTest {
 
     @Test
+    void emptyConstructor() {
+        var tag = new Tag();
+        assertEquals(null, tag.getColor());
+        assertEquals(null, tag.getName());
+    }
+    @Test
     void tagConstructor() {
         var tag = new Tag("Requirement", "BLUE");
         assertNotNull(tag);

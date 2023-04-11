@@ -124,4 +124,11 @@ public class TaskList implements IEntity {
     public int hashCode() {
         return Objects.hash(id, title, tasks);
     }
+
+    @Override
+    public String toString() {
+        return "TaskList{" + title +
+                ", " + tasks +
+                '}';
+    }
 }

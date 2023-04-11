@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.AlertUtils;
+import client.utils.MainCtrlTalio;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -47,6 +48,7 @@ public class AdminCtrl {
         if (p.equals(PWD)) {
             mainCtrl.setAdmin(true);
             password.setText("");
+            mainCtrl.showAdminBoards();
             mainCtrl.showMain();
         }
         else

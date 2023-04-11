@@ -1,8 +1,6 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.EntityWebsocketManager;
-import client.utils.WebsocketUtils;
+import client.utils.*;
 import commons.Task;
 import commons.Subtask;
 import javafx.application.Platform;
@@ -24,6 +22,8 @@ public class SubtaskCtrl
     private final WebsocketUtils websocket;
     private final AlertUtils alertUtils;
     private final MainCtrlTalio mainCtrl;
+    private final ServerUtils server;
+
 
     private Subtask subtask;
     private Task parentTask;
@@ -60,10 +60,12 @@ public class SubtaskCtrl
     @Inject
     public SubtaskCtrl(WebsocketUtils websocket,
                        AlertUtils alertUtils,
-                       MainCtrlTalio mainCtrlTalio) {
+                       MainCtrlTalio mainCtrlTalio,
+                       ServerUtils server) {
         this.websocket = websocket;
         this.alertUtils = alertUtils;
         this.mainCtrl = mainCtrlTalio;
+        this.server = server;
 
         this.entityWebsocket = new EntityWebsocketManager<>(
                 websocket,
@@ -187,5 +189,6 @@ public class SubtaskCtrl
         boolean newValue = completed.isSelected();
         subtask.setCompleted(newValue);
         websocket.updateSubtaskCompleteness(subtask, newValue);
+        server.resetTask(parentTask.getId());
     }
 }

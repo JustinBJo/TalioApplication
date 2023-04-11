@@ -15,8 +15,11 @@ public class Tag {
     private String color;
     //TODO: MAKE IT COLOR TYPE
 
+    /**
+     * Default constructor that is unused
+     */
     @SuppressWarnings("unused")
-    private Tag() {
+    public Tag() {
         // for object mapper
     }
 

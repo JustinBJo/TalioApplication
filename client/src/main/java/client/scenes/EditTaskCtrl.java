@@ -1,7 +1,7 @@
 package client.scenes;
 
 import client.utils.AlertUtils;
-import client.utils.ServerUtils;
+import client.utils.EditTaskUtils;
 import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -10,13 +10,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 public class EditTaskCtrl {
-    private final MainCtrlTalio mainCtrl;
-    private final ServerUtils server;
+    private final EditTaskUtils service;
     private final AlertUtils alertUtils;
     private final WebsocketUtils websocket;
-
     private Task editedTask;
-
     @FXML
     private TextField newTitle;
     @FXML
@@ -24,21 +21,16 @@ public class EditTaskCtrl {
     private String currentTitle;
     private String currentDescription;
 
-
     /**
-     * Constructor for the EditTask
-     *
-     * @param server    injects a server object
-     * @param mainCtrl  injects a mainCtrl object
+     * Constructor for the EditTaskCtrl
+     * @param service the edit task service
      */
     @Inject
-    public EditTaskCtrl(ServerUtils server,
-                        MainCtrlTalio mainCtrl,
+    public EditTaskCtrl(EditTaskUtils service,
                         AlertUtils alertUtils,
                         WebsocketUtils websocket) {
         this.alertUtils = alertUtils;
-        this.server = server;
-        this.mainCtrl = mainCtrl;
+        this.service = service;
         this.websocket = websocket;
     }
 
@@ -47,9 +39,7 @@ public class EditTaskCtrl {
      */
     public void setEditedTask(Task editedTask) {
         if (editedTask == null) return;
-
         this.editedTask = editedTask;
-
         currentTitle = editedTask.getTitle();
         currentDescription = editedTask.getDescription();
         newTitle.setText(editedTask.getTitle());
@@ -61,7 +51,7 @@ public class EditTaskCtrl {
      * returns to main scene
      */
     public void cancel() {
-        mainCtrl.showMain();
+        service.cancel();
     }
 
     /**
@@ -95,7 +85,12 @@ public class EditTaskCtrl {
             }
 
             if (!currentDescription.equals(newDescriptionString)) {
-                editedTask.setTitle(newDescriptionString);
+                editedTask.setDescription(newDescriptionString);
+                if (newDescriptionString.isEmpty())
+                    newDescriptionString =
+                            "HARDCODED-EMPTY-DESCRIPTION-METHOD" +
+                                    "-FOR-EDITING-TASKS";
+
                 websocket.updateTaskDescription(
                         editedTask,
                         newDescriptionString
@@ -110,6 +105,15 @@ public class EditTaskCtrl {
 
         newTitle.clear();
         newDescription.clear();
-        mainCtrl.showMain();
+        exit();
     }
+
+    /**
+     * Method that brings you to the main screen
+     */
+    public void exit() {
+        service.getServer().resetTask(editedTask.getId());
+        service.getMainCtrl().showMain();
+    }
+
 }
