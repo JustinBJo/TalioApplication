@@ -1,7 +1,7 @@
 package client.scenes;
 
 import client.utils.AlertUtils;
-import client.utils.EditTaskService;
+import client.utils.EditTaskUtils;
 import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
 import commons.Task;
@@ -10,7 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 public class EditTaskCtrl {
-    private final EditTaskService service;
+    private final EditTaskUtils service;
     private final AlertUtils alertUtils;
     private final WebsocketUtils websocket;
     private Task editedTask;
@@ -26,7 +26,7 @@ public class EditTaskCtrl {
      * @param service the edit task service
      */
     @Inject
-    public EditTaskCtrl(EditTaskService service,
+    public EditTaskCtrl(EditTaskUtils service,
                         AlertUtils alertUtils,
                         WebsocketUtils websocket) {
         this.alertUtils = alertUtils;

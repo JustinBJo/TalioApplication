@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.AddTaskService;
+import client.utils.AddTaskUtils;
 import client.utils.ServerUtils;
 import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,12 +9,12 @@ import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AddTaskServiceTest {
-    private AddTaskService service;
+class AddTaskUtilsTest {
+    private AddTaskUtils service;
 
     @BeforeEach
     void setup() {
-        service = new AddTaskService(null, null);
+        service = new AddTaskUtils(null, null);
         ServerUtils server = Mockito.mock(ServerUtils.class);
         MainCtrlTalio mainCtrl = Mockito.mock(MainCtrlTalio.class);
         service.setServer(server);
