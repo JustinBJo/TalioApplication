@@ -5,6 +5,7 @@ import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import server.api.testRepository.TestBoardRepository;
 import server.database.BoardRepository;
 import server.api.testRepository.TestTaskListRepository;
@@ -12,6 +13,7 @@ import server.api.testRepository.TestTaskRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,4 +107,26 @@ public class TaskListControllerTest {
         assertTrue(tasks.contains(taskA));
         assertTrue(tasks.contains(taskB));
     }
+
+    @Test
+    void messageAddTest() {
+        TaskList tl = new TaskList("test1");
+        Board b = new Board("test");
+        boardRepo.save(b);
+        taskListController.messageAdd(tl, b.getId().toString());
+        assertTrue(repo.findAll().contains(tl));
+    }
+
+    @Test
+    void messageUpdateTest() {
+        TaskList l = new TaskList("Old Title");
+        repo.save(l);
+
+        taskListController.messageUpdate(l.getId().toString(), "New Title");
+
+        assertTrue(repo.findAll().contains(l));
+        String newTitle = repo.getById(l.getId()).getTitle();
+        assertEquals("New Title", newTitle);
+    }
+
 }
