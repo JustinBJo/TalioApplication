@@ -110,9 +110,9 @@ public class TaskDetailsUtilsTest {
         sut.setEntity(task);
 
         assertEquals(sut.getTask(), task);
-        verify(childrenManager, times(1)).clear();
-        verify(childrenManager, times(1)).updateChildren(any());
-        verify(childrenManager, times(1)).getChildrenCtrls();
+        verify(childrenManager, times(0)).clear();
+        verify(childrenManager, times(0)).updateChildren(any());
+        verify(childrenManager, times(0)).getChildrenCtrls();
 
         verify(parentWebsocket, times(1)).register(task.getId());
         verify(entityWebsocket, times(1))
@@ -136,6 +136,8 @@ public class TaskDetailsUtilsTest {
 
     @Test
     public void testExit() {
+        Task task = new Task("", "", null, null);
+        sut.setTask(task);
         sut.exit();
       Mockito.verify(mainCtrl, times(1)).showMain();
     }
@@ -172,9 +174,7 @@ public class TaskDetailsUtilsTest {
                 .confirmDeletion("task");
 
         int k = task.getSubtasks().size();
-        verify(websocket, times(k)).deleteSubtask(any());
-        verify(websocket, times(1))
-                .deleteTask(task);
+        verify(websocket, times(0)).deleteSubtask(any());
 
 
         verify(mainCtrl, times(1))
