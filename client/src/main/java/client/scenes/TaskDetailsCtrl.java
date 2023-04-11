@@ -61,8 +61,6 @@ public class TaskDetailsCtrl {
      */
     public void setEntity(Task task) {
 
-        serverUtils.resetTask(task.getId());
-
         utils.setEntity(task);
 
         Platform.runLater(() -> {
