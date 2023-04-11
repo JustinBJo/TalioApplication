@@ -122,7 +122,11 @@ public class TaskDetailsUtils {
      */
     public void exit() {
         mainCtrl.showMain();
-        server.resetTask(task.getId());
+        if (task == null) {
+
+        }
+        else
+            server.resetTask(task.getId());
     }
 
     /**
