@@ -9,7 +9,7 @@ public class AddTaskUtils {
     private TaskList parentTaskList;
 
     /**
-     * Constructor for the AddTaskService
+     * Constructor for the AddTaskUtils
      * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */

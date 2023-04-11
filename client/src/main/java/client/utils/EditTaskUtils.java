@@ -7,7 +7,7 @@ public class EditTaskUtils {
     private ServerUtils server;
 
     /**
-     * Constructor for the EditTaskService
+     * Constructor for the EditTaskUtils
      * @param server injects a server object
      * @param mainCtrl injects a mainCtrl object
      */
