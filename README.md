@@ -37,7 +37,7 @@ To set up the development environment and run the application, follow these step
 ### Cloning the repository
 Clone the repository to your local machine using the following command:
 ```
-git clone <https://gitlab.ewi.tudelft.nl/cse1105/2022-2023/teams/oopp-team-45.git>
+git clone https://gitlab.ewi.tudelft.nl/cse1105/2022-2023/teams/oopp-team-45.git
 ```
 
 ### Running the application
