@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrlTalio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

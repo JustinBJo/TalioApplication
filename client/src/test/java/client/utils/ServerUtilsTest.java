@@ -1,4 +1,4 @@
-package utils;
+package client.utils;
 
 import client.utils.ServerUtils;
 import client.utils.WebsocketUtils;

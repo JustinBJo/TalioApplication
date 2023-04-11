@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrlTalio;
 import commons.Board;
 import commons.User;
 import jakarta.ws.rs.WebApplicationException;

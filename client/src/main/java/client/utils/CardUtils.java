@@ -1,7 +1,6 @@
 package client.utils;
 
 import client.scenes.IEntityRepresentation;
-import client.scenes.MainCtrlTalio;
 import commons.Task;
 import commons.TaskList;
 import javax.inject.Inject;

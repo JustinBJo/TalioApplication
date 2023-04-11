@@ -1,7 +1,6 @@
 package client.utils;
 
 import client.scenes.AddTitledEntityCtrl;
-import client.scenes.MainCtrlTalio;
 import com.google.inject.Inject;
 import commons.Board;
 import commons.Subtask;

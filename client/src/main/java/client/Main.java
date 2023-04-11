@@ -19,11 +19,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
-import client.utils.AlertUtils;
-import client.utils.BuildUtils;
+import client.utils.*;
 
-import client.utils.ServerUtils;
-import client.utils.WebsocketUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
