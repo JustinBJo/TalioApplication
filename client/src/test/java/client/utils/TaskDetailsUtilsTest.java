@@ -80,6 +80,10 @@ public class TaskDetailsUtilsTest {
 
 
         assertEquals(sut.getSubtaskChildrenManager().getChildrenContainer(), v);
+        assertEquals(sut.getSubtaskChildrenManager().getChildFxmlFileName(),
+                "Subtask.fxml");
+        assertEquals(sut.getSubtaskChildrenManager().getChildSceneCtrl(),
+                SubtaskCtrl.class);
 
         assertEquals(sut.getParentWebsocket().getWebsocket(), websocket);
         assertEquals(sut.getParentWebsocket().getChildEntityName(), "subtask");

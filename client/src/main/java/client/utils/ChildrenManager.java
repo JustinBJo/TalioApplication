@@ -12,27 +12,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ChildrenManager
         <T extends IEntity, C extends IEntityRepresentation<T>> {
     private final Pane childrenContainer;
     private final Map<T, Pair<C, Parent>> childUIMap;
-    private final Supplier<Pair<C, Parent>> instantiate;
+    private final Class<C> childSceneCtrl;
+    private final String childFxmlFileName;
     private Consumer<C> updatedChildConsumer;
-
-    private boolean testing = false;
 
     /**
      * @param childrenContainer JavaFX pane which contains the children
-     * @param instantiate supplier that instantiates child's FXML
-     *                    (usually BuildUtils.loadFXML())
+     * @param childSceneCtrl Class of child's scene controller
+     * @param childFxmlFileName Name of FXML file which defines child's scene
      */
     public ChildrenManager(
             Pane childrenContainer,
-            Supplier<Pair<C, Parent>> instantiate) {
+            Class<C> childSceneCtrl,
+            String childFxmlFileName) {
         this.childrenContainer = childrenContainer;
-        this.instantiate = instantiate;
+        this.childSceneCtrl = childSceneCtrl;
+        this.childFxmlFileName = childFxmlFileName;
         this.childUIMap = new HashMap<>();
     }
 
@@ -122,17 +122,18 @@ public class ChildrenManager
             }
 
             // Instantiate child UI element
-            var loadedChild = instantiate.get();
+            var loadedChild =
+                    BuildUtils.loadFXML(childSceneCtrl, childFxmlFileName);
 
             // Add it to its container
             if (insertAtIndex < 0) {
-                runInFXThread(() -> {
+                Platform.runLater(() -> {
                     childrenContainer.getChildren()
                             .add(loadedChild.getValue());
                 });
             } else {
                 int finalInsertAtIndex = insertAtIndex;
-                runInFXThread(() -> {
+                Platform.runLater(() -> {
                     childrenContainer.getChildren()
                         .set(finalInsertAtIndex, loadedChild.getValue());
                 });
@@ -152,7 +153,7 @@ public class ChildrenManager
             // Remove UI element from its container
             // and child from map at the same time
             var uiElement = childUIMap.remove(child).getValue();
-            runInFXThread(() -> {
+            Platform.runLater(() -> {
                 childrenContainer.getChildren().remove(uiElement);
             });
         }
@@ -178,27 +179,34 @@ public class ChildrenManager
     }
 
     /**
-     * Sets a flag to indicate that this instance is used for testing and
-     * as such should not use the JFX thread
-     */
-    public void setTesting(boolean val) {
-        testing = val;
-    }
-
-    private void runInFXThread(Runnable runnable) {
-        if (testing) {
-            // Don't use Platform.runLater when testing this class
-            runnable.run();
-            return;
-        }
-        Platform.runLater(runnable);
-    }
-
-    /**
      * getter for the child container
      * @return the child container
      */
     public Pane getChildrenContainer() {
         return childrenContainer;
+    }
+
+    /**
+     * getter for the child Controller
+     * @return the child scene controller
+     */
+    public Class<C> getChildSceneCtrl() {
+        return childSceneCtrl;
+    }
+
+    /**
+     * getter for the FXML name
+     * @return the FXML name as string
+     */
+    public String getChildFxmlFileName() {
+        return childFxmlFileName;
+    }
+
+    /**
+     * getter for the child UI map
+     * @return the Map of ChildUI
+     */
+    public Map<T, Pair<C, Parent>> getChildUIMap() {
+        return childUIMap;
     }
 }
