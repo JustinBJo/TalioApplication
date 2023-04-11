@@ -3,7 +3,6 @@ package client.scenes;
 import client.utils.*;
 import com.google.inject.Inject;
 import commons.Board;
-import commons.TaskList;
 import commons.User;
 
 import javafx.application.Platform;
@@ -23,22 +22,8 @@ import java.util.*;
 
 public class MainSceneCtrl implements IEntityRepresentation<Board>  {
 
-    private final ServerUtils server;
-    private final MainCtrlTalio mainCtrl;
-    private final AlertUtils alertUtils;
-    private final WebsocketUtils websocket;
 
-    private ChildrenManager<TaskList, TaskListCtrl> taskListChildrenManager;
-    private ChildrenManager<Board, BoardCtrl> boardListChildrenManager;
-
-    private EntityWebsocketManager<User> joinedBoardsWebsocket;
-    private ParentWebsocketManager<TaskList, TaskListCtrl> taskListsWebsocket;
-    private EntityWebsocketManager<Board> entityWebsocket;
-
-    private long defaultBoardID;
-
-    private Board activeBoard;
-
+    private final MainSceneUtils utils;
     @FXML
     Label sceneTitle;
     @FXML
@@ -71,18 +56,10 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
 
     /**
      * constructor
-     *
-     * @param mainCtrl the main controller
      */
     @Inject
-    public MainSceneCtrl(ServerUtils server,
-                         MainCtrlTalio mainCtrl,
-                         AlertUtils alertUtils,
-                         WebsocketUtils websocket) {
-        this.alertUtils = alertUtils;
-        this.server = server;
-        this.mainCtrl = mainCtrl;
-        this.websocket = websocket;
+    public MainSceneCtrl(MainSceneUtils utils) {
+        this.utils = utils;
     }
 
 
@@ -91,41 +68,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * after FXML components are initialized.
      */
     public void initialize() {
-        // Create children manager (needs FXML container)
-        this.taskListChildrenManager = new ChildrenManager<>(
-                taskListsContainer,
-                TaskListCtrl.class,
-                "TaskList.fxml"
-        );
-
-        this.boardListChildrenManager = new ChildrenManager<>(
-                boardsContainer,
-                BoardCtrl.class,
-                "Board.fxml"
-        );
-
-        // Long polling for drag and drop
-        startLongPolling();
-
-        // Create websocket managers
-        this.entityWebsocket = new EntityWebsocketManager<>(
-                websocket,
-                "board",
-                Board.class,
-                this::setEntity
-        );
-        this.taskListsWebsocket = new ParentWebsocketManager<>(
-                websocket,
-                "taskList",
-                TaskList.class,
-                taskListChildrenManager
-        );
-        this.joinedBoardsWebsocket = new EntityWebsocketManager<>(
-                websocket,
-                "user",
-                User.class,
-                this::updateJoinedBoards
-        );
+        utils.initialize(boardsContainer, taskListsContainer);
 
         // Set button icons
         Image menu = new Image(Objects.requireNonNull(getClass()
@@ -145,25 +88,14 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * Handles a server change
      */
     public void changeServer() {
-        this.defaultBoardID = server.getDefaultId();
-
-        validateUser();
-        Board defaultBoard = server.getBoardById(defaultBoardID);
-        if (!mainCtrl.getUser().getBoards().contains(defaultBoard)) {
-            mainCtrl.getUser().getBoards().add(defaultBoard);
-            websocket.saveUser(mainCtrl.getUser());
-        }
-
-        // Reset user and board
-        setEntity(server.getDefaultBoard());
-        updateJoinedBoards(mainCtrl.getUser());
+        utils.changeServer();
     }
 
     /**
      * @return board currently shown in scene
      */
     public Board getActiveBoard() {
-        return activeBoard;
+        return utils.getActiveBoard();
     }
 
     /**
@@ -171,45 +103,11 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * @param activeBoard new active board
      */
     public void setEntity(Board activeBoard) {
-        this.activeBoard = activeBoard;
+        utils.setEntity(activeBoard);
 
         Platform.runLater(() -> {
             sceneTitle.setText(activeBoard.getTitle());
             boardCode.setText(activeBoard.getCode());
-        });
-
-        taskListChildrenManager.updateChildren(
-                server.getBoardData(activeBoard.getId())
-        );
-
-        entityWebsocket.register(activeBoard.getId(), "update");
-        taskListsWebsocket.register(activeBoard.getId());
-
-        // Go to default board if this board is deleted somewhere else
-        websocket.registerForMessages(
-                "/topic/board/delete/" + activeBoard.getId(),
-                Integer.class,
-                (status) -> {
-                    if (status == 200) { // Delete successful
-                        setEntity(server.getDefaultBoard());
-                    }
-                }
-        );
-    }
-
-    private void startLongPolling() {
-        server.listenForUpdateTaskParent(t -> {
-            taskListChildrenManager.getChildrenCtrls().forEach(taskListCtrl -> {
-                if (taskListCtrl.getId().equals(t.oldParentId)) {
-                    taskListCtrl.getTaskChildrenManager()
-                            .removeChild(t.oldTask);
-                }
-
-                if (taskListCtrl.getId().equals(t.newParentId)) {
-                    taskListCtrl.getTaskChildrenManager()
-                            .addOrUpdateChild(t.newTask);
-                }
-            });
         });
     }
 
@@ -219,44 +117,35 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * since the user want to connect to a different server
      */
     public void back() {
-        server.resetServer();
-        mainCtrl.showConnect();
+        utils.back();
     }
 
     /**
      * Refresh the view, showing all task lists
      */
     public void updateJoinedBoards(User user) {
-        boardListChildrenManager.updateChildren(new ArrayList<>());
-        List<Board> joinedBoards = user.getBoards();
-        boardListChildrenManager.updateChildren(joinedBoards);
+        utils.updateJoinedBoards(user);
     }
 
     /**
      * fills the overview with all boards in the database
      */
     public void adminBoards() {
-        boardListChildrenManager.updateChildren(new ArrayList<>());
-        List<Board> joinedBoards = server.getBoards();
-        boardListChildrenManager.updateChildren(joinedBoards);
+        utils.adminBoards();
     }
 
     /**
      * add a board to the list
      */
     public void addBoard() {
-        mainCtrl.showAddBoard();
+        utils.addBoard();
     }
 
     /**
      * Rename the current board
      */
     public void renameBoard() {
-        if (activeBoard.getId() == defaultBoardID) {
-            alertUtils.alertError("You cannot rename the default board!");
-            return;
-        }
-        mainCtrl.showRenameBoard();
+        utils.renameBoard();
     }
 
     /**
@@ -265,7 +154,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * Behaviour after deletion can be changed in future implementations
      */
     public void removeBoard() {
-        mainCtrl.deleteBoard(activeBoard);
+        utils.removeBoard();
     }
 
     /**
@@ -277,7 +166,7 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
 
-        String code = activeBoard.getCode();
+        String code = utils.copyBoardCode();
         content.putString(code);
         clipboard.setContent(content);
 
@@ -297,43 +186,28 @@ public class MainSceneCtrl implements IEntityRepresentation<Board>  {
      * add a list to the list
      */
     public void addList() {
-        mainCtrl.showAddList();
+        utils.addList();
     }
 
     /**
      * displays the join board scene
      */
     public void joinBoard() {
-        mainCtrl.showJoinBoard();
+        utils.joinBoard();
     }
 
     /**
      * Handles setting the current user
      */
     public void validateUser() {
-        User u = server.checkUser();
-        mainCtrl.setUser(u);
-        joinedBoardsWebsocket.register(u.getId(), "save");
+        utils.validateUser();
     }
 
     /**
      * functionality for the "admin" icon button
      */
     public void adminPassword() {
-        if (!mainCtrl.isAdmin()) {
-            mainCtrl.showAdmin();
-        }
-        else {
-            boolean accept = alertUtils.confirmRevertAdmin();
-
-            if (accept) {
-                mainCtrl.setAdmin(false);
-                mainCtrl.setUser(server.checkUser());
-                updateJoinedBoards(mainCtrl.getUser());
-                mainCtrl.setActiveBoard(server.getDefaultBoard());
-                mainCtrl.showMain();
-            }
-        }
+        utils.adminPassword();
     }
 
 
