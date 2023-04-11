@@ -141,10 +141,17 @@ public class WebsocketUtils {
      * @param newDesc the new description of the task
      */
     public void updateTaskDescription(Task task, String newDesc) {
-        session.send(
+        if (newDesc.isEmpty())
+            session.send(
+                    "/app/task/updateDescription/" + task.getId() +
+                    "HARDCODED-EMPTY-DESCRIPTION-METHOD-FOR-EDITING-TASKS",
+                    task
+            );
+        else
+            session.send(
                 "/app/task/updateDescription/" + task.getId() + "/" + newDesc,
                 task
-        );
+            );
     }
 
     /**

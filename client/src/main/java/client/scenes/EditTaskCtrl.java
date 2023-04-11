@@ -95,7 +95,11 @@ public class EditTaskCtrl {
             }
 
             if (!currentDescription.equals(newDescriptionString)) {
-                editedTask.setTitle(newDescriptionString);
+                editedTask.setDescription(newDescriptionString);
+                if (newDescriptionString.isEmpty())
+                    newDescriptionString =
+                            "HARDCODED-EMPTY-DESCRIPTION-METHOD" +
+                                    "-FOR-EDITING-TASKS";
                 websocket.updateTaskDescription(
                         editedTask,
                         newDescriptionString
