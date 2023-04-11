@@ -4,12 +4,10 @@ import client.scenes.IEntityRepresentation;
 import client.scenes.MainCtrlTalio;
 import commons.Task;
 import commons.TaskList;
-import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import java.util.List;
 
-@Service
-public class CardService implements IEntityRepresentation<Task> {
+public class CardUtils implements IEntityRepresentation<Task> {
     private WebsocketUtils websocket;
     private MainCtrlTalio mainCtrl;
     private AlertUtils alert;
@@ -23,9 +21,9 @@ public class CardService implements IEntityRepresentation<Task> {
      * @param mainCtrlTalio main controller of the application
      */
     @Inject
-    public CardService(MainCtrlTalio mainCtrlTalio,
-                    AlertUtils alert,
-                    WebsocketUtils websocket, ServerUtils server) {
+    public CardUtils(MainCtrlTalio mainCtrlTalio,
+                       AlertUtils alert,
+                       WebsocketUtils websocket, ServerUtils server) {
         this.mainCtrl = mainCtrlTalio;
         this.alert = alert;
         this.websocket = websocket;

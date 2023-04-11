@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
-    private final CardService service;
+    private final CardUtils service;
     private final EntityWebsocketManager<Task> entityWebsocket;
 
     @FXML
@@ -51,7 +51,7 @@ public class CardCtrl implements IEntityRepresentation<Task> {
      * @param service the card service
      */
     @Inject
-    public CardCtrl(CardService service) {
+    public CardCtrl(CardUtils service) {
         this.service = service;
 
         this.entityWebsocket = new EntityWebsocketManager<>(

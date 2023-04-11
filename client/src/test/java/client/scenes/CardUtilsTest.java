@@ -10,12 +10,12 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 
-class CardServiceTest {
-    private CardService service;
+class CardUtilsTest {
+    private CardUtils service;
 
     @BeforeEach
     void setup() {
-        service = new CardService(null, null, null, null);
+        service = new CardUtils(null, null, null, null);
         ServerUtils server = Mockito.mock(ServerUtils.class);
         MainCtrlTalio mainCtrl = Mockito.mock(MainCtrlTalio.class);
         WebsocketUtils websocket = Mockito.mock(WebsocketUtils.class);

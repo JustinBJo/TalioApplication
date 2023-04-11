@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.AddTaskService;
+import client.utils.AddTaskUtils;
 import client.utils.AlertUtils;
 import client.utils.WebsocketUtils;
 import com.google.inject.Inject;
@@ -11,7 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 public class AddTaskCtrl {
-    private final AddTaskService service;
+    private final AddTaskUtils service;
     private final WebsocketUtils websocket;
     private final AlertUtils alertUtils;
     @FXML
@@ -24,7 +24,7 @@ public class AddTaskCtrl {
      * @param service the AddTaskCtrl service
      */
     @Inject
-    public AddTaskCtrl(AddTaskService service,
+    public AddTaskCtrl(AddTaskUtils service,
                         AlertUtils alertUtils,
                         WebsocketUtils websocket) {
         this.service = service;
