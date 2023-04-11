@@ -7,11 +7,11 @@ The application supports client-server communication via HTTP and JSON, and can 
 ## Description of project
 
 Talio is designed to help users manage their tasks efficiently using a client-server architecture.
-It supports multiple boards, each containing various lists and cards to organize tasks.
-Users can create, edit, and delete boards, lists, and tasks, and can also collaborate with others in real-time.
-The application also provides additional features such as nested task lists, task descriptions, and instant change synchronization.
+It supports multiple boards, each containing various lists and cards to organise tasks.
+Users can create, edit, and delete these entities, and can also collaborate with others in real-time.
 
-This application also supports admin features, which allows the users to access and edit all the boards that reside in the server.
+The application provides additional features such as nested task lists, task descriptions, and synchronization over multiple clients.
+A user can also use admin mode to access and edit all the boards that reside in the server.
 The password to access the admin features is "admin1234".
 
 
@@ -24,12 +24,8 @@ The password to access the admin features is "admin1234".
 | ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Vlad Ionita | V.Ionita@student.tudelft.nl |
 | ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Luca-Serban Ionescu | ionescu-8@student.tudelft.nl |
 | ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Maria Cristescu | m.a.cristescu@student.tudelft.nl |
-| ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/4881/avatar.png?width=400) | Renyi Yang      | R.Yang-7@student.tudelft.nl                        |
-<!-- Instructions (remove once assignment has been completed -->
-<!-- - Add (only!) your own name to the table above (use Markdown formatting) -->
-<!-- - Mention your *student* email address -->
-<!-- - Preferably add a recognizable photo, otherwise add your GitLab photo -->
-<!-- - (please make sure the photos have the same size) --> 
+| ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/4881/avatar.png?width=400) | Renyi Yang      | R.Yang-7@student.tudelft.nl                        | 
+
 
 ## How to run it
 To set up the development environment and run the application, follow these steps:
