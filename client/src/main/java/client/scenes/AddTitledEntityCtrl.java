@@ -185,7 +185,7 @@ public class AddTitledEntityCtrl {
                 // Error handling (very unlikely, as it is an enum)
                 default:
                     alertUtils.alertError(
-                        "Something went wrong, please try again!"
+                            "Something went wrong, please try again!"
                     );
                     pressCancel();
                     break;
@@ -199,6 +199,7 @@ public class AddTitledEntityCtrl {
         textField.clear();
         mainCtrl.showMain();
     }
+
 
     /**
      * Add a new task list
