@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import server.api.testRepository.TestUserRepository;
 import server.database.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
