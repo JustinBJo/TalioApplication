@@ -16,7 +16,6 @@ public class CardService implements IEntityRepresentation<Task> {
     private ServerUtils server;
     private Task task;
     private TaskList parentList;
-    private final EntityWebsocketManager<Task> entityWebsocket;
 
     /**
      * Main constructor for CardCtrl
@@ -31,12 +30,6 @@ public class CardService implements IEntityRepresentation<Task> {
         this.alert = alert;
         this.websocket = websocket;
         this.server = server;
-        this.entityWebsocket = new EntityWebsocketManager<>(
-                websocket,
-                "task",
-                Task.class,
-                this::setEntity
-        );
     }
 
     /**
@@ -49,8 +42,6 @@ public class CardService implements IEntityRepresentation<Task> {
             task.setTitle("Untitled");
             return;
         }
-        entityWebsocket.register(task.getId(), "updateTitle");
-        entityWebsocket.register(task.getId(), "updateDescription");
     }
 
     /**

@@ -8,7 +8,7 @@ import commons.Task;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Consumer;
 
 public class TaskDetailsUtils {
     private final MainCtrlTalio mainCtrl;
@@ -21,6 +21,8 @@ public class TaskDetailsUtils {
     private EntityWebsocketManager<Task> entityWebsocket;
 
     private Task task;
+
+    private VBox subtaskContainer;
 
     /**
      * Constructor for the TaskDetails service
@@ -44,7 +46,9 @@ public class TaskDetailsUtils {
      * used to initialize the scene
      * @param subtaskContainer the Container for children
      */
-    public void initialize(VBox subtaskContainer) {
+    public void initialize(VBox subtaskContainer,
+                           Consumer<Task> ctrlSetEntity) {
+        this.subtaskContainer = subtaskContainer;
         // Set up children manager
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
@@ -70,7 +74,7 @@ public class TaskDetailsUtils {
                 websocket,
                 "task",
                 Task.class,
-                this::setEntity
+                ctrlSetEntity
         );
     }
 
@@ -87,17 +91,24 @@ public class TaskDetailsUtils {
             task.setTitle("Untitled");
         }
 
-        var subtasks = server.getTaskData(task);
-        subtaskChildrenManager.clear();
-        subtaskChildrenManager.updateChildren(subtasks);
-        for (SubtaskCtrl subtaskCtrl :
-                subtaskChildrenManager.getChildrenCtrls()) {
-            subtaskCtrl.setParent(task);
-        }
-
         parentWebsocket.register(task.getId());
         entityWebsocket.register(task.getId(), "updateTitle");
         entityWebsocket.register(task.getId(), "updateDescription");
+
+        this.subtaskChildrenManager =
+                new ChildrenManager<>(
+                        subtaskContainer,
+                        () -> BuildUtils.loadFXML(
+                            SubtaskCtrl.class,
+                            "Subtask.fxml"
+                        )
+                );
+        subtaskChildrenManager.setUpdatedChildConsumer(
+                subtaskCtrl -> subtaskCtrl.setParent(task)
+        );
+        subtaskChildrenManager.clear();
+        subtaskChildrenManager.updateChildren(task.getSubtasks());
+
         websocket.registerForMessages(
                 "/topic/task/updateChildren/" + task.getId(),
                 Task.class,
@@ -106,6 +117,7 @@ public class TaskDetailsUtils {
                     subtaskChildrenManager.updateChildren(t.getSubtasks());
                 }
         );
+
         setupCloseOnDelete();
 
     }
@@ -131,6 +143,7 @@ public class TaskDetailsUtils {
      */
     public void exit() {
         mainCtrl.showMain();
+        //server.resetTask(task.getId());
     }
 
     /**
@@ -157,9 +170,6 @@ public class TaskDetailsUtils {
 
         // Check the user's response and perform the desired action
         if (confirmation) {
-            List<Subtask> subtasks = task.getSubtasks();
-            for (Subtask subtask : subtasks)
-                websocket.deleteSubtask(subtask);
             websocket.deleteTask(task);
             exit();
         }

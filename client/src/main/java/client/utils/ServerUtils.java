@@ -27,6 +27,7 @@ import commons.*;
 
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -282,6 +283,24 @@ public class ServerUtils {
                 .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
                 .put(Entity.entity(newParent, APPLICATION_JSON), Task.class);
 
+    }
+
+
+    /**
+     * @param id the id
+     */
+    public void resetTask(Long id) {
+        Response resParent = createClient().target(server)
+                .path("tasks/findParentId/" + id)
+                .request(APPLICATION_JSON).accept(APPLICATION_JSON) //
+                .get();
+        if (resParent.getStatus() != 200) { // OK
+            throw new RuntimeException("Task's parent wasn't found!");
+        }
+        TaskList parent = resParent.readEntity(TaskList.class);
+        resParent.close();
+
+        updateTaskParent(id, parent);
     }
 
     // methods for users ------------------------------------------------------

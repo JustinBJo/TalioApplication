@@ -230,6 +230,24 @@ public class TaskController {
     }
 
     /**
+     * @param id the id
+     * @return -
+     */
+    @GetMapping("/findParentId/{id}")
+    public ResponseEntity<TaskList> responseParentId(@PathVariable("id")
+                                                         long id) {
+        Long parentId = findParentsId(id);
+        if (parentId < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        var parent = taskListRepository.findById(parentId);
+        if (parent.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(parent.get());
+    }
+
+    /**
      * Updates the entity name using websocket messages
      * @param id id of updated entity
      * @param newName entity's new name

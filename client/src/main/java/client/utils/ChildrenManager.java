@@ -95,6 +95,9 @@ public class ChildrenManager
      * @param children list of updated children
      */
     public void updateChildren(List<T> children) {
+
+        if (children == null) return;
+
         // Tag child to be removed later
         List<T> changedChildren = new ArrayList<>();
         for (T child : childUIMap.keySet()) {

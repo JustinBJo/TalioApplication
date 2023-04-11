@@ -21,6 +21,7 @@ import java.util.Objects;
 
 public class CardCtrl implements IEntityRepresentation<Task> {
     private final CardService service;
+    private final EntityWebsocketManager<Task> entityWebsocket;
 
     @FXML
     AnchorPane root;
@@ -45,7 +46,6 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @FXML
     ImageView descriptionIndicator;
 
-
     /**
      * Main constructor for CardCtrl
      * @param service the card service
@@ -53,6 +53,13 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @Inject
     public CardCtrl(CardService service) {
         this.service = service;
+
+        this.entityWebsocket = new EntityWebsocketManager<>(
+                service.getWebsocket(),
+                "task",
+                Task.class,
+                this::setEntity
+        );
     }
 
     /**
@@ -110,6 +117,8 @@ public class CardCtrl implements IEntityRepresentation<Task> {
                 Subtask.class,
                 ignored -> Platform.runLater(this::setProgress)
         );
+        entityWebsocket.register(task.getId(), "updateTitle");
+        entityWebsocket.register(task.getId(), "updateDescription");
         Platform.runLater(() -> {
             title.setText(service.getTask().getTitle());
 
