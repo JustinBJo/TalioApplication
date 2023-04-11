@@ -172,7 +172,8 @@ public class AddTitledEntityCtrl {
                 case Subtask:
                     addNewSubtask(title);
                     textField.clear();
-                    mainCtrl.showTaskDetails(currentTask);
+                    mainCtrl.showMain();
+                    server.resetTask(currentTask.getId());
                     return;
                 //break;
                 case RenameSubtask:

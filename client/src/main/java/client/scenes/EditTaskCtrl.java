@@ -100,6 +100,14 @@ public class EditTaskCtrl {
 
         newTitle.clear();
         newDescription.clear();
+        exit();
+    }
+
+    /**
+     * Method that brings you to the main screen
+     */
+    public void exit() {
+        service.getServer().resetTask(editedTask.getId());
         service.getMainCtrl().showMain();
     }
 

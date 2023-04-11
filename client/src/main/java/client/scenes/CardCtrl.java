@@ -46,7 +46,6 @@ public class CardCtrl implements IEntityRepresentation<Task> {
     @FXML
     ImageView descriptionIndicator;
 
-
     /**
      * Main constructor for CardCtrl
      * @param service the card service

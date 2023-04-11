@@ -22,6 +22,8 @@ public class TaskDetailsUtils {
 
     private Task task;
 
+    private VBox subtaskContainer;
+
     /**
      * Constructor for the TaskDetails service
      * @param websocket the websocket used
@@ -46,6 +48,7 @@ public class TaskDetailsUtils {
      */
     public void initialize(VBox subtaskContainer,
                            Consumer<Task> ctrlSetEntity) {
+        this.subtaskContainer = subtaskContainer;
         // Set up children manager
         this.subtaskChildrenManager =
                 new ChildrenManager<>(
@@ -89,6 +92,19 @@ public class TaskDetailsUtils {
         parentWebsocket.register(task.getId());
         entityWebsocket.register(task.getId(), "updateTitle");
         entityWebsocket.register(task.getId(), "updateDescription");
+
+        this.subtaskChildrenManager =
+                new ChildrenManager<>(
+                        subtaskContainer,
+                        SubtaskCtrl.class,
+                        "Subtask.fxml"
+                );
+        subtaskChildrenManager.setUpdatedChildConsumer(
+                subtaskCtrl -> subtaskCtrl.setParent(task)
+        );
+        subtaskChildrenManager.clear();
+        subtaskChildrenManager.updateChildren(task.getSubtasks());
+
         websocket.registerForMessages(
                 "/topic/task/updateChildren/" + task.getId(),
                 Task.class,
@@ -97,6 +113,7 @@ public class TaskDetailsUtils {
                     subtaskChildrenManager.updateChildren(t.getSubtasks());
                 }
         );
+
         setupCloseOnDelete();
 
     }
@@ -122,7 +139,7 @@ public class TaskDetailsUtils {
      */
     public void exit() {
         mainCtrl.showMain();
-        server.resetTask(task.getId());
+        //server.resetTask(task.getId());
     }
 
     /**
