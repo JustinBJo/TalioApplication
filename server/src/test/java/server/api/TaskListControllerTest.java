@@ -5,7 +5,6 @@ import commons.TaskList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import server.api.testRepository.TestBoardRepository;
 import server.database.BoardRepository;
 import server.api.testRepository.TestTaskListRepository;
@@ -13,7 +12,6 @@ import server.api.testRepository.TestTaskRepository;
 import server.database.TaskListRepository;
 import server.database.TaskRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
