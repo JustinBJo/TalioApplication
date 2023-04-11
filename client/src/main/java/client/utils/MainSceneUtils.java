@@ -55,14 +55,18 @@ public class MainSceneUtils implements IEntityRepresentation<Board> {
         // Create children manager (needs FXML container)
         this.taskListChildrenManager = new ChildrenManager<>(
                 taskListsContainer,
-                TaskListCtrl.class,
-                "TaskList.fxml"
+                () -> BuildUtils.loadFXML(
+                    TaskListCtrl.class,
+                    "TaskList.fxml"
+                )
         );
 
         this.boardListChildrenManager = new ChildrenManager<>(
                 boardsContainer,
-                BoardCtrl.class,
-                "Board.fxml"
+                () -> BuildUtils.loadFXML(
+                    BoardCtrl.class,
+                    "Board.fxml"
+                )
         );
 
         // Long polling for drag and drop
