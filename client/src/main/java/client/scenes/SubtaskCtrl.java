@@ -133,6 +133,7 @@ public class SubtaskCtrl
         if (confirmation) {
             websocket.deleteSubtask(subtask);
             parentTask.removeSubtask(subtask);
+            server.resetTask(parentTask.getId());
             mainCtrl.showTaskDetails(parentTask);
         }
     }
