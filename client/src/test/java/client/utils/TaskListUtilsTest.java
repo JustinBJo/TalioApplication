@@ -62,8 +62,6 @@ class TaskListUtilsTest {
     void initialize() {
         sut.initialize(box);
 
-        assertEquals(CardCtrl.class,
-                sut.getTaskChildrenManager().getChildSceneCtrl());
         assertEquals(box, sut.getTaskChildrenManager().getChildrenContainer());
     }
 

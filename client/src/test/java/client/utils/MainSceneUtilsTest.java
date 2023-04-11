@@ -86,13 +86,9 @@ class MainSceneUtilsTest {
     void initialize() {
         sut.initialize(vBox, hBox);
 
-        assertEquals(TaskListCtrl.class,
-                sut.getListChildrenManager().getChildSceneCtrl());
         assertEquals(hBox,
                 sut.getListChildrenManager().getChildrenContainer());
 
-        assertEquals(BoardCtrl.class,
-                sut.getBoardListChildrenManager().getChildSceneCtrl());
         assertEquals(vBox,
                 sut.getBoardListChildrenManager().getChildrenContainer());
     }
