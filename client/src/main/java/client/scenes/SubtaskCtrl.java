@@ -134,7 +134,7 @@ public class SubtaskCtrl
             websocket.deleteSubtask(subtask);
             parentTask.removeSubtask(subtask);
             server.resetTask(parentTask.getId());
-            mainCtrl.showTaskDetails(parentTask);
+            mainCtrl.showMain();
         }
     }
 
