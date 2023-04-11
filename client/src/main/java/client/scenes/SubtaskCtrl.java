@@ -133,7 +133,8 @@ public class SubtaskCtrl
         if (confirmation) {
             websocket.deleteSubtask(subtask);
             parentTask.removeSubtask(subtask);
-            mainCtrl.showTaskDetails(parentTask);
+            server.resetTask(parentTask.getId());
+            mainCtrl.showMain();
         }
     }
 
@@ -190,5 +191,6 @@ public class SubtaskCtrl
         subtask.setCompleted(newValue);
         websocket.updateSubtaskCompleteness(subtask, newValue);
         server.resetTask(parentTask.getId());
+        mainCtrl.showMain();
     }
 }
