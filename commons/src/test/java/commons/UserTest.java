@@ -52,6 +52,12 @@ public class UserTest {
     }
 
     @Test
+    void getIdTest() {
+        User u = new User("127.0.0.1");
+        assertEquals(127001, u.getId());
+    }
+
+    @Test
     void testGetIp() {
         assertEquals("127.0.0.1", user.getIp());
     }

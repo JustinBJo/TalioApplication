@@ -50,13 +50,31 @@ class SubtaskControllerTest {
         sut.add(k1, t1.getId());
 
         assertEquals(k1, repo.findById(k1.getId()).get());
+    }
 
+    @Test
+    void messageAdd() {
+        k1.setId(100);
+        taskRepo.save(t1);
+        sut.messageAdd(k1, t1.getId().toString());
+
+        assertEquals(k1, repo.findById(k1.getId()).get());
     }
 
     @Test
     void updateTest() {
         repo.save(k1);
         sut.update(k1.getId(), "NewTitle");
+
+        assertTrue(repo.findAll().contains(k1));
+        String newTitle = repo.getById(k1.getId()).getTitle();
+        assertEquals("NewTitle", newTitle);
+    }
+
+    @Test
+    void messageUpdateTest() {
+        repo.save(k1);
+        sut.messageUpdateTitle(k1.getId().toString(), "NewTitle");
 
         assertTrue(repo.findAll().contains(k1));
         String newTitle = repo.getById(k1.getId()).getTitle();
@@ -73,12 +91,30 @@ class SubtaskControllerTest {
     }
 
     @Test
-    void delete() {
+    void messageUpdateCompletenessTest() {
+        repo.save(k1);
+        sut.messageUpdateCompleteness(k1.getId().toString(), true);
+
+        assertTrue(repo.findAll().contains(k1));
+        assertTrue(repo.findById(k1.getId()).get().isCompleted());
+    }
+
+    @Test
+    void messageDelete() {
         assertFalse(repo.findAll().contains(k1));
         Long id = repo.save(k1).getId();
         assertTrue(repo.findAll().contains(k1));
 
-        System.out.println("HELLO");
+        sut.messageDelete(id.toString());
+
+        assertFalse(repo.findAll().contains(k1));
+    }
+
+    @Test
+    void delete() {
+        assertFalse(repo.findAll().contains(k1));
+        Long id = repo.save(k1).getId();
+        assertTrue(repo.findAll().contains(k1));
 
         sut.delete(id);
 
