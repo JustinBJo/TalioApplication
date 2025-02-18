@@ -17,14 +17,14 @@ The password to access the admin features is "admin1234".
 
 ## Group members
 
-| Profile Picture | Name        | Email                       |
-|---|-------------|-----------------------------|
-| ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/2613/avatar.png?width=400) | Justin Jo | B.Jo@student.tudelft.nl       |
-| ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/6091/avatar.png?width=400) | Francisco Cunha | F.SiqueiraCarneirodaCunhaNeto-1@student.tudelft.nl |
-| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Vlad Ionita | V.Ionita@student.tudelft.nl |
-| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Luca-Serban Ionescu | ionescu-8@student.tudelft.nl |
-| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Maria Cristescu | m.a.cristescu@student.tudelft.nl |
-| ![](https://gitlab.ewi.tudelft.nl/uploads/-/system/user/avatar/4881/avatar.png?width=400) | Renyi Yang      | R.Yang-7@student.tudelft.nl                        | 
+| Name        | Email                       |
+|-------------|-----------------------------|
+| Justin Jo | B.Jo@student.tudelft.nl       |
+| Francisco Cunha | F.SiqueiraCarneirodaCunhaNeto-1@student.tudelft.nl |
+| Vlad Ionita | V.Ionita@student.tudelft.nl |
+| Luca-Serban Ionescu | ionescu-8@student.tudelft.nl |
+| Maria Cristescu | m.a.cristescu@student.tudelft.nl |
+| Renyi Yang      | R.Yang-7@student.tudelft.nl                        | 
 
 
 ## How to run it
@@ -37,7 +37,7 @@ To set up the development environment and run the application, follow these step
 ### Cloning the repository
 Clone the repository to your local machine using the following command:
 ```
-git clone https://gitlab.ewi.tudelft.nl/cse1105/2022-2023/teams/oopp-team-45.git
+git clone https://github.com/JustinBJo/TalioApplication.git
 ```
 
 ### Running the application
